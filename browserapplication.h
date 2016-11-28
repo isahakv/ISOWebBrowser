@@ -3,6 +3,8 @@
 
 #include <QtWidgets/QApplication>
 
+#include <QtCore/QPointer>
+
 class BrowserMainWindow;
 
 class BrowserApplication : public QApplication
@@ -12,11 +14,24 @@ class BrowserApplication : public QApplication
 public:
 	BrowserApplication(int &argc, char **argv);
 	~BrowserApplication();
+	static BrowserApplication* GetInstance();
 
-	bool isTheOnlyBrowser() const;
+	bool IsTheOnlyBrowser() const;
+	BrowserMainWindow* GetCurrentMainWindow();
+	QList<BrowserMainWindow*> GetMainWindows();
 
 public slots:
 	BrowserMainWindow* newMainWindow();
+
+signals:
+
+private slots:
+
+private:
+	void CleanInvalidMainWindows();
+
+	QList<QPointer<BrowserMainWindow> > mainWindows;
+	bool isPrivateBrowsing;
 };
 
 #endif // BROWSERAPPLICATION_H

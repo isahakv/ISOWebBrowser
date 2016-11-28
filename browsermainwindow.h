@@ -1,8 +1,15 @@
 #ifndef BROWSERMAINWINDOW_H
 #define BROWSERMAINWINDOW_H
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
 
+class TabWidget;
+
+/*!
+	The MainWindow of the Browser Application.
+
+	Handles the tab widget and all the actions
+ */
 class BrowserMainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -10,6 +17,21 @@ class BrowserMainWindow : public QMainWindow
 public:
     BrowserMainWindow(QWidget *parent = 0);
     ~BrowserMainWindow();
+
+	TabWidget* GetTabWidget() const;
+
+private:
+	void SetupMenu();
+	void SetupToolBar();
+
+private:
+	QToolBar* navigationBar;
+	TabWidget* tabWidget;
+
+	QAction* historyBack;
+	QMenu* historyBackMenu;
+	QAction* historyForward;
+	QMenu* historyForwardMenu;
 };
 
 #endif // BROWSERMAINWINDOW_H

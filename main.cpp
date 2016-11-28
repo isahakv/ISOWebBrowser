@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
 	BrowserApplication application(argc, argv);
-	if (!application.isTheOnlyBrowser())
+	if (!application.IsTheOnlyBrowser())
 		return 0;
 
 	application.newMainWindow();
