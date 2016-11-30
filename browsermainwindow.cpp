@@ -5,6 +5,7 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QLineEdit>
 #include <QStyle>
 
 
@@ -27,14 +28,36 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 	centralWidget->setLayout(layout);
 	setCentralWidget(centralWidget);
 
-	tabWidget->newTab();
-	tabWidget->newTab();
-	tabWidget->newTab();
+	connect(tabWidget, SIGNAL(LoadPage(QString)), this, SLOT(LoadPage(QString)));
+
+	tabWidget->NewTab();
+	tabWidget->NewTab();
+	tabWidget->NewTab();
 }
 
 BrowserMainWindow::~BrowserMainWindow()
 {
 
+}
+
+WebView* BrowserMainWindow::GetCurrentTab() const
+{
+	return tabWidget->GetCurrentWebView();
+}
+
+void BrowserMainWindow::LoadPage(const QString& url)
+{
+	QUrl _url = QUrl::fromUserInput(url);
+	LoadUrl(_url);
+}
+
+void BrowserMainWindow::LoadUrl(const QUrl& url)
+{
+	if (!GetCurrentTab() || !url.isValid())
+		return;
+
+	tabWidget->GetCurrentLineEdit()->setText(QString::fromUtf8(url.toEncoded()));
+	tabWidget->LoadUrlInCurrentTab(url);
 }
 
 void BrowserMainWindow::SetupMenu()
@@ -76,4 +99,6 @@ void BrowserMainWindow::SetupToolBar()
 	historyForwardMenu = new QMenu(this);
 	historyForward->setMenu(historyForwardMenu);
 	navigationBar->addAction(historyForward);
+
+	navigationBar->addWidget(tabWidget->GetLineEditStack());
 }

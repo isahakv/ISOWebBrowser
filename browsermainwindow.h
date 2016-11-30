@@ -4,6 +4,7 @@
 #include <QtWidgets/QMainWindow>
 
 class TabWidget;
+class WebView;
 
 /*!
 	The MainWindow of the Browser Application.
@@ -18,7 +19,14 @@ public:
     BrowserMainWindow(QWidget *parent = 0);
     ~BrowserMainWindow();
 
-	TabWidget* GetTabWidget() const;
+	inline TabWidget* GetTabWidget() const { return tabWidget; }
+	WebView* GetCurrentTab() const;
+
+public slots:
+	void LoadPage(const QString& url);
+
+private slots:
+	void LoadUrl(const QUrl& url);
 
 private:
 	void SetupMenu();

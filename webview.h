@@ -15,7 +15,13 @@ class WebView : public QWebEngineView
 	Q_OBJECT
 
 public:
-	WebView();
+	WebView(QWidget* parent = 0);
+
+	void LoadUrl(const QUrl& url);
+	QUrl GetUrl() const;
+
+private:
+	QUrl initialUrl;
 };
 
 #endif // WEBVIEW_H
