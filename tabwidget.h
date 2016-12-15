@@ -3,6 +3,8 @@
 
 #include <QtWidgets/QTabBar>
 
+class QLabel;
+
 /*
 	Tab bar with a few more features such as a context menu and shortcuts
  */
@@ -22,10 +24,12 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 
 private slots:
+	void NewTabSlot();
 	void CloseTab();
 	void ContextMenuRequested(const QPoint& position);
 
 private:
+	QList<QLabel*> tabLabels;
 	friend class TabWidget;
 
 	QPoint dragStartPos;
@@ -94,6 +98,11 @@ protected:
 
 private slots:
 	void CurrentTabChanged(int index);
+	void WebViewLoadStarted();
+	void WebViewLoadFinished(bool b);
+	void WebViewIconChanged(const QIcon& icon);
+	void WebViewTitleChanged(const QString& title);
+	void WebViewUrlChanged(const QUrl& url);
 	void LineEditReturnPressed();
 	void WindowCloseRequested();
 

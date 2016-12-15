@@ -2,6 +2,7 @@
 
 #include "webview.h"
 
+#include <QtGui/QFocusEvent>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QLayout>
 #include <QtWidgets/QPushButton>
@@ -16,8 +17,9 @@ UrlLineEdit::UrlLineEdit(QWidget *parent)
 	setSizePolicy(lineEdit->sizePolicy());
 
 	// line edit
+	lineEdit->setFocusProxy(this);
 	//lineEdit->setFocusPolicy(Qt::FocusPolicy::Fo);
-	lineEdit->setFocus();
+	//lineEdit->setFocus();
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->addWidget(lineEdit);
@@ -29,7 +31,7 @@ UrlLineEdit::UrlLineEdit(QWidget *parent)
 
 void UrlLineEdit::SetWebView(WebView* _webView)
 {
-	Q_ASSERT(!_webView);
+	Q_ASSERT(_webView);
 	webView = _webView;
 	connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(WebViewUrlChanged(QUrl)));
 	connect(webView, SIGNAL(iconChanged(QIcon)), this, SLOT(WebViewIconChanged(QIcon)));
@@ -42,6 +44,29 @@ QSize UrlLineEdit::SizeHint() const
 	QSize size = lineEdit->sizeHint();
 	lineEdit->setFrame(false);
 	return size;
+}
+
+void UrlLineEdit::focusInEvent(QFocusEvent* event)
+{
+	lineEdit->event(event);
+	QWidget::focusInEvent(event);
+}
+
+void UrlLineEdit::focusOutEvent(QFocusEvent* event)
+{
+	lineEdit->event(event);
+
+	if (lineEdit->completer())
+	{
+		qWarning("Fuck yea");
+	}
+
+	QWidget::focusOutEvent(event);
+}
+
+void UrlLineEdit::keyPressEvent(QKeyEvent* event)
+{
+	lineEdit->event(event);
 }
 
 void UrlLineEdit::WebViewUrlChanged(const QUrl& url)

@@ -11,6 +11,9 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QStackedWidget>
+#include <QtWidgets/QLabel>
+#include <QPixmap>
+#include <QMovie>
 
 TabBar::TabBar(QWidget *parent)
 	: QTabBar(parent)
@@ -21,6 +24,7 @@ TabBar::TabBar(QWidget *parent)
 			this, SLOT(ContextMenuRequested(QPoint)));
 
 	setTabsClosable(true);
+	// connect(this, SIGNAL(NewTab()), this, SLOT(NewTabSlot()));
 	connect(this, SIGNAL(tabCloseRequested(int)), this, SIGNAL(CloseTab(int)));
 	setSelectionBehaviorOnRemove(QTabBar::SelectPreviousTab);
 	setMovable(true);
@@ -46,6 +50,20 @@ void TabBar::mousePressEvent(QMouseEvent *event)
 void TabBar::mouseMoveEvent(QMouseEvent *event)
 {
 	QTabBar::mouseMoveEvent(event);
+}
+
+void TabBar::NewTabSlot()
+{
+	/*QPixmap pixmap(QString(":Images/16x16/defaulticon.png"));
+	QLabel* label = new QLabel(this);
+	label->setPixmap(pixmap);
+	setTabButton(currentIndex(), ButtonPosition::LeftSide, label);
+	//tab
+	//tabLabels.append(label);
+
+	qWarning("NewTabSlot Called");
+
+	emit NewTab();*/
 }
 
 void TabBar::CloseTab()
@@ -142,6 +160,10 @@ WebView* TabWidget::NewTab(bool makeCurrent)
 
 	// webview
 	WebView* webView = new WebView;
+	urlLineEdit->SetWebView(webView);
+	connect(webView, SIGNAL(loadStarted()), this, SLOT(WebViewLoadStarted()));
+	connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(WebViewLoadFinished(bool)));
+	connect(webView, SIGNAL(iconChanged(QIcon)), this, SLOT(WebViewIconChanged(QIcon)));
 
 	addTab(webView, tr("Untitled"));
 	if (makeCurrent)
@@ -252,6 +274,73 @@ void TabWidget::CurrentTabChanged(int index)
 		lineEdits->currentWidget()->setFocus();
 	else
 		webView->setFocus();
+}
+
+void TabWidget::WebViewLoadStarted()
+{
+	WebView* webView = qobject_cast<WebView*>(sender());
+	int index = GetWebViewIndex(webView);
+	if (index != -1)
+	{
+		/*QIcon icon(QLatin1String(":Images/16x16/loading.gif"));
+		setTabIcon(index, icon);*/
+		QLabel* label = qobject_cast<QLabel*>(tabBar->tabButton(index, QTabBar::ButtonPosition::LeftSide));
+		if (label)
+		{
+			QMovie* movie = label->movie();
+			if (!movie)
+			{
+				movie = new QMovie(":Images/16x16/loading.gif", QByteArray(), label);
+				label->setMovie(movie);
+			}
+			movie->start();
+		}
+		else
+		{
+			label = new QLabel(this);
+			QMovie* movie = new QMovie(":Images/16x16/loading.gif", QByteArray(), label);
+			label->setMovie(movie);
+			movie->start();
+			tabBar->setTabButton(index, QTabBar::ButtonPosition::LeftSide, label);
+		}
+	}
+}
+
+void TabWidget::WebViewLoadFinished(bool b)
+{
+
+}
+
+void TabWidget::WebViewIconChanged(const QIcon& icon)
+{
+	WebView* webView = qobject_cast<WebView*>(sender());
+	int index = GetWebViewIndex(webView);
+	if (index != -1)
+	{
+		QLabel* label = qobject_cast<QLabel*>(tabBar->tabButton(index, QTabBar::ButtonPosition::LeftSide));
+		if (label)
+		{
+			QPixmap pixmap = icon.pixmap(QSize(16, 16));
+			label->setPixmap(pixmap);
+		}
+		else
+		{
+			label = new QLabel(this);
+			QPixmap pixmap = icon.pixmap(QSize(16, 16));
+			label->setPixmap(pixmap);
+			tabBar->setTabButton(index, QTabBar::ButtonPosition::LeftSide, label);
+		}
+	}
+}
+
+void TabWidget::WebViewTitleChanged(const QString& title)
+{
+
+}
+
+void TabWidget::WebViewUrlChanged(const QUrl& url)
+{
+
 }
 
 void TabWidget::LineEditReturnPressed()

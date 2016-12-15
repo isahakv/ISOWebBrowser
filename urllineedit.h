@@ -19,6 +19,11 @@ public:
 	QSize SizeHint() const;
 
 protected:
+	void focusInEvent(QFocusEvent* event);
+	void focusOutEvent(QFocusEvent* event);
+	void keyPressEvent(QKeyEvent* event);
+
+protected:
 	QLineEdit* lineEdit;
 
 private slots:

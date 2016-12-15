@@ -15,7 +15,7 @@ void WebView::LoadUrl(const QUrl& url)
 QUrl WebView::GetUrl() const
 {
 	QUrl url = QWebEngineView::url();
-	if (url.isEmpty())
+	if (!url.isEmpty())
 		return url;
 
 	return initialUrl;
