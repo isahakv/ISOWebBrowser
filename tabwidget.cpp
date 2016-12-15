@@ -164,6 +164,7 @@ WebView* TabWidget::NewTab(bool makeCurrent)
 	connect(webView, SIGNAL(loadStarted()), this, SLOT(WebViewLoadStarted()));
 	connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(WebViewLoadFinished(bool)));
 	connect(webView, SIGNAL(iconChanged(QIcon)), this, SLOT(WebViewIconChanged(QIcon)));
+	connect(webView, SIGNAL(titleChanged(QString)), this, SLOT(WebViewTitleChanged(QString)));
 
 	addTab(webView, tr("Untitled"));
 	if (makeCurrent)
@@ -313,6 +314,8 @@ void TabWidget::WebViewLoadFinished(bool b)
 
 void TabWidget::WebViewIconChanged(const QIcon& icon)
 {
+	qWarning("WebViewIconChanged Function Calles!");
+
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
@@ -335,7 +338,12 @@ void TabWidget::WebViewIconChanged(const QIcon& icon)
 
 void TabWidget::WebViewTitleChanged(const QString& title)
 {
-
+	WebView* webView = qobject_cast<WebView*>(sender());
+	int index = GetWebViewIndex(webView);
+	if (index != -1)
+	{
+		setTabText(index, title);
+	}
 }
 
 void TabWidget::WebViewUrlChanged(const QUrl& url)
