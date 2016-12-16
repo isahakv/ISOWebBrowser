@@ -19,6 +19,8 @@ public:
     BrowserMainWindow(QWidget *parent = 0);
     ~BrowserMainWindow();
 
+	static const char* defaultHomePage;
+
 	inline TabWidget* GetTabWidget() const { return tabWidget; }
 	WebView* GetCurrentTab() const;
 
@@ -26,7 +28,10 @@ public slots:
 	void LoadPage(const QString& url);
 
 private slots:
+	void NewTabCreated(WebView* tab);
 	void LoadUrl(const QUrl& url);
+
+	void SlotFileNew();
 
 private:
 	void SetupMenu();
@@ -40,6 +45,8 @@ private:
 	QMenu* historyBackMenu;
 	QAction* historyForward;
 	QMenu* historyForwardMenu;
+
+	//HomePageType homePageType;
 };
 
 #endif // BROWSERMAINWINDOW_H

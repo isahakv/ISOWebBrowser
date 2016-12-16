@@ -24,7 +24,6 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 
 private slots:
-	void NewTabSlot();
 	void CloseTab();
 	void ContextMenuRequested(const QPoint& position);
 
@@ -80,14 +79,17 @@ public:
 
 signals:
 	// tab widget signals
+	void NewTabCreated(WebView* tab);
 	void LoadPage(const QString& url);
 
 	// current tab signals
 	void geometryChangeRequested(const QRect& geometry);
 
 public slots:
+	void LoadHomePage(WebView* tab);
+	void LoadNewTabPage(WebView* tab);
 	void LoadUrlInCurrentTab(const QUrl& url);
-	WebView* NewTab(bool makeCurrent = true);
+	WebView* NewTab(bool makeCurrent = true, bool loadHomePage = false);
 	void RequestCloseTab(int index = -1);
 	void CloseTab(int index);
 
@@ -99,7 +101,6 @@ protected:
 private slots:
 	void CurrentTabChanged(int index);
 	void WebViewLoadStarted();
-	void WebViewLoadFinished(bool b);
 	void WebViewIconChanged(const QIcon& icon);
 	void WebViewTitleChanged(const QString& title);
 	void WebViewUrlChanged(const QUrl& url);

@@ -58,7 +58,7 @@ void UrlLineEdit::focusOutEvent(QFocusEvent* event)
 
 	if (lineEdit->completer())
 	{
-		qWarning("Fuck yea");
+		qWarning("Fuck yeah");
 	}
 
 	QWidget::focusOutEvent(event);

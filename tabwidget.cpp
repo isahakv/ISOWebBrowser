@@ -1,11 +1,13 @@
 #include "tabwidget.h"
 
+#include "browsertypes.h"
 #include "webview.h"
 #include "urllineedit.h"
 
 #include <QApplication>
 #include <QClipboard>
 #include <QAction>
+#include <QSettings>
 #include <QtGui/QDrag>
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QMenu>
@@ -14,6 +16,8 @@
 #include <QtWidgets/QLabel>
 #include <QPixmap>
 #include <QMovie>
+
+#include <QIODevice>
 
 TabBar::TabBar(QWidget *parent)
 	: QTabBar(parent)
@@ -24,7 +28,6 @@ TabBar::TabBar(QWidget *parent)
 			this, SLOT(ContextMenuRequested(QPoint)));
 
 	setTabsClosable(true);
-	// connect(this, SIGNAL(NewTab()), this, SLOT(NewTabSlot()));
 	connect(this, SIGNAL(tabCloseRequested(int)), this, SIGNAL(CloseTab(int)));
 	setSelectionBehaviorOnRemove(QTabBar::SelectPreviousTab);
 	setMovable(true);
@@ -50,20 +53,6 @@ void TabBar::mousePressEvent(QMouseEvent *event)
 void TabBar::mouseMoveEvent(QMouseEvent *event)
 {
 	QTabBar::mouseMoveEvent(event);
-}
-
-void TabBar::NewTabSlot()
-{
-	/*QPixmap pixmap(QString(":Images/16x16/defaulticon.png"));
-	QLabel* label = new QLabel(this);
-	label->setPixmap(pixmap);
-	setTabButton(currentIndex(), ButtonPosition::LeftSide, label);
-	//tab
-	//tabLabels.append(label);
-
-	qWarning("NewTabSlot Called");
-
-	emit NewTab();*/
 }
 
 void TabBar::CloseTab()
@@ -137,6 +126,61 @@ int TabWidget::GetWebViewIndex(WebView* webView) const
 	return indexOf(webView);
 }
 
+void TabWidget::LoadHomePage(WebView* tab)
+{
+	QSettings settings;
+	settings.beginGroup(QLatin1String("MainWindow"));
+	HomePageType homeType = qvariant_cast<HomePageType>(settings.value(QLatin1String("HomePageType"), (unsigned short)HomePageType::NewTabPage));
+	settings.endGroup();
+	switch (homeType)
+	{
+	case HomePageType::NewTabPage:
+		LoadNewTabPage(tab);
+		break;
+	case HomePageType::SpecificPage:
+		//LoadPage(home);
+		break;
+	}
+}
+
+void TabWidget::LoadNewTabPage(WebView* tab)
+{
+	QString htmlTxt;
+	QFile html(":html/NewTab.html");
+	html.open(QIODevice::OpenModeFlag::ReadOnly);
+	/*QTextStream in(&html);
+	while (!in.atEnd())
+	{
+		qWarning("fffff");
+		in >> htmlTxt;
+	}*/
+	htmlTxt = html.readAll();
+	//qWarning(htmlTxt.toStdString().c_str());
+
+	// tab->load(QUrl("qrc:///html/NewTab.html"));
+	tab->setHtml(htmlTxt);
+/*
+	// This code may move to another function
+	int index = GetWebViewIndex(tab);
+	QLabel* label = qobject_cast<QLabel*>(tabBar->tabButton(index, QTabBar::ButtonPosition::LeftSide));
+	if (label)
+	{
+		QPixmap pixmap(QString(":Images/16x16/new-tab.png"));
+		label->setPixmap(pixmap);
+	}
+	else
+	{
+		label = new QLabel(this);
+		QPixmap pixmap(QString(":Images/16x16/new-tab.png"));
+		label->setPixmap(pixmap);
+		tabBar->setTabButton(index, QTabBar::ButtonPosition::LeftSide, label);
+	}
+	// This code may move to another function
+
+	tab->iconChanged(QIcon(":Images/16x16/new-tab.png"));
+	tab->loadFinished(true);*/
+}
+
 void TabWidget::LoadUrlInCurrentTab(const QUrl& url)
 {
 	WebView* webView = GetCurrentWebView();
@@ -147,7 +191,7 @@ void TabWidget::LoadUrlInCurrentTab(const QUrl& url)
 	}
 }
 
-WebView* TabWidget::NewTab(bool makeCurrent)
+WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 {
 	// line edit
 	UrlLineEdit* urlLineEdit = new UrlLineEdit;
@@ -162,15 +206,21 @@ WebView* TabWidget::NewTab(bool makeCurrent)
 	WebView* webView = new WebView;
 	urlLineEdit->SetWebView(webView);
 	connect(webView, SIGNAL(loadStarted()), this, SLOT(WebViewLoadStarted()));
-	connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(WebViewLoadFinished(bool)));
 	connect(webView, SIGNAL(iconChanged(QIcon)), this, SLOT(WebViewIconChanged(QIcon)));
 	connect(webView, SIGNAL(titleChanged(QString)), this, SLOT(WebViewTitleChanged(QString)));
+	connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(WebViewUrlChanged(QUrl)));
 
 	addTab(webView, tr("Untitled"));
 	if (makeCurrent)
 		setCurrentWidget(webView);
 
 	SetupPage(webView->page());
+
+	// emit NewTabCreated(webView);
+	if (loadHomePage)
+		LoadHomePage(webView);
+	else
+		LoadNewTabPage(webView);
 
 	//qWarning(QString("LineEditStack Count = %1").arg(lineEdits->count()).toStdString().c_str());
 	return webView;
@@ -307,14 +357,9 @@ void TabWidget::WebViewLoadStarted()
 	}
 }
 
-void TabWidget::WebViewLoadFinished(bool b)
-{
-
-}
-
 void TabWidget::WebViewIconChanged(const QIcon& icon)
 {
-	qWarning("WebViewIconChanged Function Calles!");
+	qWarning("WebViewIconChanged Called");
 
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
@@ -348,7 +393,14 @@ void TabWidget::WebViewTitleChanged(const QString& title)
 
 void TabWidget::WebViewUrlChanged(const QUrl& url)
 {
+	qWarning("WebViewUrlChanged Function Called!");
 
+	WebView* webView = qobject_cast<WebView*>(sender());
+	int index = GetWebViewIndex(webView);
+	if (index != -1)
+	{
+		tabBar->setTabData(index, url);
+	}
 }
 
 void TabWidget::LineEditReturnPressed()

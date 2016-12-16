@@ -29,6 +29,7 @@ private slots:
 
 private:
 	void CleanInvalidMainWindows();
+	QString GetCommandLineUrlArgument() const;
 
 	QList<QPointer<BrowserMainWindow> > mainWindows;
 	bool isPrivateBrowsing;

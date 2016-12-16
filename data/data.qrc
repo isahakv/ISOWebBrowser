@@ -2,5 +2,12 @@
     <qresource prefix="/Images/16x16">
         <file>loading.gif</file>
         <file>defaulticon.png</file>
+        <file>new-tab.png</file>
+    </qresource>
+    <qresource prefix="/Images/64x64">
+        <file>browser_icon.png</file>
+    </qresource>
+    <qresource prefix="/html">
+        <file>NewTab.html</file>
     </qresource>
 </RCC>

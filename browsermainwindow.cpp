@@ -1,6 +1,8 @@
 #include "browsermainwindow.h"
 
+#include "browserapplication.h"
 #include "tabwidget.h"
+#include "webview.h"
 
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QToolBar>
@@ -8,6 +10,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QStyle>
 
+const char* BrowserMainWindow::defaultHomePage = "http://google.com/";
 
 BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 	: QMainWindow(parent),
@@ -28,11 +31,11 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 	centralWidget->setLayout(layout);
 	setCentralWidget(centralWidget);
 
+	connect(tabWidget, SIGNAL(NewTabCreated(WebView*)), this, SLOT(NewTabCreated(WebView*)));
 	connect(tabWidget, SIGNAL(LoadPage(QString)), this, SLOT(LoadPage(QString)));
 
-	tabWidget->NewTab();
-	tabWidget->NewTab();
-	tabWidget->NewTab();
+	/*WebView* tab = */tabWidget->NewTab(true, true);
+	//SlotLoadHomePage(tab);
 }
 
 BrowserMainWindow::~BrowserMainWindow()
@@ -51,19 +54,32 @@ void BrowserMainWindow::LoadPage(const QString& url)
 	LoadUrl(_url);
 }
 
+void BrowserMainWindow::NewTabCreated(WebView* tab)
+{
+
+}
+
 void BrowserMainWindow::LoadUrl(const QUrl& url)
 {
 	if (!GetCurrentTab() || !url.isValid())
 		return;
 
-	tabWidget->GetCurrentLineEdit()->setText(QString::fromUtf8(url.toEncoded()));
+	tabWidget->GetCurrentLineEdit()->setText(QString::fromUtf8(url.toEncoded())); // maybe move this in tabwidget...
 	tabWidget->LoadUrlInCurrentTab(url);
+}
+
+void BrowserMainWindow::SlotFileNew()
+{
+	BrowserMainWindow* mw = BrowserApplication::GetInstance()->newMainWindow();
+	//if (mw)
+	//	mw->SlotLoadHomePage();
 }
 
 void BrowserMainWindow::SetupMenu()
 {
 	// File
 	QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
+	fileMenu->addAction(tr("&New Window"), this, SLOT(SlotFileNew()), QKeySequence::New);
 	fileMenu->addAction(tr("&Quit"), this, SLOT(close()), QKeySequence::Close);
 
 	// Edit

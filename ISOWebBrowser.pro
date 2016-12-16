@@ -6,7 +6,8 @@ HEADERS  += browsermainwindow.h \
             browserapplication.h \
     tabwidget.h \
     webview.h \
-    urllineedit.h
+    urllineedit.h \
+    browsertypes.h
 
 SOURCES += main.cpp\
         browsermainwindow.cpp \
