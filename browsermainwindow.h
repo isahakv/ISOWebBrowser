@@ -28,7 +28,6 @@ public slots:
 	void LoadPage(const QString& url);
 
 private slots:
-	void NewTabCreated(WebView* tab);
 	void LoadUrl(const QUrl& url);
 
 	void SlotFileNew();

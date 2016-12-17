@@ -6,6 +6,7 @@
 
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QToolBar>
+#include <QStatusBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QLineEdit>
 #include <QStyle>
@@ -20,6 +21,7 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 	//
 	SetupMenu();
 	SetupToolBar();
+	statusBar()->setSizeGripEnabled(true);
 
 	QWidget* centralWidget = new QWidget(this);
 	QVBoxLayout* layout = new QVBoxLayout;
@@ -31,11 +33,11 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 	centralWidget->setLayout(layout);
 	setCentralWidget(centralWidget);
 
-	connect(tabWidget, SIGNAL(NewTabCreated(WebView*)), this, SLOT(NewTabCreated(WebView*)));
 	connect(tabWidget, SIGNAL(LoadPage(QString)), this, SLOT(LoadPage(QString)));
+	connect(tabWidget, SIGNAL(WebPageLinkHovered(QString)),
+			statusBar(), SLOT(showMessage(QString)));
 
-	/*WebView* tab = */tabWidget->NewTab(true, true);
-	//SlotLoadHomePage(tab);
+	tabWidget->NewTab(true, true);
 }
 
 BrowserMainWindow::~BrowserMainWindow()
@@ -54,17 +56,12 @@ void BrowserMainWindow::LoadPage(const QString& url)
 	LoadUrl(_url);
 }
 
-void BrowserMainWindow::NewTabCreated(WebView* tab)
-{
-
-}
-
 void BrowserMainWindow::LoadUrl(const QUrl& url)
 {
 	if (!GetCurrentTab() || !url.isValid())
 		return;
 
-	tabWidget->GetCurrentLineEdit()->setText(QString::fromUtf8(url.toEncoded())); // maybe move this in tabwidget...
+	// tabWidget->GetCurrentLineEdit()->setText(QString::fromUtf8(url.toEncoded())); // maybe move this in tabwidget...
 	tabWidget->LoadUrlInCurrentTab(url);
 }
 

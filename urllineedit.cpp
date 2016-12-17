@@ -15,11 +15,11 @@ UrlLineEdit::UrlLineEdit(QWidget *parent)
 	setFocusPolicy(lineEdit->focusPolicy());
 	setAttribute(Qt::WA_InputMethodEnabled);
 	setSizePolicy(lineEdit->sizePolicy());
+	setMouseTracking(true);
+	setAcceptDrops(true);
 
 	// line edit
 	lineEdit->setFocusProxy(this);
-	//lineEdit->setFocusPolicy(Qt::FocusPolicy::Fo);
-	//lineEdit->setFocus();
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->addWidget(lineEdit);
@@ -34,7 +34,6 @@ void UrlLineEdit::SetWebView(WebView* _webView)
 	Q_ASSERT(_webView);
 	webView = _webView;
 	connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(WebViewUrlChanged(QUrl)));
-	connect(webView, SIGNAL(iconChanged(QIcon)), this, SLOT(WebViewIconChanged(QIcon)));
 	connect(webView, SIGNAL(loadProgress(int)), this, SLOT(update()));
 }
 
@@ -48,7 +47,12 @@ QSize UrlLineEdit::SizeHint() const
 
 void UrlLineEdit::focusInEvent(QFocusEvent* event)
 {
+	qWarning("focusInEvent");
 	lineEdit->event(event);
+	//if (event->)
+	{
+		lineEdit->selectAll();
+	}
 	QWidget::focusInEvent(event);
 }
 
@@ -72,9 +76,4 @@ void UrlLineEdit::keyPressEvent(QKeyEvent* event)
 void UrlLineEdit::WebViewUrlChanged(const QUrl& url)
 {
 	lineEdit->setText(QString::fromUtf8(url.toEncoded()));
-}
-
-void UrlLineEdit::WebViewIconChanged(const QIcon& icon)
-{
-
 }

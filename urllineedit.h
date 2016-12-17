@@ -28,7 +28,6 @@ protected:
 
 private slots:
 	void WebViewUrlChanged(const QUrl& url);
-	void WebViewIconChanged(const QIcon& icon);
 
 private:
 	WebView* webView;

@@ -2,6 +2,8 @@ TEMPLATE = app
 TARGET = ISOWebBrowser
 QT += webenginewidgets network widgets printsupport
 
+CONFIG += debug_and_release
+
 HEADERS  += browsermainwindow.h \
             browserapplication.h \
     tabwidget.h \

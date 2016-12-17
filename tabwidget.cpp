@@ -159,6 +159,7 @@ void TabWidget::LoadNewTabPage(WebView* tab)
 
 	// tab->load(QUrl("qrc:///html/NewTab.html"));
 	tab->setHtml(htmlTxt);
+	//tab->load(QUrl(":html/NewTab.html"));
 /*
 	// This code may move to another function
 	int index = GetWebViewIndex(tab);
@@ -206,6 +207,7 @@ WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 	WebView* webView = new WebView;
 	urlLineEdit->SetWebView(webView);
 	connect(webView, SIGNAL(loadStarted()), this, SLOT(WebViewLoadStarted()));
+	connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(WebViewLoadFinished(bool)));
 	connect(webView, SIGNAL(iconChanged(QIcon)), this, SLOT(WebViewIconChanged(QIcon)));
 	connect(webView, SIGNAL(titleChanged(QString)), this, SLOT(WebViewTitleChanged(QString)));
 	connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(WebViewUrlChanged(QUrl)));
@@ -216,7 +218,6 @@ WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 
 	SetupPage(webView->page());
 
-	// emit NewTabCreated(webView);
 	if (loadHomePage)
 		LoadHomePage(webView);
 	else
@@ -317,8 +318,12 @@ void TabWidget::CurrentTabChanged(int index)
 	WebView* oldWebView = GetWebView(lineEdits->currentIndex());
 	if (oldWebView)
 	{
-
+		disconnect(oldWebView->page(), SIGNAL(linkHovered(QString)),
+				   this, SIGNAL(WebPageLinkHovered(QString)));
 	}
+
+	connect(webView->page(), SIGNAL(linkHovered(QString)),
+					   this, SIGNAL(WebPageLinkHovered(QString)));
 
 	lineEdits->setCurrentIndex(index);
 	if (webView->GetUrl().isEmpty())
@@ -329,6 +334,8 @@ void TabWidget::CurrentTabChanged(int index)
 
 void TabWidget::WebViewLoadStarted()
 {
+	qWarning("WebViewLoadStarted Called");
+
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
@@ -354,6 +361,18 @@ void TabWidget::WebViewLoadStarted()
 			movie->start();
 			tabBar->setTabButton(index, QTabBar::ButtonPosition::LeftSide, label);
 		}
+	}
+}
+
+void TabWidget::WebViewLoadFinished(bool b)
+{
+	qWarning("WebViewLoadFinished Called");
+
+	WebView* webView = qobject_cast<WebView*>(sender());
+	int index = GetWebViewIndex(webView);
+	if (index != -1)
+	{
+		WebViewIconChanged(webView->icon());
 	}
 }
 
