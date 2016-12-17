@@ -80,7 +80,7 @@ TabWidget::TabWidget(QWidget *parent)
 	connect(tabBar, SIGNAL(CloseTab(int)), this, SLOT(RequestCloseTab(int)));
 	setTabBar(tabBar);
 
-	connect(this, SIGNAL(currentChanged(int)), this, SLOT(CurrentTabChanged(int)));
+	connect(this, SIGNAL(currentChanged(int)), this, SLOT(SlotCurrentTabChanged(int)));
 
 	lineEdits = new QStackedWidget(this);
 }
@@ -88,6 +88,11 @@ TabWidget::TabWidget(QWidget *parent)
 TabWidget::~TabWidget()
 {
 
+}
+
+void TabWidget::AddWebAction(QAction* action, QWebEnginePage::WebAction webAction)
+{
+	webActionMappers.append(new WebActionMapper(action, webAction, this));
 }
 
 QWidget* TabWidget::GetLineEditStack() const
@@ -307,7 +312,7 @@ void TabWidget::mouseReleaseEvent(QMouseEvent* event)
 	QTabWidget::mouseReleaseEvent(event);
 }
 
-void TabWidget::CurrentTabChanged(int index)
+void TabWidget::SlotCurrentTabChanged(int index)
 {
 	WebView* webView = GetWebView(index);
 	if (!webView)
@@ -320,20 +325,27 @@ void TabWidget::CurrentTabChanged(int index)
 	{
 		disconnect(oldWebView->page(), SIGNAL(linkHovered(QString)),
 				   this, SIGNAL(WebPageLinkHovered(QString)));
-		disconnect(oldWebView, SIGNAL(loadProgress(int)),
-				   this, SIGNAL(WebPageLoadProgress(int)));
+		//disconnect(oldWebView, SIGNAL(loadProgress(int)),
+		//		   this, SIGNAL(WebPageLoadProgress(int)));
 	}
 
 	connect(webView->page(), SIGNAL(linkHovered(QString)),
 					   this, SIGNAL(WebPageLinkHovered(QString)));
-	connect(webView, SIGNAL(loadProgress(int)),
-					   this, SIGNAL(WebPageLoadProgress(int)));
+	//connect(webView, SIGNAL(loadProgress(int)),
+	//				   this, SIGNAL(WebPageLoadProgress(int)));
+
+	for (int i = 0; i < webActionMappers.count(); i++)
+	{
+		webActionMappers[i]->UpdateCurrentPage(webView->page());
+	}
 
 	lineEdits->setCurrentIndex(index);
 	if (webView->GetUrl().isEmpty())
 		lineEdits->currentWidget()->setFocus();
 	else
 		webView->setFocus();
+
+	emit CurrentTabChanged(index);
 }
 
 void TabWidget::SlotWebViewLoadStarted()
@@ -365,7 +377,7 @@ void TabWidget::SlotWebViewLoadStarted()
 			movie->start();
 			tabBar->setTabButton(index, QTabBar::ButtonPosition::LeftSide, label);
 		}
-		emit WebViewLoadStarted();
+		emit WebViewLoadStarted(webView);
 	}
 }
 
@@ -379,7 +391,7 @@ void TabWidget::SlotWebViewLoadFinished(bool b)
 	{
 		WebViewIconChanged(webView->icon());
 
-		emit WebViewLoadFinished(b);
+		emit WebViewLoadFinished(webView);
 	}
 }
 
@@ -456,4 +468,65 @@ void TabWidget::SetupPage(QWebEnginePage* page)
 			this, SLOT(WindowCloseRequested()));
 	connect(page, SIGNAL(geometryChangeRequested(QRect)),
 			this, SIGNAL(geometryChangeRequested(QRect)));
+
+	// WebView Actions
+
+}
+
+WebActionMapper::WebActionMapper(QAction *_rootAction, QWebEnginePage::WebAction _webAction, QObject *parent)
+	: QObject(parent)
+	, currentPage(0)
+	, rootAction(_rootAction)
+	, webAction(_webAction)
+{
+	if (!rootAction)
+		return;
+
+	connect(rootAction, SIGNAL(triggered(bool)), this, SLOT(RootTriggered()));
+	connect(rootAction, SIGNAL(destroyed(QObject*)), this, SLOT(RootDistroyed()));
+}
+
+void WebActionMapper::UpdateCurrentPage(QWebEnginePage* newCurrentPage)
+{
+	if (currentPage)
+	{
+		disconnect(currentPage, SIGNAL(destroyed(QObject*)),
+				   this, SLOT(CurrentPageDestroyed()));
+	}
+
+	currentPage = newCurrentPage;
+	if (!rootAction)
+		return;
+
+	if (!currentPage)
+	{
+		rootAction->setEnabled(false);
+		rootAction->setCheckable(false);
+		return;
+	}
+
+	QAction* source = currentPage->action(webAction);
+	rootAction->setEnabled(source->isEnabled());
+	rootAction->setCheckable(source->isCheckable());
+	connect(currentPage, SIGNAL(destroyed(QObject*)),
+					   this, SLOT(CurrentPageDestroyed()));
+}
+
+void WebActionMapper::RootTriggered()
+{
+	if (!currentPage)
+		return;
+
+	QAction* action = currentPage->action(webAction);
+	action->trigger();
+}
+
+void WebActionMapper::RootDistroyed()
+{
+	rootAction = 0;
+}
+
+void WebActionMapper::CurrentPageDestroyed()
+{
+	currentPage = 0;
 }

@@ -28,9 +28,9 @@ public slots:
 	void LoadPage(const QString& url);
 
 private slots:
-	void SlotWebPageLoadStarted();
-	void SlotWebPageLoadFinished(bool b);
-
+	void SlotWebPageLoadStarted(WebView* webView);
+	void SlotWebPageLoadFinished(WebView* webView);
+	void SlotCurrentWebPageChanged();
 	void SlotUpadateStatusBarText(const QString& text);
 
 	void LoadUrl(const QUrl& url);
@@ -38,7 +38,7 @@ private slots:
 	void SlotFileNew();
 	void SlotEditFind();
 	void SlotEditFindNext();
-	void SlotEditFindprevious();
+	void SlotEditFindPrevious();
 
 	void SlotAboutToShowBackMenu();
 	void SlotAboutToShowForwardMenu();

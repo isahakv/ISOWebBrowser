@@ -47,7 +47,18 @@ class WebActionMapper : public QObject
 	Q_OBJECT
 
 public:
+	WebActionMapper(QAction* root, QWebEnginePage::WebAction webAction, QObject* parent);
+	void UpdateCurrentPage(QWebEnginePage* newCurrentPage);
 
+private slots:
+	void RootTriggered();
+	void RootDistroyed();
+	void CurrentPageDestroyed();
+
+private:
+	QWebEnginePage* currentPage;
+	QAction* rootAction;
+	QWebEnginePage::WebAction webAction;
 };
 
 #include <QtWidgets/QTabWidget>
@@ -70,6 +81,8 @@ public:
 	TabWidget(QWidget* parent = 0);
 	~TabWidget();
 
+	void AddWebAction(QAction* action, QWebEnginePage::WebAction webAction);
+
 	QWidget* GetLineEditStack() const;
 	QLineEdit* GetCurrentLineEdit() const;
 	QLineEdit* GetLineEdit(int index) const;
@@ -83,10 +96,10 @@ signals:
 
 	// current tab signals
 	void ShowStatusBarMessage(const QString& message);
-	void WebViewLoadStarted();
-	void WebViewLoadFinished(bool b);
+	void WebViewLoadStarted(WebView* webView);
+	void WebViewLoadFinished(WebView* webView);
 	void WebPageLinkHovered(const QString& link);
-	void WebPageLoadProgress(int progress);
+	void CurrentTabChanged(int index);
 	void geometryChangeRequested(const QRect& geometry);
 
 public slots:
@@ -103,7 +116,7 @@ protected:
 	void mouseReleaseEvent(QMouseEvent* event);
 
 private slots:
-	void CurrentTabChanged(int index);
+	void SlotCurrentTabChanged(int index);
 	void SlotWebViewLoadStarted();
 	void SlotWebViewLoadFinished(bool b);
 	void WebViewIconChanged(const QIcon& icon);
@@ -114,6 +127,8 @@ private slots:
 
 private:
 	void SetupPage(QWebEnginePage* page);
+
+	QList<WebActionMapper*> webActionMappers;
 
 	QStackedWidget* lineEdits;
 	TabBar* tabBar;

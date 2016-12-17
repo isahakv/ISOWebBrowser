@@ -3,7 +3,10 @@
 WebView::WebView(QWidget* parent)
 	: QWebEngineView(parent)
 {
+	isWebPageLoading = false;
 
+	connect(this, SIGNAL(loadStarted()), this, SLOT(SlotLoadStarted()));
+	connect(this, SIGNAL(loadFinished(bool)), this, SLOT(SlotLoadFinished()));
 }
 
 void WebView::LoadUrl(const QUrl& url)
@@ -19,4 +22,14 @@ QUrl WebView::GetUrl() const
 		return url;
 
 	return initialUrl;
+}
+
+void WebView::SlotLoadStarted()
+{
+	isWebPageLoading = true;
+}
+
+void WebView::SlotLoadFinished()
+{
+	isWebPageLoading = false;
 }

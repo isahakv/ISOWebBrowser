@@ -62,10 +62,12 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 	connect(tabWidget, SIGNAL(LoadPage(QString)), this, SLOT(LoadPage(QString)));
 	connect(tabWidget, SIGNAL(WebPageLinkHovered(QString)),
 			statusBar(), SLOT(showMessage(QString)));
-	connect(tabWidget, SIGNAL(WebViewLoadStarted()),
-			this, SLOT(SlotWebPageLoadStarted()));
-	connect(tabWidget, SIGNAL(WebViewLoadFinished(bool)),
-			this, SLOT(SlotWebPageLoadFinished(bool)));
+	connect(tabWidget, SIGNAL(CurrentTabChanged(int)),
+			this, SLOT(SlotCurrentWebPageChanged()));
+	connect(tabWidget, SIGNAL(WebViewLoadStarted(WebView*)),
+			this, SLOT(SlotWebPageLoadStarted(WebView*)));
+	connect(tabWidget, SIGNAL(WebViewLoadFinished(WebView*)),
+			this, SLOT(SlotWebPageLoadFinished(WebView*)));
 
 	tabWidget->NewTab(true, true);
 }
@@ -86,20 +88,52 @@ void BrowserMainWindow::LoadPage(const QString& url)
 	LoadUrl(_url);
 }
 
-void BrowserMainWindow::SlotWebPageLoadStarted()
+void BrowserMainWindow::SlotWebPageLoadStarted(WebView* webView)
 {
+	if (!webView || webView != GetCurrentTab())
+		return;
+
 	disconnect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
 	stopReload->setIcon(stopIcon);
 	connect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
 	stopReload->setToolTip("Stop loading the current page");
 }
 
-void BrowserMainWindow::SlotWebPageLoadFinished(bool b)
+void BrowserMainWindow::SlotWebPageLoadFinished(WebView* webView)
 {
+	if (!webView || webView != GetCurrentTab())
+		return;
+
 	disconnect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
 	stopReload->setIcon(reloadIcon);
 	connect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
 	stopReload->setToolTip("Reload the current page");
+}
+
+void BrowserMainWindow::SlotCurrentWebPageChanged()
+{
+	if (!GetCurrentTab())
+		return;
+
+	bool isWebPageLoading = GetCurrentTab()->IsWebPageLoading();
+	if (isWebPageLoading)
+	{
+		// optimize this stuff, make another function for this
+		disconnect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
+		stopReload->setIcon(stopIcon);
+		connect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
+		stopReload->setToolTip("Stop loading the current page");
+		qWarning("SlotWebPageLoadStarted");
+	}
+	else
+	{
+		// optimize this stuff, make another function for this
+		disconnect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
+		stopReload->setIcon(reloadIcon);
+		connect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
+		stopReload->setToolTip("Reload the current page");
+		qWarning("SlotWebPageLoadFinished");
+	}
 }
 
 void BrowserMainWindow::SlotUpadateStatusBarText(const QString& text)
@@ -146,7 +180,7 @@ void BrowserMainWindow::SlotEditFindNext()
 	GetCurrentTab()->findText(lastSearch);
 }
 
-void BrowserMainWindow::SlotEditFindprevious()
+void BrowserMainWindow::SlotEditFindPrevious()
 {
 	if (!GetCurrentTab() || lastSearch.isEmpty())
 		return;
@@ -232,14 +266,16 @@ void BrowserMainWindow::SetupMenu()
 
 	QAction* findPrevious = editMenu->addAction(tr("&Find Previous"));
 	findPrevious->setShortcuts(QKeySequence::FindPrevious);
-	connect(findPrevious, SIGNAL(triggered(bool)), this, SLOT(SlotEditFindprevious()));
+	connect(findPrevious, SIGNAL(triggered(bool)), this, SLOT(SlotEditFindPrevious()));
 
 	// View
 	QMenu* viewMenu = menuBar()->addMenu(tr("&View"));
 
 	stop = viewMenu->addAction(tr("&Stop"));
+	tabWidget->AddWebAction(stop, QWebEnginePage::Stop);
 
 	reload = viewMenu->addAction(tr("&Reload"));
+	tabWidget->AddWebAction(reload, QWebEnginePage::Reload);
 
 	// History
 	QMenu* historyMenu = menuBar()->addMenu(tr("Hi&story"));
