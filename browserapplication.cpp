@@ -2,6 +2,11 @@
 
 #include "browsermainwindow.h"
 
+#include <QWebEngineProfile>
+#include <QWebEngineSettings>
+#include <QWebEngineScript>
+#include <QWebEngineScriptCollection>
+
 #include <QUrl>
 
 BrowserApplication::BrowserApplication(int &argc, char **argv)
@@ -61,6 +66,12 @@ QList<BrowserMainWindow*> BrowserApplication::GetMainWindows()
 	for (int i = 0; i < mainWindows.count(); i++)
 		list.append(mainWindows.at(i));
 	return list;
+}
+
+QIcon BrowserApplication::GetIconByUrl(const QUrl& url)
+{
+	// QIcon icon = QWebEngineSettings::
+	return QIcon(":Images/16x16/defaulticon.png");
 }
 
 BrowserMainWindow* BrowserApplication::newMainWindow()

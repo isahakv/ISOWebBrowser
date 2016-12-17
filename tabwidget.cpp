@@ -206,8 +206,8 @@ WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 	// webview
 	WebView* webView = new WebView;
 	urlLineEdit->SetWebView(webView);
-	connect(webView, SIGNAL(loadStarted()), this, SLOT(WebViewLoadStarted()));
-	connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(WebViewLoadFinished(bool)));
+	connect(webView, SIGNAL(loadStarted()), this, SLOT(SlotWebViewLoadStarted()));
+	connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(SlotWebViewLoadFinished(bool)));
 	connect(webView, SIGNAL(iconChanged(QIcon)), this, SLOT(WebViewIconChanged(QIcon)));
 	connect(webView, SIGNAL(titleChanged(QString)), this, SLOT(WebViewTitleChanged(QString)));
 	connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(WebViewUrlChanged(QUrl)));
@@ -320,10 +320,14 @@ void TabWidget::CurrentTabChanged(int index)
 	{
 		disconnect(oldWebView->page(), SIGNAL(linkHovered(QString)),
 				   this, SIGNAL(WebPageLinkHovered(QString)));
+		disconnect(oldWebView, SIGNAL(loadProgress(int)),
+				   this, SIGNAL(WebPageLoadProgress(int)));
 	}
 
 	connect(webView->page(), SIGNAL(linkHovered(QString)),
 					   this, SIGNAL(WebPageLinkHovered(QString)));
+	connect(webView, SIGNAL(loadProgress(int)),
+					   this, SIGNAL(WebPageLoadProgress(int)));
 
 	lineEdits->setCurrentIndex(index);
 	if (webView->GetUrl().isEmpty())
@@ -332,7 +336,7 @@ void TabWidget::CurrentTabChanged(int index)
 		webView->setFocus();
 }
 
-void TabWidget::WebViewLoadStarted()
+void TabWidget::SlotWebViewLoadStarted()
 {
 	qWarning("WebViewLoadStarted Called");
 
@@ -361,10 +365,11 @@ void TabWidget::WebViewLoadStarted()
 			movie->start();
 			tabBar->setTabButton(index, QTabBar::ButtonPosition::LeftSide, label);
 		}
+		emit WebViewLoadStarted();
 	}
 }
 
-void TabWidget::WebViewLoadFinished(bool b)
+void TabWidget::SlotWebViewLoadFinished(bool b)
 {
 	qWarning("WebViewLoadFinished Called");
 
@@ -373,6 +378,8 @@ void TabWidget::WebViewLoadFinished(bool b)
 	if (index != -1)
 	{
 		WebViewIconChanged(webView->icon());
+
+		emit WebViewLoadFinished(b);
 	}
 }
 

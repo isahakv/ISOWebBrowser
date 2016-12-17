@@ -83,7 +83,10 @@ signals:
 
 	// current tab signals
 	void ShowStatusBarMessage(const QString& message);
+	void WebViewLoadStarted();
+	void WebViewLoadFinished(bool b);
 	void WebPageLinkHovered(const QString& link);
+	void WebPageLoadProgress(int progress);
 	void geometryChangeRequested(const QRect& geometry);
 
 public slots:
@@ -101,8 +104,8 @@ protected:
 
 private slots:
 	void CurrentTabChanged(int index);
-	void WebViewLoadStarted();
-	void WebViewLoadFinished(bool b);
+	void SlotWebViewLoadStarted();
+	void SlotWebViewLoadFinished(bool b);
 	void WebViewIconChanged(const QIcon& icon);
 	void WebViewTitleChanged(const QString& title);
 	void WebViewUrlChanged(const QUrl& url);

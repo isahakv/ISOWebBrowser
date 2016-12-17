@@ -4,6 +4,9 @@
 #include "tabwidget.h"
 #include "webview.h"
 
+#include <QWebEngineHistory>
+#include <QWebEngineHistoryItem>
+
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QToolBar>
 #include <QStatusBar>
@@ -14,8 +17,12 @@
 const char* BrowserMainWindow::defaultHomePage = "http://google.com/";
 
 BrowserMainWindow::BrowserMainWindow(QWidget *parent)
-	: QMainWindow(parent),
-	  tabWidget(new TabWidget(this))
+	: QMainWindow(parent)
+	, tabWidget(new TabWidget(this))
+	, historyBack(0)
+	, historyForward(0)
+	, stop(0)
+	, reload(0)
 {
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	//
@@ -36,6 +43,10 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 	connect(tabWidget, SIGNAL(LoadPage(QString)), this, SLOT(LoadPage(QString)));
 	connect(tabWidget, SIGNAL(WebPageLinkHovered(QString)),
 			statusBar(), SLOT(showMessage(QString)));
+	connect(tabWidget, SIGNAL(WebViewLoadStarted()),
+			this, SLOT(SlotWebPageLoadStarted()));
+	connect(tabWidget, SIGNAL(WebViewLoadFinished(bool)),
+			this, SLOT(SlotWebPageLoadFinished(bool)));
 
 	tabWidget->NewTab(true, true);
 }
@@ -56,6 +67,22 @@ void BrowserMainWindow::LoadPage(const QString& url)
 	LoadUrl(_url);
 }
 
+void BrowserMainWindow::SlotWebPageLoadStarted()
+{
+	disconnect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
+	stopReload->setIcon(stopIcon);
+	connect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
+	stopReload->setToolTip("Stop loading the current page");
+}
+
+void BrowserMainWindow::SlotWebPageLoadFinished(bool b)
+{
+	disconnect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
+	stopReload->setIcon(reloadIcon);
+	connect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
+	stopReload->setToolTip("Reload the current page");
+}
+
 void BrowserMainWindow::LoadUrl(const QUrl& url)
 {
 	if (!GetCurrentTab() || !url.isValid())
@@ -67,9 +94,63 @@ void BrowserMainWindow::LoadUrl(const QUrl& url)
 
 void BrowserMainWindow::SlotFileNew()
 {
-	BrowserMainWindow* mw = BrowserApplication::GetInstance()->newMainWindow();
+	BrowserApplication::GetInstance()->newMainWindow();
 	//if (mw)
 	//	mw->SlotLoadHomePage();
+}
+
+void BrowserMainWindow::SlotAboutToShowBackMenu()
+{
+	historyBackMenu->clear();
+	if (!GetCurrentTab())
+		return;
+
+	QWebEngineHistory* history = GetCurrentTab()->history();
+	int historyCount = history->count();
+	QList<QWebEngineHistoryItem> backItems = history->backItems(historyCount);
+	for (int i = backItems.count() - 1; i >= 0; i--)
+	{
+		QWebEngineHistoryItem backItem = backItems[i];
+		QAction* action = new QAction(this);
+		action->setData(-1*(historyCount-i-1));
+
+		QIcon icon = BrowserApplication::GetInstance()->GetIconByUrl(backItem.url());
+		action->setIcon(icon);
+		action->setText(backItem.title());
+		historyBackMenu->addAction(action);
+	}
+}
+
+void BrowserMainWindow::SlotAboutToShowForwardMenu()
+{
+	historyForwardMenu->clear();
+	if (!GetCurrentTab())
+		return;
+
+	QWebEngineHistory* history = GetCurrentTab()->history();
+	int historyCount = history->count();
+	QList<QWebEngineHistoryItem> forwardItems = history->forwardItems(historyCount);
+	for (int i = 0; i < forwardItems.count(); i++)
+	{
+		QWebEngineHistoryItem forwardItem = forwardItems[i];
+		QAction* action = new QAction(this);
+		action->setData(historyCount-i);
+
+		QIcon icon = BrowserApplication::GetInstance()->GetIconByUrl(forwardItem.url());
+		action->setIcon(icon);
+		action->setText(forwardItem.title());
+		historyForwardMenu->addAction(action);
+	}
+}
+
+void BrowserMainWindow::SlotOpenActionUrl(QAction* action)
+{
+	int offset = action->data().toInt();
+	QWebEngineHistory* history = GetCurrentTab()->history();
+	if (offset < 0)
+		history->goToItem(history->backItems(-1*offset).first());
+	else if (offset > 0)
+		history->goToItem(history->forwardItems(history->count() - offset + 1).back());
 }
 
 void BrowserMainWindow::SetupMenu()
@@ -81,6 +162,13 @@ void BrowserMainWindow::SetupMenu()
 
 	// Edit
 	QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
+
+	// View
+	QMenu* viewMenu = menuBar()->addMenu(tr("&View"));
+
+	stop = viewMenu->addAction(tr("&Stop"));
+
+	reload = viewMenu->addAction(tr("&Reload"));
 
 	// History
 	QMenu* historyMenu = menuBar()->addMenu(tr("Hi&story"));
@@ -106,12 +194,27 @@ void BrowserMainWindow::SetupToolBar()
 	historyBack->setIcon(style()->standardIcon(QStyle::SP_ArrowBack, 0, this));
 	historyBackMenu = new QMenu(this);
 	historyBack->setMenu(historyBackMenu);
+	connect(historyBackMenu, SIGNAL(aboutToShow()),
+			this, SLOT(SlotAboutToShowBackMenu()));
+	connect(historyBackMenu, SIGNAL(triggered(QAction*)),
+			this, SLOT(SlotOpenActionUrl(QAction*)));
 	navigationBar->addAction(historyBack);
 
 	historyForward->setIcon(style()->standardIcon(QStyle::SP_ArrowForward, 0, this));
 	historyForwardMenu = new QMenu(this);
 	historyForward->setMenu(historyForwardMenu);
+	connect(historyForwardMenu, SIGNAL(aboutToShow()),
+			this, SLOT(SlotAboutToShowForwardMenu()));
+	connect(historyForwardMenu, SIGNAL(triggered(QAction*)),
+			this, SLOT(SlotOpenActionUrl(QAction*)));
 	navigationBar->addAction(historyForward);
+
+	stopReload = new QAction(this);
+	reloadIcon = style()->standardIcon(QStyle::SP_BrowserReload);
+	stopIcon = style()->standardIcon(QStyle::SP_BrowserStop);
+	stopReload->setIcon(reloadIcon);
+
+	navigationBar->addAction(stopReload);
 
 	navigationBar->addWidget(tabWidget->GetLineEditStack());
 }

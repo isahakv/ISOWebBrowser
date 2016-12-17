@@ -19,6 +19,7 @@ public:
 	bool IsTheOnlyBrowser() const;
 	BrowserMainWindow* GetCurrentMainWindow();
 	QList<BrowserMainWindow*> GetMainWindows();
+	QIcon GetIconByUrl(const QUrl& url);
 
 public slots:
 	BrowserMainWindow* newMainWindow();

@@ -28,9 +28,16 @@ public slots:
 	void LoadPage(const QString& url);
 
 private slots:
+	void SlotWebPageLoadStarted();
+	void SlotWebPageLoadFinished(bool b);
+
 	void LoadUrl(const QUrl& url);
 
 	void SlotFileNew();
+
+	void SlotAboutToShowBackMenu();
+	void SlotAboutToShowForwardMenu();
+	void SlotOpenActionUrl(QAction* action);
 
 private:
 	void SetupMenu();
@@ -44,6 +51,13 @@ private:
 	QMenu* historyBackMenu;
 	QAction* historyForward;
 	QMenu* historyForwardMenu;
+
+	QAction* reload;
+	QAction* stop;
+	QAction* stopReload;
+
+	QIcon reloadIcon;
+	QIcon stopIcon;
 
 	//HomePageType homePageType;
 };
