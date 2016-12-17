@@ -138,6 +138,22 @@ void BrowserMainWindow::SlotEditFind()
 	}
 }
 
+void BrowserMainWindow::SlotEditFindNext()
+{
+	if (!GetCurrentTab() || lastSearch.isEmpty())
+		return;
+
+	GetCurrentTab()->findText(lastSearch);
+}
+
+void BrowserMainWindow::SlotEditFindprevious()
+{
+	if (!GetCurrentTab() || lastSearch.isEmpty())
+		return;
+
+	GetCurrentTab()->findText(lastSearch, QWebEnginePage::FindBackward);
+}
+
 void BrowserMainWindow::SlotAboutToShowBackMenu()
 {
 	historyBackMenu->clear();
@@ -209,6 +225,14 @@ void BrowserMainWindow::SetupMenu()
 	QAction* find = editMenu->addAction(tr("&Find"));
 	find->setShortcuts(QKeySequence::Find);
 	connect(find, SIGNAL(triggered(bool)), this, SLOT(SlotEditFind()));
+
+	QAction* findNext = editMenu->addAction(tr("&Find Next"));
+	findNext->setShortcuts(QKeySequence::FindNext);
+	connect(findNext, SIGNAL(triggered(bool)), this, SLOT(SlotEditFindNext()));
+
+	QAction* findPrevious = editMenu->addAction(tr("&Find Previous"));
+	findPrevious->setShortcuts(QKeySequence::FindPrevious);
+	connect(findPrevious, SIGNAL(triggered(bool)), this, SLOT(SlotEditFindprevious()));
 
 	// View
 	QMenu* viewMenu = menuBar()->addMenu(tr("&View"));

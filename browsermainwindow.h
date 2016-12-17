@@ -37,6 +37,8 @@ private slots:
 
 	void SlotFileNew();
 	void SlotEditFind();
+	void SlotEditFindNext();
+	void SlotEditFindprevious();
 
 	void SlotAboutToShowBackMenu();
 	void SlotAboutToShowForwardMenu();
