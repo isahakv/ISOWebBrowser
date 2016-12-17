@@ -31,9 +31,12 @@ private slots:
 	void SlotWebPageLoadStarted();
 	void SlotWebPageLoadFinished(bool b);
 
+	void SlotUpadateStatusBarText(const QString& text);
+
 	void LoadUrl(const QUrl& url);
 
 	void SlotFileNew();
+	void SlotEditFind();
 
 	void SlotAboutToShowBackMenu();
 	void SlotAboutToShowForwardMenu();
@@ -42,6 +45,7 @@ private slots:
 private:
 	void SetupMenu();
 	void SetupToolBar();
+	void HandleFindTextResult(bool isFound);
 
 private:
 	QToolBar* navigationBar;
@@ -59,7 +63,7 @@ private:
 	QIcon reloadIcon;
 	QIcon stopIcon;
 
-	//HomePageType homePageType;
+	QString lastSearch;
 };
 
 #endif // BROWSERMAINWINDOW_H

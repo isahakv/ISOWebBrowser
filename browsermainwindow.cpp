@@ -13,6 +13,25 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QLineEdit>
 #include <QStyle>
+#include <QInputDialog>
+
+template<typename Arg, typename R>
+struct InvokeWrapper
+{
+	R* receiver;
+	void (R::*memberFunc)(Arg);
+	void operator()(Arg result)
+	{
+		(receiver->*memberFunc)(result);
+	}
+};
+
+template<typename Arg, typename R>
+InvokeWrapper<Arg, R> Invoke(R* receiver, void (R::*memberFunc)(Arg))
+{
+	InvokeWrapper<Arg, R> wrapper = { receiver, memberFunc };
+	return wrapper;
+}
 
 const char* BrowserMainWindow::defaultHomePage = "http://google.com/";
 
@@ -83,6 +102,11 @@ void BrowserMainWindow::SlotWebPageLoadFinished(bool b)
 	stopReload->setToolTip("Reload the current page");
 }
 
+void BrowserMainWindow::SlotUpadateStatusBarText(const QString& text)
+{
+	statusBar()->showMessage(text, 2000);
+}
+
 void BrowserMainWindow::LoadUrl(const QUrl& url)
 {
 	if (!GetCurrentTab() || !url.isValid())
@@ -97,6 +121,21 @@ void BrowserMainWindow::SlotFileNew()
 	BrowserApplication::GetInstance()->newMainWindow();
 	//if (mw)
 	//	mw->SlotLoadHomePage();
+}
+
+void BrowserMainWindow::SlotEditFind()
+{
+	if (!GetCurrentTab())
+		return;
+
+	bool ok;
+	QString search = QInputDialog::getText(this, tr("Find"), tr("Text:"),
+										   QLineEdit::Normal, lastSearch, &ok);
+	if (ok && !search.isEmpty())
+	{
+		lastSearch = search;
+		GetCurrentTab()->findText(lastSearch, 0, Invoke(this, &BrowserMainWindow::HandleFindTextResult));
+	}
 }
 
 void BrowserMainWindow::SlotAboutToShowBackMenu()
@@ -162,6 +201,14 @@ void BrowserMainWindow::SetupMenu()
 
 	// Edit
 	QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
+	QAction* undo = editMenu->addAction(tr("&Undo"));
+	undo->setShortcuts(QKeySequence::Undo);
+	QAction* redo = editMenu->addAction(tr("&Redo"));
+	redo->setShortcuts(QKeySequence::Redo);
+
+	QAction* find = editMenu->addAction(tr("&Find"));
+	find->setShortcuts(QKeySequence::Find);
+	connect(find, SIGNAL(triggered(bool)), this, SLOT(SlotEditFind()));
 
 	// View
 	QMenu* viewMenu = menuBar()->addMenu(tr("&View"));
@@ -217,4 +264,10 @@ void BrowserMainWindow::SetupToolBar()
 	navigationBar->addAction(stopReload);
 
 	navigationBar->addWidget(tabWidget->GetLineEditStack());
+}
+
+void BrowserMainWindow::HandleFindTextResult(bool isFound)
+{
+	if (!isFound)
+		SlotUpadateStatusBarText(tr("\"%1\" not Found").arg(lastSearch));
 }
