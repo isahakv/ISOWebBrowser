@@ -39,6 +39,9 @@ private slots:
 	void SlotEditFind();
 	void SlotEditFindNext();
 	void SlotEditFindPrevious();
+	void SlotViewZoomIn();
+	void SlotViewZoomOut();
+	void SlotViewResetZoom();
 
 	void SlotAboutToShowBackMenu();
 	void SlotAboutToShowForwardMenu();

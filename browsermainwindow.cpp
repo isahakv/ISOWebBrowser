@@ -168,6 +168,31 @@ void BrowserMainWindow::SlotEditFindPrevious()
 	GetCurrentTab()->findText(lastSearch, QWebEnginePage::FindBackward);
 }
 
+void BrowserMainWindow::SlotViewZoomIn()
+{
+	if (!GetCurrentTab())
+		return;
+
+	GetCurrentTab()->setZoomFactor(GetCurrentTab()->zoomFactor() + 0.1f);
+}
+
+void BrowserMainWindow::SlotViewZoomOut()
+{
+	if (!GetCurrentTab())
+		return;
+
+	GetCurrentTab()->setZoomFactor(GetCurrentTab()->zoomFactor() - 0.1f);
+}
+
+void BrowserMainWindow::SlotViewResetZoom()
+{
+	if (!GetCurrentTab())
+		return;
+
+	GetCurrentTab()->setZoomFactor(1.0f);
+}
+
+// Fix this
 void BrowserMainWindow::SlotAboutToShowBackMenu()
 {
 	historyBackMenu->clear();
@@ -189,7 +214,7 @@ void BrowserMainWindow::SlotAboutToShowBackMenu()
 		historyBackMenu->addAction(action);
 	}
 }
-
+// Fix this
 void BrowserMainWindow::SlotAboutToShowForwardMenu()
 {
 	historyForwardMenu->clear();
@@ -211,7 +236,7 @@ void BrowserMainWindow::SlotAboutToShowForwardMenu()
 		historyForwardMenu->addAction(action);
 	}
 }
-
+// Fix this
 void BrowserMainWindow::SlotOpenActionUrl(QAction* action)
 {
 	int offset = action->data().toInt();
@@ -275,6 +300,12 @@ void BrowserMainWindow::SetupMenu()
 
 	reload = viewMenu->addAction(tr("&Reload"));
 	tabWidget->AddWebAction(reload, QWebEnginePage::Reload);
+
+	viewMenu->addSeparator();
+
+	viewMenu->addAction(tr("Zoom &In"), this, SLOT(SlotViewZoomIn()), QKeySequence(Qt::CTRL | Qt::Key_Plus));
+	viewMenu->addAction(tr("Zoom &Out"), this, SLOT(SlotViewZoomOut()), QKeySequence(Qt::CTRL | Qt::Key_Minus));
+	viewMenu->addAction(tr("Reset &Zoom"), this, SLOT(SlotViewResetZoom()), QKeySequence(Qt::CTRL | Qt::Key_0));
 
 	// History
 	QMenu* historyMenu = menuBar()->addMenu(tr("Hi&story"));
