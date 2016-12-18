@@ -93,10 +93,7 @@ void BrowserMainWindow::SlotWebPageLoadStarted(WebView* webView)
 	if (!webView || webView != GetCurrentTab())
 		return;
 
-	disconnect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
-	stopReload->setIcon(stopIcon);
-	connect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
-	stopReload->setToolTip("Stop loading the current page");
+	ActivatePageStopAction();
 }
 
 void BrowserMainWindow::SlotWebPageLoadFinished(WebView* webView)
@@ -104,10 +101,7 @@ void BrowserMainWindow::SlotWebPageLoadFinished(WebView* webView)
 	if (!webView || webView != GetCurrentTab())
 		return;
 
-	disconnect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
-	stopReload->setIcon(reloadIcon);
-	connect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
-	stopReload->setToolTip("Reload the current page");
+	ActivatePageReloadAction();
 }
 
 void BrowserMainWindow::SlotCurrentWebPageChanged()
@@ -117,21 +111,9 @@ void BrowserMainWindow::SlotCurrentWebPageChanged()
 
 	bool isWebPageLoading = GetCurrentTab()->IsWebPageLoading();
 	if (isWebPageLoading)
-	{
-		// optimize this stuff, make another function for this
-		disconnect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
-		stopReload->setIcon(stopIcon);
-		connect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
-		stopReload->setToolTip("Stop loading the current page");
-	}
+		ActivatePageStopAction();
 	else
-	{
-		// optimize this stuff, make another function for this
-		disconnect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
-		stopReload->setIcon(reloadIcon);
-		connect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
-		stopReload->setToolTip("Reload the current page");
-	}
+		ActivatePageReloadAction();
 }
 
 void BrowserMainWindow::SlotUpadateStatusBarText(const QString& text)
@@ -251,9 +233,27 @@ void BrowserMainWindow::SetupMenu()
 	QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
 	QAction* undo = editMenu->addAction(tr("&Undo"));
 	undo->setShortcuts(QKeySequence::Undo);
+	tabWidget->AddWebAction(undo, QWebEnginePage::Undo);
 
 	QAction* redo = editMenu->addAction(tr("&Redo"));
 	redo->setShortcuts(QKeySequence::Redo);
+	tabWidget->AddWebAction(redo, QWebEnginePage::Redo);
+
+	editMenu->addSeparator();
+
+	QAction* cut = editMenu->addAction(tr("Cu&t"));
+	cut->setShortcuts(QKeySequence::Cut);
+	tabWidget->AddWebAction(cut, QWebEnginePage::Cut);
+
+	QAction* copy = editMenu->addAction(tr("&Copy"));
+	copy->setShortcuts(QKeySequence::Copy);
+	tabWidget->AddWebAction(copy, QWebEnginePage::Copy);
+
+	QAction* paste = editMenu->addAction(tr("&Paste"));
+	paste->setShortcuts(QKeySequence::Paste);
+	tabWidget->AddWebAction(paste, QWebEnginePage::Paste);
+
+	editMenu->addSeparator();
 
 	QAction* find = editMenu->addAction(tr("&Find"));
 	find->setShortcuts(QKeySequence::Find);
@@ -331,4 +331,20 @@ void BrowserMainWindow::HandleFindTextResult(bool isFound)
 {
 	if (!isFound)
 		SlotUpadateStatusBarText(tr("\"%1\" not Found").arg(lastSearch));
+}
+
+void BrowserMainWindow::ActivatePageStopAction()
+{
+	disconnect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
+	stopReload->setIcon(stopIcon);
+	connect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
+	stopReload->setToolTip("Stop loading the current page");
+}
+
+void BrowserMainWindow::ActivatePageReloadAction()
+{
+	disconnect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
+	stopReload->setIcon(reloadIcon);
+	connect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
+	stopReload->setToolTip("Reload the current page");
 }

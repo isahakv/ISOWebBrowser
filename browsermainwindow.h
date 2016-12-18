@@ -49,6 +49,9 @@ private:
 	void SetupToolBar();
 	void HandleFindTextResult(bool isFound);
 
+	void ActivatePageStopAction();
+	void ActivatePageReloadAction();
+
 private:
 	QToolBar* navigationBar;
 	TabWidget* tabWidget;
