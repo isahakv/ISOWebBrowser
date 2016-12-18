@@ -53,6 +53,7 @@ public:
 private slots:
 	void RootTriggered();
 	void RootDistroyed();
+	void CurrentPageActionChanged();
 	void CurrentPageDestroyed();
 
 private:

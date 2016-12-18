@@ -490,6 +490,8 @@ void WebActionMapper::UpdateCurrentPage(QWebEnginePage* newCurrentPage)
 {
 	if (currentPage)
 	{
+		disconnect(currentPage->action(webAction), SIGNAL(changed()),
+			 this, SLOT(CurrentPageActionChanged()));
 		disconnect(currentPage, SIGNAL(destroyed(QObject*)),
 				   this, SLOT(CurrentPageDestroyed()));
 	}
@@ -508,6 +510,8 @@ void WebActionMapper::UpdateCurrentPage(QWebEnginePage* newCurrentPage)
 	QAction* source = currentPage->action(webAction);
 	rootAction->setEnabled(source->isEnabled());
 	rootAction->setCheckable(source->isCheckable());
+	connect(currentPage->action(webAction), SIGNAL(changed()),
+			this, SLOT(CurrentPageActionChanged()));
 	connect(currentPage, SIGNAL(destroyed(QObject*)),
 					   this, SLOT(CurrentPageDestroyed()));
 }
@@ -524,6 +528,16 @@ void WebActionMapper::RootTriggered()
 void WebActionMapper::RootDistroyed()
 {
 	rootAction = 0;
+}
+
+void WebActionMapper::CurrentPageActionChanged()
+{
+	QAction* source = qobject_cast<QAction*>(sender());
+	if (rootAction && source)
+	{
+		rootAction->setEnabled(source->isEnabled());
+		rootAction->setChecked(source->isChecked());
+	}
 }
 
 void WebActionMapper::CurrentPageDestroyed()

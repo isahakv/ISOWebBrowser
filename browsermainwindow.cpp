@@ -123,7 +123,6 @@ void BrowserMainWindow::SlotCurrentWebPageChanged()
 		stopReload->setIcon(stopIcon);
 		connect(stopReload, SIGNAL(triggered(bool)), stop, SLOT(trigger()));
 		stopReload->setToolTip("Stop loading the current page");
-		qWarning("SlotWebPageLoadStarted");
 	}
 	else
 	{
@@ -132,7 +131,6 @@ void BrowserMainWindow::SlotCurrentWebPageChanged()
 		stopReload->setIcon(reloadIcon);
 		connect(stopReload, SIGNAL(triggered(bool)), reload, SLOT(trigger()));
 		stopReload->setToolTip("Reload the current page");
-		qWarning("SlotWebPageLoadFinished");
 	}
 }
 
@@ -253,6 +251,7 @@ void BrowserMainWindow::SetupMenu()
 	QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
 	QAction* undo = editMenu->addAction(tr("&Undo"));
 	undo->setShortcuts(QKeySequence::Undo);
+
 	QAction* redo = editMenu->addAction(tr("&Redo"));
 	redo->setShortcuts(QKeySequence::Redo);
 
@@ -282,11 +281,13 @@ void BrowserMainWindow::SetupMenu()
 	QList<QAction*> historyActions;
 
 	historyBack = new QAction(tr("Back"), this);
+	tabWidget->AddWebAction(historyBack, QWebEnginePage::Back);
 	historyBack->setShortcut(QKeySequence::Back);
 	historyBack->setIconVisibleInMenu(false);
 	historyActions.append(historyBack);
 
 	historyForward = new QAction(tr("Forward"), this);
+	tabWidget->AddWebAction(historyForward, QWebEnginePage::Forward);
 	historyForward->setShortcut(QKeySequence::Forward);
 	historyForward->setIconVisibleInMenu(false);
 	historyActions.append(historyForward);
