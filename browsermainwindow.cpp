@@ -43,7 +43,9 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 	, stop(0)
 	, reload(0)
 {
+	setToolButtonStyle(Qt::ToolButtonFollowStyle);
 	setAttribute(Qt::WA_DeleteOnClose, true);
+	setMinimumSize(QSize(724, 124));
 	//
 	SetupMenu();
 	SetupToolBar();
@@ -68,6 +70,8 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 			this, SLOT(SlotWebPageLoadStarted(WebView*)));
 	connect(tabWidget, SIGNAL(WebViewLoadFinished(WebView*)),
 			this, SLOT(SlotWebPageLoadFinished(WebView*)));
+	connect(tabWidget, SIGNAL(LastTabClosed()),
+			tabWidget, SLOT(NewTab()));
 
 	tabWidget->NewTab(true, true);
 }

@@ -269,6 +269,8 @@ void TabWidget::CloseTab(int index)
 	webView->deleteLater();
 	if (hasFocus && count() > 0)
 		GetCurrentWebView()->setFocus();
+	if (count() == 0)
+		emit LastTabClosed();
 
 	//qWarning(QString("LineEditStack Count = %1").arg(lineEdits->count()).toStdString().c_str());
 }

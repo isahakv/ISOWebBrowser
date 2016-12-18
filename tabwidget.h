@@ -94,6 +94,7 @@ public:
 signals:
 	// tab widget signals
 	void LoadPage(const QString& url);
+	void LastTabClosed();
 
 	// current tab signals
 	void ShowStatusBarMessage(const QString& message);
