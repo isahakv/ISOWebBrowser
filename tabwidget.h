@@ -128,6 +128,8 @@ private slots:
 
 private:
 	void SetupPage(QWebEnginePage* page);
+	void SetTabIconToImage(int tabIndex, const QIcon& icon);
+	void SetTabIconToGif(int tabIndex, const QString& path);
 
 	QList<WebActionMapper*> webActionMappers;
 

@@ -350,46 +350,24 @@ void TabWidget::SlotCurrentTabChanged(int index)
 
 void TabWidget::SlotWebViewLoadStarted()
 {
-	qWarning("WebViewLoadStarted Called");
-
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
 	{
-		/*QIcon icon(QLatin1String(":Images/16x16/loading.gif"));
-		setTabIcon(index, icon);*/
-		QLabel* label = qobject_cast<QLabel*>(tabBar->tabButton(index, QTabBar::ButtonPosition::LeftSide));
-		if (label)
-		{
-			QMovie* movie = label->movie();
-			if (!movie)
-			{
-				movie = new QMovie(":Images/16x16/loading.gif", QByteArray(), label);
-				label->setMovie(movie);
-			}
-			movie->start();
-		}
-		else
-		{
-			label = new QLabel(this);
-			QMovie* movie = new QMovie(":Images/16x16/loading.gif", QByteArray(), label);
-			label->setMovie(movie);
-			movie->start();
-			tabBar->setTabButton(index, QTabBar::ButtonPosition::LeftSide, label);
-		}
+		SetTabIconToGif(index, ":Images/16x16/loading.gif");
+
 		emit WebViewLoadStarted(webView);
 	}
 }
 
+// Deal with this function
 void TabWidget::SlotWebViewLoadFinished(bool b)
 {
-	qWarning("WebViewLoadFinished Called");
-
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
 	{
-		WebViewIconChanged(webView->icon());
+		SetTabIconToImage(index, webView->icon());
 
 		emit WebViewLoadFinished(webView);
 	}
@@ -403,19 +381,7 @@ void TabWidget::WebViewIconChanged(const QIcon& icon)
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
 	{
-		QLabel* label = qobject_cast<QLabel*>(tabBar->tabButton(index, QTabBar::ButtonPosition::LeftSide));
-		if (label)
-		{
-			QPixmap pixmap = icon.pixmap(QSize(16, 16));
-			label->setPixmap(pixmap);
-		}
-		else
-		{
-			label = new QLabel(this);
-			QPixmap pixmap = icon.pixmap(QSize(16, 16));
-			label->setPixmap(pixmap);
-			tabBar->setTabButton(index, QTabBar::ButtonPosition::LeftSide, label);
-		}
+		SetTabIconToImage(index, icon);
 	}
 }
 
@@ -471,6 +437,46 @@ void TabWidget::SetupPage(QWebEnginePage* page)
 
 	// WebView Actions
 
+}
+
+void TabWidget::SetTabIconToImage(int tabIndex, const QIcon& icon)
+{
+	QLabel* label = qobject_cast<QLabel*>(tabBar->tabButton(tabIndex, QTabBar::ButtonPosition::LeftSide));
+	if (label)
+	{
+		QPixmap pixmap = icon.pixmap(QSize(16, 16));
+		label->setPixmap(pixmap);
+	}
+	else
+	{
+		label = new QLabel(this);
+		QPixmap pixmap = icon.pixmap(QSize(16, 16));
+		label->setPixmap(pixmap);
+		tabBar->setTabButton(tabIndex, QTabBar::ButtonPosition::LeftSide, label);
+	}
+}
+
+void TabWidget::SetTabIconToGif(int tabIndex, const QString& path)
+{
+	QLabel* label = qobject_cast<QLabel*>(tabBar->tabButton(tabIndex, QTabBar::ButtonPosition::LeftSide));
+	if (label)
+	{
+		QMovie* movie = label->movie();
+		if (!movie)
+		{
+			movie = new QMovie(path, QByteArray(), label);
+			label->setMovie(movie);
+		}
+		movie->start();
+	}
+	else
+	{
+		label = new QLabel(this);
+		QMovie* movie = new QMovie(path, QByteArray(), label);
+		label->setMovie(movie);
+		movie->start();
+		tabBar->setTabButton(tabIndex, QTabBar::ButtonPosition::LeftSide, label);
+	}
 }
 
 WebActionMapper::WebActionMapper(QAction *_rootAction, QWebEnginePage::WebAction _webAction, QObject *parent)
