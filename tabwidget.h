@@ -18,6 +18,7 @@ public:
 signals:
 	void NewTab();
 	void CloseTab(int index);
+	void ReloadAllTabs();
 
 protected:
 	void mousePressEvent(QMouseEvent *event);
@@ -111,6 +112,7 @@ public slots:
 	WebView* NewTab(bool makeCurrent = true, bool loadHomePage = false);
 	void RequestCloseTab(int index = -1);
 	void CloseTab(int index);
+	void ReloadAllTabs();
 
 protected:
 	void mouseDoubleClickEvent(QMouseEvent* event);

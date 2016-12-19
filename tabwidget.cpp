@@ -67,6 +67,10 @@ void TabBar::CloseTab()
 void TabBar::ContextMenuRequested(const QPoint& position)
 {
 	QMenu menu;
+	menu.addAction(tr("New &Tab"), this, SIGNAL(NewTab()), QKeySequence::AddTab);
+
+	menu.addAction(tr("Reload All Tabs"), this, SIGNAL(ReloadAllTabs()));
+	menu.exec(QCursor::pos());
 }
 
 TabWidget::TabWidget(QWidget *parent)
@@ -78,6 +82,7 @@ TabWidget::TabWidget(QWidget *parent)
 
 	connect(tabBar, SIGNAL(NewTab()), this, SLOT(NewTab()));
 	connect(tabBar, SIGNAL(CloseTab(int)), this, SLOT(RequestCloseTab(int)));
+	connect(tabBar, SIGNAL(ReloadAllTabs()), this, SLOT(ReloadAllTabs()));
 	setTabBar(tabBar);
 
 	connect(this, SIGNAL(currentChanged(int)), this, SLOT(SlotCurrentTabChanged(int)));
@@ -279,6 +284,16 @@ void TabWidget::CloseTab(int index)
 	//qWarning(QString("LineEditStack Count = %1").arg(lineEdits->count()).toStdString().c_str());
 }
 
+void TabWidget::ReloadAllTabs()
+{
+	for (int i = 0; i < count(); i++)
+	{
+		WebView* webView = GetWebView(i);
+		if (webView)
+			webView->reload();
+	}
+}
+
 void TabWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton && !childAt(event->pos())
@@ -403,7 +418,7 @@ void TabWidget::WebViewTitleChanged(const QString& title)
 
 void TabWidget::WebViewUrlChanged(const QUrl& url)
 {
-	qWarning("WebViewUrlChanged Function Called!");
+	// qWarning("WebViewUrlChanged Function Called!");
 
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
