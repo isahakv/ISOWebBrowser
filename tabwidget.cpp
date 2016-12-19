@@ -55,6 +55,15 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
 	QTabBar::mouseMoveEvent(event);
 }
 
+void TabBar::CloneTab()
+{
+	if (QAction* action = qobject_cast<QAction*>(sender()))
+	{
+		int index = action->data().toInt();
+		emit CloneTab(index);
+	}
+}
+
 void TabBar::CloseTab()
 {
 	if(QAction* action = qobject_cast<QAction*>(sender()))
@@ -85,8 +94,10 @@ void TabBar::ContextMenuRequested(const QPoint& position)
 	int index = tabAt(position);
 	if (index != -1)
 	{
-		QAction* action = menu.addAction(tr("&Close Tab"), this,
-										 SLOT(CloseTab()), QKeySequence::Close);
+		QAction* action = menu.addAction(tr("Clone Tab"), this, SLOT(CloneTab()));
+		action->setData(index);
+
+		action = menu.addAction(tr("&Close Tab"), this, SLOT(CloseTab()), QKeySequence::Close);
 		action->setData(index);
 
 		menu.addSeparator();
@@ -113,6 +124,7 @@ TabWidget::TabWidget(QWidget *parent)
 	setElideMode(Qt::ElideRight);
 
 	connect(tabBar, SIGNAL(NewTab()), this, SLOT(NewTab()));
+	connect(tabBar, SIGNAL(CloneTab(int)), this, SLOT(CloneTab(int)));
 	connect(tabBar, SIGNAL(CloseTab(int)), this, SLOT(RequestCloseTab(int)));
 	connect(tabBar, SIGNAL(ReloadAllTabs()), this, SLOT(ReloadAllTabs()));
 	connect(tabBar, SIGNAL(MuteTab(int,bool)), this, SLOT(SetAudioMutedForTab(int,bool)));
@@ -272,6 +284,18 @@ WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 
 	//qWarning(QString("LineEditStack Count = %1").arg(lineEdits->count()).toStdString().c_str());
 	return webView;
+}
+
+// When index is -1 index chooses the current tab
+void TabWidget::CloneTab(int index)
+{
+	if (index < 0)
+		index = currentIndex();
+	if (index < 0 || index >= count())
+		return;
+
+	WebView* webView = NewTab(false);
+	webView->setUrl(GetWebView(index)->url());
 }
 
 // When index is -1 index chooses the current tab

@@ -17,6 +17,7 @@ public:
 
 signals:
 	void NewTab();
+	void CloneTab(int index);
 	void CloseTab(int index);
 	void MuteTab(int index, bool mute);
 	void ReloadAllTabs();
@@ -26,6 +27,7 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 
 private slots:
+	void CloneTab();
 	void CloseTab();
 	void MuteTab();
 	void UnmuteTab();
@@ -113,6 +115,7 @@ public slots:
 	void LoadNewTabPage(WebView* tab);
 	void LoadUrlInCurrentTab(const QUrl& url);
 	WebView* NewTab(bool makeCurrent = true, bool loadHomePage = false);
+	void CloneTab(int index = -1);
 	void RequestCloseTab(int index = -1);
 	void CloseTab(int index);
 	void ReloadAllTabs();
