@@ -73,6 +73,24 @@ void TabBar::CloseTab()
 	}
 }
 
+void TabBar::CloseOtherTabs()
+{
+	if (QAction* action = qobject_cast<QAction*>(sender()))
+	{
+		int index = action->data().toInt();
+		emit CloseOtherTabs(index);
+	}
+}
+
+void TabBar::ReloadTab()
+{
+	if (QAction* action = qobject_cast<QAction*>(sender()))
+	{
+		int index = action->data().toInt();
+		emit ReloadTab(index);
+	}
+}
+
 void TabBar::MuteTab()
 {
 	QAction* action = qobject_cast<QAction*>(sender());
@@ -100,7 +118,13 @@ void TabBar::ContextMenuRequested(const QPoint& position)
 		action = menu.addAction(tr("&Close Tab"), this, SLOT(CloseTab()), QKeySequence::Close);
 		action->setData(index);
 
+		action = menu.addAction(tr("&Close Other Tabs"), this, SLOT(CloseOtherTabs()));
+		action->setData(index);
+
 		menu.addSeparator();
+
+		action = menu.addAction(tr("&Reload Tab"), this, SLOT(ReloadTab()), QKeySequence::Refresh);
+		action->setData(index);
 
 		// Audio Mute / Unmute
 		action = menu.addAction(tr("Mute Tab"), this, SLOT(MuteTab()));
@@ -126,8 +150,10 @@ TabWidget::TabWidget(QWidget *parent)
 	connect(tabBar, SIGNAL(NewTab()), this, SLOT(NewTab()));
 	connect(tabBar, SIGNAL(CloneTab(int)), this, SLOT(CloneTab(int)));
 	connect(tabBar, SIGNAL(CloseTab(int)), this, SLOT(RequestCloseTab(int)));
-	connect(tabBar, SIGNAL(ReloadAllTabs()), this, SLOT(ReloadAllTabs()));
+	connect(tabBar, SIGNAL(CloseOtherTabs(int)), this, SLOT(CloseOtherTabs(int)));
+	connect(tabBar, SIGNAL(ReloadTab(int)), this, SLOT(ReloadTab(int)));
 	connect(tabBar, SIGNAL(MuteTab(int,bool)), this, SLOT(SetAudioMutedForTab(int,bool)));
+	connect(tabBar, SIGNAL(ReloadAllTabs()), this, SLOT(ReloadAllTabs()));
 	setTabBar(tabBar);
 
 	connect(this, SIGNAL(currentChanged(int)), this, SLOT(SlotCurrentTabChanged(int)));
@@ -339,6 +365,35 @@ void TabWidget::CloseTab(int index)
 		emit LastTabClosed();
 
 	//qWarning(QString("LineEditStack Count = %1").arg(lineEdits->count()).toStdString().c_str());
+}
+
+void TabWidget::CloseOtherTabs(int index)
+{
+	if (index < 0)
+		index = currentIndex();
+	if (index < 0 || index >= count())
+		return;
+
+	for (int i = count() - 1; i >= 0;  i--)
+	{
+		if (index == i)
+			continue;
+
+		CloseTab(i);
+	}
+}
+
+// When index is -1 index chooses the current tab
+void TabWidget::ReloadTab(int index)
+{
+	if (index < 0)
+		index = currentIndex();
+	if (index < 0 || index >= count())
+		return;
+
+	WebView* webView = GetWebView(index);
+	if (webView)
+		webView->reload();
 }
 
 void TabWidget::ReloadAllTabs()

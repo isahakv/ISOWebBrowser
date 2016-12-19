@@ -19,6 +19,8 @@ signals:
 	void NewTab();
 	void CloneTab(int index);
 	void CloseTab(int index);
+	void CloseOtherTabs(int index);
+	void ReloadTab(int index);
 	void MuteTab(int index, bool mute);
 	void ReloadAllTabs();
 
@@ -29,6 +31,8 @@ protected:
 private slots:
 	void CloneTab();
 	void CloseTab();
+	void CloseOtherTabs();
+	void ReloadTab();
 	void MuteTab();
 	void UnmuteTab();
 	void ContextMenuRequested(const QPoint& position);
@@ -118,6 +122,8 @@ public slots:
 	void CloneTab(int index = -1);
 	void RequestCloseTab(int index = -1);
 	void CloseTab(int index);
+	void CloseOtherTabs(int index);
+	void ReloadTab(int index);
 	void ReloadAllTabs();
 	void SetAudioMutedForTab(int index, bool mute);
 
