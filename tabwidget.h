@@ -18,6 +18,7 @@ public:
 signals:
 	void NewTab();
 	void CloseTab(int index);
+	void MuteTab(int index, bool mute);
 	void ReloadAllTabs();
 
 protected:
@@ -26,6 +27,8 @@ protected:
 
 private slots:
 	void CloseTab();
+	void MuteTab();
+	void UnmuteTab();
 	void ContextMenuRequested(const QPoint& position);
 
 private:
@@ -113,6 +116,7 @@ public slots:
 	void RequestCloseTab(int index = -1);
 	void CloseTab(int index);
 	void ReloadAllTabs();
+	void SetAudioMutedForTab(int index, bool mute);
 
 protected:
 	void mouseDoubleClickEvent(QMouseEvent* event);

@@ -64,10 +64,42 @@ void TabBar::CloseTab()
 	}
 }
 
+void TabBar::MuteTab()
+{
+	QAction* action = qobject_cast<QAction*>(sender());
+	int index = action->data().toInt();
+	emit MuteTab(index, true);
+}
+
+void TabBar::UnmuteTab()
+{
+	QAction* action = qobject_cast<QAction*>(sender());
+	int index = action->data().toInt();
+	emit MuteTab(index, false);
+}
+
 void TabBar::ContextMenuRequested(const QPoint& position)
 {
 	QMenu menu;
 	menu.addAction(tr("New &Tab"), this, SIGNAL(NewTab()), QKeySequence::AddTab);
+	int index = tabAt(position);
+	if (index != -1)
+	{
+		QAction* action = menu.addAction(tr("&Close Tab"), this,
+										 SLOT(CloseTab()), QKeySequence::Close);
+		action->setData(index);
+
+		menu.addSeparator();
+
+		// Audio Mute / Unmute
+		action = menu.addAction(tr("Mute Tab"), this, SLOT(MuteTab()));
+		action->setData(index);
+
+		action = menu.addAction(tr("Unmute Tab"), this, SLOT(UnmuteTab()));
+		action->setData(index);
+	}
+	else
+		menu.addSeparator();
 
 	menu.addAction(tr("Reload All Tabs"), this, SIGNAL(ReloadAllTabs()));
 	menu.exec(QCursor::pos());
@@ -83,6 +115,7 @@ TabWidget::TabWidget(QWidget *parent)
 	connect(tabBar, SIGNAL(NewTab()), this, SLOT(NewTab()));
 	connect(tabBar, SIGNAL(CloseTab(int)), this, SLOT(RequestCloseTab(int)));
 	connect(tabBar, SIGNAL(ReloadAllTabs()), this, SLOT(ReloadAllTabs()));
+	connect(tabBar, SIGNAL(MuteTab(int,bool)), this, SLOT(SetAudioMutedForTab(int,bool)));
 	setTabBar(tabBar);
 
 	connect(this, SIGNAL(currentChanged(int)), this, SLOT(SlotCurrentTabChanged(int)));
@@ -292,6 +325,18 @@ void TabWidget::ReloadAllTabs()
 		if (webView)
 			webView->reload();
 	}
+}
+
+void TabWidget::SetAudioMutedForTab(int index, bool mute)
+{
+	if (index < 0)
+		index = currentIndex();
+	if (index < 0 || index >= count())
+		return;
+
+	WebView* webView = GetWebView(index);
+	if (webView)
+		webView->page()->setAudioMuted(mute);
 }
 
 void TabWidget::mouseDoubleClickEvent(QMouseEvent* event)
