@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 	if (!application.IsTheOnlyBrowser())
 		return 0;
 
-	application.setApplicationVersion(QString("V0.0.3_PreAlpha"));
+	application.setApplicationVersion(QString("V0.0.4_PreAlpha"));
 	application.setApplicationName(QLatin1String("ISOBrowser"));
 	application.setApplicationDisplayName(QLatin1String("ISOBrowser"));
 

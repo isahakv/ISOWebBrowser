@@ -124,6 +124,7 @@ private slots:
 	void WebViewIconChanged(const QIcon& icon);
 	void WebViewTitleChanged(const QString& title);
 	void WebViewUrlChanged(const QUrl& url);
+	void WebPageMutedOrAudibleChanged();
 	void LineEditReturnPressed();
 	void WindowCloseRequested();
 

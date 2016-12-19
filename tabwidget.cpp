@@ -216,6 +216,10 @@ WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 	connect(webView, SIGNAL(iconChanged(QIcon)), this, SLOT(WebViewIconChanged(QIcon)));
 	connect(webView, SIGNAL(titleChanged(QString)), this, SLOT(WebViewTitleChanged(QString)));
 	connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(WebViewUrlChanged(QUrl)));
+	connect(webView->page(), SIGNAL(audioMutedChanged(bool)),
+			this, SLOT(WebPageMutedOrAudibleChanged()));
+	connect(webView->page(), SIGNAL(recentlyAudibleChanged(bool)),
+			this, SLOT(WebPageMutedOrAudibleChanged()));
 
 	addTab(webView, tr("Untitled"));
 	if (makeCurrent)
@@ -406,6 +410,26 @@ void TabWidget::WebViewUrlChanged(const QUrl& url)
 	if (index != -1)
 	{
 		tabBar->setTabData(index, url);
+	}
+}
+
+void TabWidget::WebPageMutedOrAudibleChanged()
+{
+	QWebEnginePage* webPage = qobject_cast<QWebEnginePage*>(sender());
+	WebView* webView = qobject_cast<WebView*>(webPage->view());
+	int index = GetWebViewIndex(webView);
+	if (index != -1)
+	{
+		QString title = webView->title();
+
+		bool isMuted = webPage->isAudioMuted();
+		bool isAudible = webPage->recentlyAudible();
+		if (isMuted)
+			title += tr(" (muted)");
+		else if (isAudible)
+			title += tr(" (audible)");
+
+		setTabText(index, title);
 	}
 }
 
