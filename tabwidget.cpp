@@ -140,6 +140,8 @@ void TabBar::ContextMenuRequested(const QPoint& position)
 	menu.exec(QCursor::pos());
 }
 
+int TabWidget::MaxSymbolsInTabTitle = 20;
+
 TabWidget::TabWidget(QWidget *parent)
 	: QTabWidget(parent),
 	  tabBar(new TabBar(this)),
@@ -537,7 +539,8 @@ void TabWidget::WebViewTitleChanged(const QString& title)
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
 	{
-		setTabText(index, title);
+		QString t = NormalizeTabTitle(title);
+		setTabText(index, t);
 	}
 }
 
@@ -550,6 +553,7 @@ void TabWidget::WebViewUrlChanged(const QUrl& url)
 	if (index != -1)
 	{
 		tabBar->setTabData(index, url);
+		tabBar->setTabToolTip(index, QString::fromUtf8(url.toEncoded()));
 	}
 }
 
@@ -560,7 +564,7 @@ void TabWidget::WebPageMutedOrAudibleChanged()
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
 	{
-		QString title = webView->title();
+		QString title = NormalizeTabTitle(webView->title());
 
 		bool isMuted = webPage->isAudioMuted();
 		bool isAudible = webPage->recentlyAudible();
@@ -650,6 +654,17 @@ void TabWidget::SetTabIconToGif(int tabIndex, const QString& path)
 		movie->start();
 		tabBar->setTabButton(tabIndex, QTabBar::ButtonPosition::LeftSide, label);
 	}
+}
+
+QString TabWidget::NormalizeTabTitle(const QString& title)
+{
+	QString t = title;
+	if (t.size() > MaxSymbolsInTabTitle)
+	{
+		t.resize(MaxSymbolsInTabTitle);
+		t += QString("...");
+	}
+	return t;
 }
 
 WebActionMapper::WebActionMapper(QAction *_rootAction, QWebEnginePage::WebAction _webAction, QObject *parent)

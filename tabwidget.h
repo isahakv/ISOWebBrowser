@@ -67,7 +67,7 @@ private slots:
 	void CurrentPageDestroyed();
 
 private:
-	QWebEnginePage* currentPage;
+	QWebEnginePage* currentPage; // Note: make this property static
 	QAction* rootAction;
 	QWebEnginePage::WebAction webAction;
 };
@@ -100,6 +100,8 @@ public:
 	WebView* GetCurrentWebView() const;
 	WebView* GetWebView(int index) const;
 	int GetWebViewIndex(WebView* webView) const;
+
+	static int MaxSymbolsInTabTitle;
 
 signals:
 	// tab widget signals
@@ -148,6 +150,7 @@ private:
 	void SetupPage(QWebEnginePage* page);
 	void SetTabIconToImage(int tabIndex, const QIcon& icon);
 	void SetTabIconToGif(int tabIndex, const QString& path);
+	QString NormalizeTabTitle(const QString& title);
 
 	QList<WebActionMapper*> webActionMappers;
 

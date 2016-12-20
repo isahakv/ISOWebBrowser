@@ -47,7 +47,7 @@ QSize UrlLineEdit::SizeHint() const
 
 void UrlLineEdit::focusInEvent(QFocusEvent* event)
 {
-	qWarning("focusInEvent");
+	// qWarning("focusInEvent");
 	lineEdit->event(event);
 	//if (event->)
 	{
