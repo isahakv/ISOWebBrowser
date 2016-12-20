@@ -154,6 +154,7 @@ TabWidget::TabWidget(QWidget *parent)
 	connect(tabBar, SIGNAL(ReloadTab(int)), this, SLOT(ReloadTab(int)));
 	connect(tabBar, SIGNAL(MuteTab(int,bool)), this, SLOT(SetAudioMutedForTab(int,bool)));
 	connect(tabBar, SIGNAL(ReloadAllTabs()), this, SLOT(ReloadAllTabs()));
+	connect(tabBar, SIGNAL(tabMoved(int,int)), this, SLOT(MoveTab(int,int)));
 	setTabBar(tabBar);
 
 	connect(this, SIGNAL(currentChanged(int)), this, SLOT(SlotCurrentTabChanged(int)));
@@ -520,7 +521,7 @@ void TabWidget::SlotWebViewLoadFinished(bool b)
 
 void TabWidget::WebViewIconChanged(const QIcon& icon)
 {
-	qWarning("WebViewIconChanged Called");
+	// qWarning("WebViewIconChanged Called");
 
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
@@ -591,6 +592,13 @@ void TabWidget::WindowCloseRequested()
 	int index = GetWebViewIndex(webView);
 	if (index >= 0)
 		CloseTab(index);
+}
+
+void TabWidget::MoveTab(int fromIndex, int toIndex)
+{
+	QWidget* urlLineEdit = lineEdits->widget(fromIndex);
+	lineEdits->removeWidget(urlLineEdit);
+	lineEdits->insertWidget(toIndex, urlLineEdit);
 }
 
 void TabWidget::SetupPage(QWebEnginePage* page)

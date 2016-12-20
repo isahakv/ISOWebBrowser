@@ -142,6 +142,7 @@ private slots:
 	void WebPageMutedOrAudibleChanged();
 	void LineEditReturnPressed();
 	void WindowCloseRequested();
+	void MoveTab(int fromIndex, int toIndex);
 
 private:
 	void SetupPage(QWebEnginePage* page);
