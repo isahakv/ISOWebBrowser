@@ -4,6 +4,7 @@
 #include "tabwidget.h"
 #include "webview.h"
 
+#include <QWebEngineProfile>
 #include <QWebEngineHistory>
 #include <QWebEngineHistoryItem>
 
@@ -38,10 +39,11 @@ InvokeWrapper<Arg, R> Invoke(R* receiver, void (R::*memberFunc)(Arg))
 
 const char* BrowserMainWindow::defaultHomePage = "http://google.com/";
 
-BrowserMainWindow::BrowserMainWindow(QWidget *parent)
+BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
 	: QMainWindow(parent)
 	, tabWidget(new TabWidget(this))
 	, isPrivateBrowsing(false)
+	, privateProfile(0)
 	, historyBack(0)
 	, historyForward(0)
 	, stop(0)
@@ -50,7 +52,8 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 	setToolButtonStyle(Qt::ToolButtonFollowStyle);
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	setMinimumSize(QSize(724, 124));
-	//
+	setWindowTitle(isPrivateWindow ? tr("Incognito - ")+BrowserApplication::applicationName()
+								   : BrowserApplication::applicationName());
 	SetupMenu();
 	SetupToolBar();
 	statusBar()->setSizeGripEnabled(true);
@@ -77,6 +80,7 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 	connect(tabWidget, SIGNAL(LastTabClosed()),
 			tabWidget, SLOT(NewTab()));
 
+	SetPrivateBrowsing(isPrivateWindow);
 	tabWidget->NewTab(true, true);
 }
 
@@ -94,6 +98,32 @@ void BrowserMainWindow::LoadPage(const QString& url)
 {
 	QUrl _url = QUrl::fromUserInput(url);
 	LoadUrl(_url);
+}
+
+void BrowserMainWindow::SetPrivateBrowsing(bool newPrivateBrowsing)
+{
+	isPrivateBrowsing = newPrivateBrowsing;
+
+	if (newPrivateBrowsing)
+	{
+		if (!privateProfile)
+		{
+			privateProfile = new QWebEngineProfile(this);
+			privateProfile->setPersistentCookiesPolicy(QWebEngineProfile::PersistentCookiesPolicy::NoPersistentCookies);
+		}
+
+		if (privateProfile == tabWidget->GetProfile())
+			return;
+
+		tabWidget->SetProfile(privateProfile);
+	}
+	else
+	{
+		if (QWebEngineProfile::defaultProfile() == tabWidget->GetProfile())
+			return;
+
+		tabWidget->SetProfile(QWebEngineProfile::defaultProfile());
+	}
 }
 
 void BrowserMainWindow::SlotWebPageLoadStarted(WebView* webView)
@@ -180,9 +210,10 @@ void BrowserMainWindow::SlotFileSaveAs()
 	file.close();
 }
 
-void BrowserMainWindow::SlotPrivateBrowsing()
+// Change Name
+void BrowserMainWindow::SlotNewPrivateWindow()
 {
-
+	BrowserApplication::GetInstance()->newMainWindow(true);
 }
 
 void BrowserMainWindow::SlotEditFind()
@@ -316,10 +347,8 @@ void BrowserMainWindow::SetupMenu()
 	fileMenu->addAction(tr("&New Window"), this, SLOT(SlotFileNew()), QKeySequence::New);
 	fileMenu->addAction(tr("&Open File..."), this, SLOT(SlotFileOpen()), QKeySequence::Open);
 	fileMenu->addAction(tr("&Save As..."), this, SLOT(SlotFileSaveAs()), QKeySequence::SaveAs);
-	QAction* action = fileMenu->addAction(tr("Private &Browsing..."), this, SLOT(SlotPrivateBrowsing()),
-													QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_N));
-	action->setCheckable(true);
-	action->setChecked(isPrivateBrowsing);
+	fileMenu->addAction(tr("New Private &Browsing..."), this, SLOT(SlotNewPrivateWindow()),
+						QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_N));
 
 	fileMenu->addSeparator();
 	fileMenu->addAction(tr("&Quit"), this, SLOT(close()), QKeySequence::Close);

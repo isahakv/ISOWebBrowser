@@ -22,7 +22,7 @@ public:
 	QIcon GetIconByUrl(const QUrl& url);
 
 public slots:
-	BrowserMainWindow* newMainWindow();
+	BrowserMainWindow* newMainWindow(bool isPrivateWindow = false);
 
 signals:
 

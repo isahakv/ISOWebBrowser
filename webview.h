@@ -1,13 +1,17 @@
 #ifndef WEBVIEW_H
 #define WEBVIEW_H
 
+#include <QWebEnginePage>
 #include <QWebEngineView>
+
+class QWebEngineProfile;
 
 class WebPage : public QWebEnginePage
 {
 	Q_OBJECT
 
 public:
+	WebPage(QWebEngineProfile* profile, QObject* parent = 0);
 };
 
 class WebView : public QWebEngineView

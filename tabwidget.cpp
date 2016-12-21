@@ -1,8 +1,11 @@
 #include "tabwidget.h"
 
 #include "browsertypes.h"
+#include "browsermainwindow.h"
 #include "webview.h"
 #include "urllineedit.h"
+
+#include <QWebEngineProfile>
 
 #include <QApplication>
 #include <QClipboard>
@@ -143,9 +146,10 @@ void TabBar::ContextMenuRequested(const QPoint& position)
 int TabWidget::MaxSymbolsInTabTitle = 20;
 
 TabWidget::TabWidget(QWidget *parent)
-	: QTabWidget(parent),
-	  tabBar(new TabBar(this)),
-	  lineEdits(0)
+	: QTabWidget(parent)
+	, tabBar(new TabBar(this))
+	, lineEdits(0)
+	, profile(QWebEngineProfile::defaultProfile())
 {
 	setElideMode(Qt::ElideRight);
 
@@ -210,6 +214,26 @@ int TabWidget::GetWebViewIndex(WebView* webView) const
 	return indexOf(webView);
 }
 
+BrowserMainWindow* TabWidget::GetMainWindow() const
+{
+	return qobject_cast<BrowserMainWindow*>(parent());
+}
+
+void TabWidget::SetProfile(QWebEngineProfile* newProfile)
+{
+	profile = newProfile;
+	for (int i = 0; i < count(); i++)
+	{
+		if (WebView* webView = GetWebView(i))
+		{
+			QWebEnginePage* webPage = new QWebEnginePage(profile, webView);
+			SetupPage(webPage);
+			webPage->load(webView->page()->url());
+			webView->setPage(webPage);
+		}
+	}
+}
+
 void TabWidget::LoadHomePage(WebView* tab)
 {
 	QSettings settings;
@@ -230,7 +254,16 @@ void TabWidget::LoadHomePage(WebView* tab)
 void TabWidget::LoadNewTabPage(WebView* tab)
 {
 	QString htmlTxt;
-	QFile html(":html/NewTab.html");
+	QFile html;
+
+	if (!GetMainWindow())
+		qWarning("Shit hepened");
+	//if (GetMainWindow()->IsPrivateBrowsing())
+	if (profile == QWebEngineProfile::defaultProfile())
+		html.setFileName(":html/NewTab.html");
+	else
+		html.setFileName(":html/NewIncognitoTab.html");
+
 	html.open(QIODevice::OpenModeFlag::ReadOnly);
 	/*QTextStream in(&html);
 	while (!in.atEnd())
@@ -289,6 +322,7 @@ WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 
 	// webview
 	WebView* webView = new WebView;
+	webView->setPage(new QWebEnginePage(profile, webView));
 	urlLineEdit->SetWebView(webView);
 	connect(webView, SIGNAL(loadStarted()), this, SLOT(SlotWebViewLoadStarted()));
 	connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(SlotWebViewLoadFinished(bool)));

@@ -5,6 +5,7 @@
 
 class TabWidget;
 class WebView;
+class QWebEngineProfile;
 
 /*!
 	The MainWindow of the Browser Application.
@@ -16,7 +17,7 @@ class BrowserMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    BrowserMainWindow(QWidget *parent = 0);
+	BrowserMainWindow(QWidget *parent = 0, bool isPrivateWindow = false);
     ~BrowserMainWindow();
 
 	static const char* defaultHomePage;
@@ -24,8 +25,11 @@ public:
 	inline TabWidget* GetTabWidget() const { return tabWidget; }
 	WebView* GetCurrentTab() const;
 
+	inline bool IsPrivateBrowsing() const { return isPrivateBrowsing; }
+
 public slots:
 	void LoadPage(const QString& url);
+	void SetPrivateBrowsing(bool);
 
 private slots:
 	void SlotWebPageLoadStarted(WebView* webView);
@@ -38,7 +42,7 @@ private slots:
 	void SlotFileNew();
 	void SlotFileOpen();
 	void SlotFileSaveAs();
-	void SlotPrivateBrowsing();
+	void SlotNewPrivateWindow();
 	void SlotEditFind();
 	void SlotEditFindNext();
 	void SlotEditFindPrevious();
@@ -77,6 +81,7 @@ private:
 
 	QString lastSearch;
 
+	QWebEngineProfile* privateProfile;
 	bool isPrivateBrowsing;
 };
 

@@ -1,5 +1,13 @@
 #include "webview.h"
 
+#include <QWebEngineProfile>
+
+WebPage::WebPage(QWebEngineProfile* profile, QObject* parent)
+	: QWebEnginePage(profile, parent)
+{
+
+}
+
 WebView::WebView(QWidget* parent)
 	: QWebEngineView(parent)
 {

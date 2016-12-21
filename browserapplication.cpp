@@ -73,9 +73,9 @@ QIcon BrowserApplication::GetIconByUrl(const QUrl& url)
 	return QIcon(":Images/16x16/defaulticon.png");
 }
 
-BrowserMainWindow* BrowserApplication::newMainWindow()
+BrowserMainWindow* BrowserApplication::newMainWindow(bool isPrivateWindow)
 {
-	BrowserMainWindow* browser = new BrowserMainWindow();
+	BrowserMainWindow* browser = new BrowserMainWindow(0, isPrivateWindow);
 	mainWindows.prepend(browser);
 	browser->show();
 	return browser;

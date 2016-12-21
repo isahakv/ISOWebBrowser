@@ -4,6 +4,9 @@
 #include <QtWidgets/QTabBar>
 
 class QLabel;
+class QWebEngineProfile;
+
+class BrowserMainWindow;
 
 /*
 	Tab bar with a few more features such as a context menu and shortcuts
@@ -100,8 +103,12 @@ public:
 	WebView* GetCurrentWebView() const;
 	WebView* GetWebView(int index) const;
 	int GetWebViewIndex(WebView* webView) const;
+	BrowserMainWindow* GetMainWindow() const;
 
 	static int MaxSymbolsInTabTitle;
+
+	inline QWebEngineProfile* GetProfile() const { return profile; }
+	void SetProfile(QWebEngineProfile* newProfile);
 
 signals:
 	// tab widget signals
@@ -156,6 +163,7 @@ private:
 
 	QStackedWidget* lineEdits;
 	TabBar* tabBar;
+	QWebEngineProfile* profile;
 };
 
 #endif // TABWIDGET_H

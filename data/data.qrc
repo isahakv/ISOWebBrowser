@@ -9,5 +9,6 @@
     </qresource>
     <qresource prefix="/html">
         <file>NewTab.html</file>
+        <file>NewIncognitoTab.html</file>
     </qresource>
 </RCC>
