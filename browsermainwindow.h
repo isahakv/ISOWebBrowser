@@ -42,6 +42,7 @@ private slots:
 	void SlotViewZoomIn();
 	void SlotViewZoomOut();
 	void SlotViewResetZoom();
+	void SlotViewPageSource();
 
 	void SlotAboutToShowBackMenu();
 	void SlotAboutToShowForwardMenu();

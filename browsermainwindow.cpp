@@ -12,6 +12,7 @@
 #include <QStatusBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QPlainTextEdit>
 #include <QStyle>
 #include <QInputDialog>
 
@@ -196,6 +197,20 @@ void BrowserMainWindow::SlotViewResetZoom()
 	GetCurrentTab()->setZoomFactor(1.0f);
 }
 
+void BrowserMainWindow::SlotViewPageSource()
+{
+	if (!GetCurrentTab())
+		return;
+
+	QPlainTextEdit* textEdit = new QPlainTextEdit;
+	textEdit->setWindowTitle(tr("Page Source of %1").arg(GetCurrentTab()->title()));
+	textEdit->setMinimumWidth(640);
+	textEdit->setAttribute(Qt::WA_DeleteOnClose);
+	textEdit->show();
+
+	GetCurrentTab()->page()->toHtml(Invoke(textEdit, &QPlainTextEdit::setPlainText));
+}
+
 // Fix this
 void BrowserMainWindow::SlotAboutToShowBackMenu()
 {
@@ -310,6 +325,10 @@ void BrowserMainWindow::SetupMenu()
 	viewMenu->addAction(tr("Zoom &In"), this, SLOT(SlotViewZoomIn()), QKeySequence(Qt::CTRL | Qt::Key_Plus));
 	viewMenu->addAction(tr("Zoom &Out"), this, SLOT(SlotViewZoomOut()), QKeySequence(Qt::CTRL | Qt::Key_Minus));
 	viewMenu->addAction(tr("Reset &Zoom"), this, SLOT(SlotViewResetZoom()), QKeySequence(Qt::CTRL | Qt::Key_0));
+
+	viewMenu->addSeparator();
+
+	viewMenu->addAction(tr("Page Source"), this, SLOT(SlotViewPageSource()), tr("Ctrl+Alt+U"));
 
 	// History
 	QMenu* historyMenu = menuBar()->addMenu(tr("Hi&story"));
