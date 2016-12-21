@@ -36,6 +36,9 @@ private slots:
 	void LoadUrl(const QUrl& url);
 
 	void SlotFileNew();
+	void SlotFileOpen();
+	void SlotFileSaveAs();
+	void SlotPrivateBrowsing();
 	void SlotEditFind();
 	void SlotEditFindNext();
 	void SlotEditFindPrevious();
@@ -73,6 +76,8 @@ private:
 	QIcon stopIcon;
 
 	QString lastSearch;
+
+	bool isPrivateBrowsing;
 };
 
 #endif // BROWSERMAINWINDOW_H

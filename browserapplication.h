@@ -33,7 +33,6 @@ private:
 	QString GetCommandLineUrlArgument() const;
 
 	QList<QPointer<BrowserMainWindow> > mainWindows;
-	bool isPrivateBrowsing;
 };
 
 #endif // BROWSERAPPLICATION_H

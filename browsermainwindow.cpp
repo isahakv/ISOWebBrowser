@@ -15,6 +15,8 @@
 #include <QtWidgets/QPlainTextEdit>
 #include <QStyle>
 #include <QInputDialog>
+#include <QFileDialog>
+#include <QFile>
 
 template<typename Arg, typename R>
 struct InvokeWrapper
@@ -39,6 +41,7 @@ const char* BrowserMainWindow::defaultHomePage = "http://google.com/";
 BrowserMainWindow::BrowserMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, tabWidget(new TabWidget(this))
+	, isPrivateBrowsing(false)
 	, historyBack(0)
 	, historyForward(0)
 	, stop(0)
@@ -140,6 +143,46 @@ void BrowserMainWindow::SlotFileNew()
 	BrowserApplication::GetInstance()->newMainWindow();
 	//if (mw)
 	//	mw->SlotLoadHomePage();
+}
+
+void BrowserMainWindow::SlotFileOpen()
+{
+	QString file = QFileDialog::getOpenFileName(this, tr("Open Web Resource"), QString(),
+				tr("Web Resources (*.html *.htm *.svg *.png *.gif *.svgz);;All files (*.*)"));
+
+	if (file.isEmpty())
+		return;
+
+	LoadPage(file);
+}
+
+void BrowserMainWindow::SlotFileSaveAs()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Web Resource"), QString(),
+			tr("Web Resources (*.html *.htm *.svg *.png *.gif *.svgz);;All files (*.*)"));
+
+	if (fileName.isEmpty())
+		return;
+
+	QFile file(fileName);
+	if (!file.open(QIODevice::WriteOnly))
+		return;
+
+	QString text("<html><head></head><body></body></html>");
+
+	QDataStream out(&file);
+	//while (!out.atEnd())
+	{
+		out << text;
+	}
+
+	file.flush();
+	file.close();
+}
+
+void BrowserMainWindow::SlotPrivateBrowsing()
+{
+
 }
 
 void BrowserMainWindow::SlotEditFind()
@@ -271,6 +314,14 @@ void BrowserMainWindow::SetupMenu()
 	// File
 	QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
 	fileMenu->addAction(tr("&New Window"), this, SLOT(SlotFileNew()), QKeySequence::New);
+	fileMenu->addAction(tr("&Open File..."), this, SLOT(SlotFileOpen()), QKeySequence::Open);
+	fileMenu->addAction(tr("&Save As..."), this, SLOT(SlotFileSaveAs()), QKeySequence::SaveAs);
+	QAction* action = fileMenu->addAction(tr("Private &Browsing..."), this, SLOT(SlotPrivateBrowsing()),
+													QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_N));
+	action->setCheckable(true);
+	action->setChecked(isPrivateBrowsing);
+
+	fileMenu->addSeparator();
 	fileMenu->addAction(tr("&Quit"), this, SLOT(close()), QKeySequence::Close);
 
 	// Edit

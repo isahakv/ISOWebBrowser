@@ -10,8 +10,7 @@
 #include <QUrl>
 
 BrowserApplication::BrowserApplication(int &argc, char **argv)
-	: QApplication(argc, argv),
-	  isPrivateBrowsing(false)
+	: QApplication(argc, argv)
 {
 	QApplication::setQuitOnLastWindowClosed(true);
 
