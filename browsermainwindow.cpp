@@ -15,6 +15,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPlainTextEdit>
 #include <QStyle>
+#include <QMessageBox>
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QFile>
@@ -285,6 +286,15 @@ void BrowserMainWindow::SlotViewPageSource()
 	GetCurrentTab()->page()->toHtml(Invoke(textEdit, &QPlainTextEdit::setPlainText));
 }
 
+void BrowserMainWindow::SlotAboutApplication()
+{
+	QMessageBox::about(this, tr("About Browser"), tr("Version %1"
+													 "<p>This is my Personal \"Yet\" Not Commercial Browser!"
+													 "<p>Qt WebEngine is based on the Chromium open source project "
+													 "<p>Contact: isahakv@gmail.com"
+													 ).arg(QCoreApplication::applicationVersion()));
+}
+
 // Fix this
 void BrowserMainWindow::SlotAboutToShowBackMenu()
 {
@@ -427,6 +437,10 @@ void BrowserMainWindow::SetupMenu()
 	historyActions.append(historyForward);
 
 	historyMenu->addActions(historyActions);
+
+	// Help
+	QMenu* helpMenu = menuBar()->addMenu(tr("&Help"));
+	helpMenu->addAction(tr("About Browser"), this, SLOT(SlotAboutApplication()));
 }
 
 void BrowserMainWindow::SetupToolBar()

@@ -277,26 +277,6 @@ void TabWidget::LoadNewTabPage(WebView* tab)
 	// tab->load(QUrl("qrc:///html/NewTab.html"));
 	tab->setHtml(htmlTxt);
 	//tab->load(QUrl(":html/NewTab.html"));
-/*
-	// This code may move to another function
-	int index = GetWebViewIndex(tab);
-	QLabel* label = qobject_cast<QLabel*>(tabBar->tabButton(index, QTabBar::ButtonPosition::LeftSide));
-	if (label)
-	{
-		QPixmap pixmap(QString(":Images/16x16/new-tab.png"));
-		label->setPixmap(pixmap);
-	}
-	else
-	{
-		label = new QLabel(this);
-		QPixmap pixmap(QString(":Images/16x16/new-tab.png"));
-		label->setPixmap(pixmap);
-		tabBar->setTabButton(index, QTabBar::ButtonPosition::LeftSide, label);
-	}
-	// This code may move to another function
-
-	tab->iconChanged(QIcon(":Images/16x16/new-tab.png"));
-	tab->loadFinished(true);*/
 }
 
 void TabWidget::LoadUrlInCurrentTab(const QUrl& url)
@@ -322,7 +302,7 @@ WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 
 	// webview
 	WebView* webView = new WebView;
-	webView->setPage(new QWebEnginePage(profile, webView));
+	webView->setPage(new WebPage(profile, webView));
 	urlLineEdit->SetWebView(webView);
 	connect(webView, SIGNAL(loadStarted()), this, SLOT(SlotWebViewLoadStarted()));
 	connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(SlotWebViewLoadFinished(bool)));

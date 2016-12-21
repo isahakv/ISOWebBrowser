@@ -51,6 +51,8 @@ private slots:
 	void SlotViewResetZoom();
 	void SlotViewPageSource();
 
+	void SlotAboutApplication();
+
 	void SlotAboutToShowBackMenu();
 	void SlotAboutToShowForwardMenu();
 	void SlotOpenActionUrl(QAction* action);
