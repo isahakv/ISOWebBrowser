@@ -3,6 +3,7 @@
 #include "webview.h"
 #include "browsermainwindow.h"
 
+#include <QApplication>
 #include <QtCore/QEvent>
 
 #include <QtGui/QPainter>
@@ -302,8 +303,6 @@ void SearchLineEdit::ClearRecentSearches()
 
 void SearchLineEdit::SlotSearch()
 {
-	qWarning("SlotSearch");
-
 	QString searchText = lineEdit->text();
 	QStringList newList = stringListModel->stringList();
 	if (newList.contains(searchText))
@@ -319,7 +318,7 @@ void SearchLineEdit::SlotSearch()
 		SaveSearchHistory();
 	}
 
-	QSettings settings;
+	QSettings settings(QString("ISOBrowser"));
 	settings.beginGroup(QString("General"));
 	QUrl url(settings.value(QString("DefaultSearchEngine"),
 							BrowserMainWindow::defaultSearchEngine).toString());
@@ -367,10 +366,21 @@ void SearchLineEdit::TriggeredMenuAction(QAction* action)
 
 void SearchLineEdit::SaveSearchHistory()
 {
-	QSettings settings;
+	QSettings settings(QString("ISOBrowser"));
+	settings.beginGroup(QLatin1String("ToolbarSearch"));
+	settings.setValue(QString("RecentSearches"), stringListModel->stringList());
+	settings.setValue(QLatin1String("MaxSavedSearches"), 5472);
+	settings.endGroup();
+
+	settings.sync();
 }
 
 void SearchLineEdit::LoadSearchHistory()
 {
-	QSettings settings;
+	QSettings settings(QString("ISOBrowser"));
+	settings.beginGroup(QLatin1String("ToolbarSearch"));
+	QStringList list = settings.value(QLatin1String("RecentSearches")).toStringList();
+	maxSavedSearches = settings.value(QLatin1String("MaxSavedSearches"), maxSavedSearches).toInt();
+	settings.endGroup();
+	stringListModel->setStringList(list);
 }
