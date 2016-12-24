@@ -11,4 +11,8 @@
         <file>NewTab.html</file>
         <file>NewIncognitoTab.html</file>
     </qresource>
+    <qresource prefix="/Images/Vector">
+        <file>search.svg</file>
+        <file>cancel-button.svg</file>
+    </qresource>
 </RCC>

@@ -3,6 +3,7 @@
 #include "browserapplication.h"
 #include "tabwidget.h"
 #include "webview.h"
+#include "urllineedit.h"
 
 #include <QWebEngineProfile>
 #include <QWebEngineHistory>
@@ -38,11 +39,13 @@ InvokeWrapper<Arg, R> Invoke(R* receiver, void (R::*memberFunc)(Arg))
 	return wrapper;
 }
 
-const char* BrowserMainWindow::defaultHomePage = "http://google.com/";
+const QString BrowserMainWindow::defaultHomePage = "http://google.com/";
+const QString BrowserMainWindow::defaultSearchEngine = "http://google.com/search";
 
 BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
 	: QMainWindow(parent)
-	, tabWidget(new TabWidget(this))
+	, tabWidget(new TabWidget(this, this))
+	, toolbarSearch(0)
 	, isPrivateBrowsing(false)
 	, privateProfile(0)
 	, historyBack(0)
@@ -248,6 +251,11 @@ void BrowserMainWindow::SlotEditFindPrevious()
 	GetCurrentTab()->findText(lastSearch, QWebEnginePage::FindBackward);
 }
 
+void BrowserMainWindow::SlotPreferences()
+{
+
+}
+
 void BrowserMainWindow::SlotViewZoomIn()
 {
 	if (!GetCurrentTab())
@@ -401,6 +409,9 @@ void BrowserMainWindow::SetupMenu()
 	findPrevious->setShortcuts(QKeySequence::FindPrevious);
 	connect(findPrevious, SIGNAL(triggered(bool)), this, SLOT(SlotEditFindPrevious()));
 
+	editMenu->addSeparator();
+	editMenu->addAction(tr("&Preferences"), this, SLOT(SlotPreferences()), tr("Ctrl+,"));
+
 	// View
 	QMenu* viewMenu = menuBar()->addMenu(tr("&View"));
 
@@ -473,6 +484,10 @@ void BrowserMainWindow::SetupToolBar()
 	navigationBar->addAction(stopReload);
 
 	navigationBar->addWidget(tabWidget->GetLineEditStack());
+
+	toolbarSearch = new SearchLineEdit(navigationBar, this);
+	navigationBar->addWidget(toolbarSearch);
+	connect(toolbarSearch, SIGNAL(Search(QUrl)), this, SLOT(LoadUrl(QUrl)));
 }
 
 void BrowserMainWindow::HandleFindTextResult(bool isFound)

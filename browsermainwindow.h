@@ -6,6 +6,7 @@
 class TabWidget;
 class WebView;
 class QWebEngineProfile;
+class SearchLineEdit;
 
 /*!
 	The MainWindow of the Browser Application.
@@ -20,7 +21,8 @@ public:
 	BrowserMainWindow(QWidget *parent = 0, bool isPrivateWindow = false);
     ~BrowserMainWindow();
 
-	static const char* defaultHomePage;
+	static const QString defaultHomePage;
+	static const QString defaultSearchEngine;
 
 	inline TabWidget* GetTabWidget() const { return tabWidget; }
 	WebView* GetCurrentTab() const;
@@ -46,6 +48,7 @@ private slots:
 	void SlotEditFind();
 	void SlotEditFindNext();
 	void SlotEditFindPrevious();
+	void SlotPreferences();
 	void SlotViewZoomIn();
 	void SlotViewZoomOut();
 	void SlotViewResetZoom();
@@ -67,6 +70,7 @@ private:
 
 private:
 	QToolBar* navigationBar;
+	SearchLineEdit* toolbarSearch;
 	TabWidget* tabWidget;
 
 	QAction* historyBack;

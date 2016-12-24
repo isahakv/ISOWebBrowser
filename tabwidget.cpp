@@ -145,8 +145,9 @@ void TabBar::ContextMenuRequested(const QPoint& position)
 
 int TabWidget::MaxSymbolsInTabTitle = 20;
 
-TabWidget::TabWidget(QWidget *parent)
+TabWidget::TabWidget(QWidget *parent, BrowserMainWindow* ownerMainWindow)
 	: QTabWidget(parent)
+	, ownerBrowserMainWindow(ownerMainWindow)
 	, tabBar(new TabBar(this))
 	, lineEdits(0)
 	, profile(QWebEngineProfile::defaultProfile())
@@ -214,11 +215,6 @@ int TabWidget::GetWebViewIndex(WebView* webView) const
 	return indexOf(webView);
 }
 
-BrowserMainWindow* TabWidget::GetMainWindow() const
-{
-	return qobject_cast<BrowserMainWindow*>(parent());
-}
-
 void TabWidget::SetProfile(QWebEngineProfile* newProfile)
 {
 	profile = newProfile;
@@ -256,8 +252,6 @@ void TabWidget::LoadNewTabPage(WebView* tab)
 	QString htmlTxt;
 	QFile html;
 
-	if (!GetMainWindow())
-		qWarning("Shit hepened");
 	//if (GetMainWindow()->IsPrivateBrowsing())
 	if (profile == QWebEngineProfile::defaultProfile())
 		html.setFileName(":html/NewTab.html");
@@ -292,7 +286,7 @@ void TabWidget::LoadUrlInCurrentTab(const QUrl& url)
 WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 {
 	// line edit
-	UrlLineEdit* urlLineEdit = new UrlLineEdit;
+	UrlLineEdit* urlLineEdit = new UrlLineEdit(this, ownerBrowserMainWindow);
 	QLineEdit* lineEdit = urlLineEdit->GetLineEdit();
 
 	connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(LineEditReturnPressed()));
@@ -525,6 +519,8 @@ void TabWidget::SlotWebViewLoadStarted()
 // Deal with this function
 void TabWidget::SlotWebViewLoadFinished(bool b)
 {
+	Q_UNUSED(b)
+
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
 	if (index != -1)

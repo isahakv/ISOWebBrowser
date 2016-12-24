@@ -92,7 +92,7 @@ class TabWidget : public QTabWidget
 	Q_OBJECT
 
 public:
-	TabWidget(QWidget* parent = 0);
+	TabWidget(QWidget* parent = 0, BrowserMainWindow* ownerMainWindow = 0);
 	~TabWidget();
 
 	void AddWebAction(QAction* action, QWebEnginePage::WebAction webAction);
@@ -103,7 +103,7 @@ public:
 	WebView* GetCurrentWebView() const;
 	WebView* GetWebView(int index) const;
 	int GetWebViewIndex(WebView* webView) const;
-	BrowserMainWindow* GetMainWindow() const;
+	inline BrowserMainWindow* GetOwnerBrowserMainWindow() const { return ownerBrowserMainWindow; }
 
 	static int MaxSymbolsInTabTitle;
 
@@ -164,6 +164,8 @@ private:
 	QStackedWidget* lineEdits;
 	TabBar* tabBar;
 	QWebEngineProfile* profile;
+
+	BrowserMainWindow* ownerBrowserMainWindow;
 };
 
 #endif // TABWIDGET_H

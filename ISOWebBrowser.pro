@@ -9,14 +9,16 @@ HEADERS  += browsermainwindow.h \
     tabwidget.h \
     webview.h \
     urllineedit.h \
-    browsertypes.h
+    browsertypes.h \
+    settings.h
 
 SOURCES += main.cpp\
         browsermainwindow.cpp \
         browserapplication.cpp \
     tabwidget.cpp \
     webview.cpp \
-    urllineedit.cpp
+    urllineedit.cpp \
+    settings.cpp
 
 FORMS += \
     mainwindow.ui
