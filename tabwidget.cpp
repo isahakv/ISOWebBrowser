@@ -222,7 +222,7 @@ void TabWidget::SetProfile(QWebEngineProfile* newProfile)
 	{
 		if (WebView* webView = GetWebView(i))
 		{
-			QWebEnginePage* webPage = new QWebEnginePage(profile, webView);
+			WebPage* webPage = new WebPage(profile, webView);
 			SetupPage(webPage);
 			webPage->load(webView->page()->url());
 			webView->setPage(webPage);
@@ -569,7 +569,7 @@ void TabWidget::WebViewUrlChanged(const QUrl& url)
 
 void TabWidget::WebPageMutedOrAudibleChanged()
 {
-	QWebEnginePage* webPage = qobject_cast<QWebEnginePage*>(sender());
+	WebPage* webPage = qobject_cast<WebPage*>(sender());
 	WebView* webView = qobject_cast<WebView*>(webPage->view());
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
@@ -601,7 +601,7 @@ void TabWidget::LineEditReturnPressed()
 
 void TabWidget::WindowCloseRequested()
 {
-	QWebEnginePage* webPage = qobject_cast<QWebEnginePage*>(sender());
+	WebPage* webPage = qobject_cast<WebPage*>(sender());
 	WebView* webView = qobject_cast<WebView*>(webPage->view());
 	int index = GetWebViewIndex(webView);
 	if (index >= 0)

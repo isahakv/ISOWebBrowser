@@ -29,6 +29,8 @@ SearchButton::SearchButton(QWidget *parent)
 #endif // QT_NO_CURSOR
 	setToolTip(tr("Recent Searches"));
 	setFocusPolicy(Qt::NoFocus);
+
+	setGeometry(0, 0, 16, 16);
 }
 
 void SearchButton::paintEvent(QPaintEvent* event)
@@ -68,6 +70,8 @@ ClearButton::ClearButton(QWidget *parent)
 	setToolTip(tr("Clear"));
 	setVisible(false);
 	setFocusPolicy(Qt::NoFocus);
+
+	setGeometry(0, 0, 16, 16);
 }
 
 void ClearButton::paintEvent(QPaintEvent* event)
@@ -78,22 +82,6 @@ void ClearButton::paintEvent(QPaintEvent* event)
 
 	painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
 	painter.drawPixmap(0, 0, 16, 16, QPixmap(":Images/Vector/cancel-button.svg"));
-	int width = this->width();
-	int height = this->height();
-
-	/*painter.setRenderHint(QPainter::Antialiasing, true);
-	painter.setBrush(isDown() ? palette().color(QPalette::Dark)
-							  : palette().color(QPalette::Mid));
-	painter.setPen(painter.brush().color());
-	int size = this->width();
-	int offset = size / 5;
-	int radius = size/2 - offset;
-	painter.drawEllipse(0, 0, width, height);
-
-	painter.setPen(palette().color(QPalette::Base));
-	int border = offset*2;
-	painter.drawLine(border, border, (width-border), (height-border));
-	painter.drawLine((width-border), border, border, (height-border));*/
 }
 
 void ClearButton::TextChanged(const QString& text)
@@ -112,26 +100,19 @@ BrowserLineEdit::BrowserLineEdit(QWidget *parent, BrowserMainWindow* ownerMainWi
 	setFocusPolicy(lineEdit->focusPolicy());
 	setAttribute(Qt::WA_InputMethodEnabled);
 	setSizePolicy(lineEdit->sizePolicy());
+	setBackgroundRole(lineEdit->backgroundRole());
 	setMouseTracking(true);
 	setAcceptDrops(true);
 	setAttribute(Qt::WA_MacShowFocusRect, true);
-	setPalette(lineEdit->palette());
+	//setPalette(lineEdit->palette());
 
 	// line edit
 	lineEdit->setFrame(false);
 	lineEdit->setFocusProxy(this);
-	//lineEdit->setAttribute(Qt::WA_MacShowFocusRect, false);
+	lineEdit->setAttribute(Qt::WA_MacShowFocusRect, false);
 
 	// clearButton
 	clearButton = new ClearButton(this);
-	/*clearButton->setIcon(QIcon(":Images/Vector/cancel-button.svg"));
-	clearButton->setAttribute(Qt::WA_TranslucentBackground);
-	clearButton->setAttribute(Qt::WA_MacShowFocusRect, false);
-	QPalette p( clearButton->palette() );
-	p.setBrush( QPalette::Button, Qt::NoBrush );
-	clearButton->setPalette( p );
-	clearButton->setBackgroundRole(QPalette::NoRole);*/
-
 	connect(clearButton, SIGNAL(clicked(bool)),
 			lineEdit, SLOT(clear()));
 	connect(lineEdit, SIGNAL(textChanged(QString)),
@@ -187,42 +168,36 @@ void BrowserLineEdit::inputMethodEvent(QInputMethodEvent* event)
 
 void BrowserLineEdit::UpdateGeometries()
 {
-	QStyleOptionFrame panel;
-	InitStyleOption(&panel);
-	QRect rect = style()->subElementRect(QStyle::SE_LineEditContents, &panel, this);
+	int leftWidgetX = 0, leftWidgetY = 0;
+	int leftWidgetWidth = 0, leftWidgetHeight = 0;
+	if (leftWidget)
+	{
+		leftWidgetWidth = leftWidget->width();
+		leftWidgetHeight = leftWidget->height();
+		leftWidgetX = 0;
+		leftWidgetY = (this->height() - leftWidgetHeight)/2;
+		leftWidget->setGeometry(leftWidgetX, leftWidgetY,
+								leftWidgetWidth, leftWidgetHeight);
+	}
 
-	int height = rect.height();
-	int width = rect.width();
+	int clearButtonWidth = 0, clearButtonHeight = 0;
+	if (clearButton)
+	{
+		clearButtonWidth = clearButtonHeight = clearButton->width();
+		clearButton->setGeometry(this->width()-clearButtonWidth, (this->height()-clearButtonHeight)/2,
+								 clearButtonWidth, clearButtonHeight);
+	}
 
-	lineEdit->setGeometry(0, 0, width, height);
-
-	int clearButtonSize = this->height() / 3;
-	int x = this->width() - clearButtonSize;
-	int y = (this->height() - clearButtonSize)/2;
-	clearButton->setGeometry(x, y, clearButtonSize, clearButtonSize);
-}
-
-void BrowserLineEdit::InitStyleOption(QStyleOptionFrame *option) const
-{
-	option->initFrom(this);
-	option->rect = contentsRect();
-	option->lineWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth, option, this);
-	option->midLineWidth = 0;
-	option->state |= QStyle::State_Sunken;
-	if (lineEdit->isReadOnly())
-		option->state |= QStyle::State_ReadOnly;
-#ifdef QT_KEYPAD_NAVIGATION
-	if (hasEditFocus())
-		option->state |= QStyle::State_HasEditFocus;
-#endif
-	option->features = QStyleOptionFrame::None;
+	int lineEditWidth = this->width() - leftWidgetWidth - clearButtonWidth, lineEditHeight = lineEdit->height();
+	lineEdit->setGeometry(leftWidgetX + leftWidgetWidth, (this->height()-lineEditHeight)/2,
+						  lineEditWidth, lineEditHeight);
 }
 
 // UrlLineEdit
 UrlLineEdit::UrlLineEdit(QWidget *parent, BrowserMainWindow* ownerMainWindow)
 	: BrowserLineEdit(parent, ownerMainWindow)
 	, webView(0)
-{
+{	
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->addWidget(lineEdit);
 }
@@ -239,7 +214,7 @@ void UrlLineEdit::focusOutEvent(QFocusEvent* event)
 {
 	BrowserLineEdit::focusOutEvent(event);
 
-	if (lineEdit->text().isEmpty())
+	if (lineEdit->text().isEmpty() && webView)
 		lineEdit->setText(QString::fromUtf8(webView->url().toEncoded()));
 }
 
@@ -261,6 +236,9 @@ SearchLineEdit::SearchLineEdit(QWidget* parent, BrowserMainWindow* ownerMainWind
 
 	SetLeftWidget(searchButton);
 	inactiveText = tr("Search");
+
+	QSizePolicy policy = sizePolicy();
+	setSizePolicy(QSizePolicy::Preferred, policy.verticalPolicy());
 
 	QMenu* m = GetMenu();
 	connect(m, SIGNAL(aboutToShow()), this, SLOT(AboutToShowMenu()));
@@ -289,10 +267,11 @@ void SearchLineEdit::UpdateGeometries()
 {
 	BrowserLineEdit::UpdateGeometries();
 
+	/*
 	int clearButtonSize = this->height() / 3;
 	int x = clearButtonSize;//this->width() - clearButtonSize;
 	int y = (this->height() - clearButtonSize)/2;
-	searchButton->setGeometry(x, y, clearButtonSize, clearButtonSize);
+	searchButton->setGeometry(x, y, clearButtonSize, clearButtonSize);*/
 }
 
 void SearchLineEdit::ClearRecentSearches()
@@ -366,10 +345,10 @@ void SearchLineEdit::TriggeredMenuAction(QAction* action)
 
 void SearchLineEdit::SaveSearchHistory()
 {
-	QSettings settings(QString("ISOBrowser"));
+	QSettings settings(QLatin1String("ISOBrowser"));
 	settings.beginGroup(QLatin1String("ToolbarSearch"));
-	settings.setValue(QString("RecentSearches"), stringListModel->stringList());
-	settings.setValue(QLatin1String("MaxSavedSearches"), 5472);
+	settings.setValue(QLatin1String("RecentSearches"), stringListModel->stringList());
+	settings.setValue(QLatin1String("MaxSavedSearches"), maxSavedSearches);
 	settings.endGroup();
 
 	settings.sync();
@@ -377,7 +356,7 @@ void SearchLineEdit::SaveSearchHistory()
 
 void SearchLineEdit::LoadSearchHistory()
 {
-	QSettings settings(QString("ISOBrowser"));
+	QSettings settings(QLatin1String("ISOBrowser"));
 	settings.beginGroup(QLatin1String("ToolbarSearch"));
 	QStringList list = settings.value(QLatin1String("RecentSearches")).toStringList();
 	maxSavedSearches = settings.value(QLatin1String("MaxSavedSearches"), maxSavedSearches).toInt();

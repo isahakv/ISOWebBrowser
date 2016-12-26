@@ -12,6 +12,10 @@ class WebPage : public QWebEnginePage
 
 public:
 	WebPage(QWebEngineProfile* profile, QObject* parent = 0);
+
+	void javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString &message,
+								  int lineNumber, const QString &sourceID);
+
 };
 
 class WebView : public QWebEngineView
@@ -24,6 +28,7 @@ public:
 	void LoadUrl(const QUrl& url);
 	QUrl GetUrl() const;
 	inline bool IsWebPageLoading() const { return isWebPageLoading; }
+
 
 private slots:
 	void SlotLoadStarted();

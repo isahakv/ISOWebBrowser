@@ -8,6 +8,13 @@ WebPage::WebPage(QWebEngineProfile* profile, QObject* parent)
 
 }
 
+void WebPage::javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString &message,
+							  int lineNumber, const QString &sourceID)
+{
+	//if (level == JavaScriptConsoleMessageLevel::ErrorMessageLevel)
+		qWarning((QString("Js Error: \"") + message + QString("\" ; lineNumber: ") + lineNumber).toStdString().c_str());
+}
+
 WebView::WebView(QWidget* parent)
 	: QWebEngineView(parent)
 {

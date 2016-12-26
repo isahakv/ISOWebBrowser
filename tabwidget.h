@@ -47,7 +47,7 @@ private:
 	QPoint dragStartPos;
 };
 
-#include <QWebEnginePage>
+#include "webview.h"
 /*!
 	A proxy object that connects a single browser action
 	to one child webpage action at a time.

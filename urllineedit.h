@@ -71,7 +71,6 @@ protected:
 	void inputMethodEvent(QInputMethodEvent* event);
 
 	virtual void UpdateGeometries();
-	void InitStyleOption(QStyleOptionFrame *option) const;
 
 	QWidget* leftWidget;
 	QLineEdit* lineEdit;

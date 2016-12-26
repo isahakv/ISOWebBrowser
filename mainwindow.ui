@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>210</y>
+      <x>300</x>
+      <y>50</y>
       <width>291</width>
       <height>191</height>
      </rect>
@@ -51,16 +51,10 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionFuck"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionFuck">
-   <property name="text">
-    <string>Fuck</string>
-   </property>
-  </action>
  </widget>
  <resources>
   <include location="data/data.qrc"/>
