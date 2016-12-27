@@ -232,9 +232,15 @@ void TabWidget::SetProfile(QWebEngineProfile* newProfile)
 
 void TabWidget::LoadHomePage(WebView* tab)
 {
-	QSettings settings;
-	settings.beginGroup(QLatin1String("MainWindow"));
-	HomePageType homeType = qvariant_cast<HomePageType>(settings.value(QLatin1String("HomePageType"), (unsigned short)HomePageType::NewTabPage));
+	if (!tab)
+		tab = GetCurrentWebView();
+	if (!tab)
+		return;
+
+	QSettings settings("ISOBrowser");
+	settings.beginGroup(QLatin1String("General"));
+	HomePageType homeType = qvariant_cast<HomePageType>(settings.value(QLatin1String("HomePageType"),
+														(unsigned short)HomePageType::NewTabPage));
 	settings.endGroup();
 	switch (homeType)
 	{
@@ -242,7 +248,7 @@ void TabWidget::LoadHomePage(WebView* tab)
 		LoadNewTabPage(tab);
 		break;
 	case HomePageType::SpecificPage:
-		//LoadPage(home);
+		LoadPage(tab, BrowserMainWindow::GetHomePage());
 		break;
 	}
 }
@@ -273,14 +279,16 @@ void TabWidget::LoadNewTabPage(WebView* tab)
 	//tab->load(QUrl(":html/NewTab.html"));
 }
 
-void TabWidget::LoadUrlInCurrentTab(const QUrl& url)
+// If tab == NULL, Then Load on Current Tab, Note: maybe this will be deleted later...
+void TabWidget::LoadUrl(WebView* tab, const QUrl& url)
 {
-	WebView* webView = GetCurrentWebView();
-	if (webView)
-	{
-		webView->LoadUrl(url);
-		webView->setFocus();
-	}
+	if (!tab)
+		tab = GetCurrentWebView();
+	if (!tab)
+		return;
+
+	tab->LoadUrl(url);
+	tab->setFocus();
 }
 
 WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
@@ -593,7 +601,7 @@ void TabWidget::LineEditReturnPressed()
 	{
 		if (lineEdits->currentWidget() == lineEdit->parent())
 		{
-			emit LoadPage(lineEdit->text());
+			emit LoadPage(GetCurrentWebView(), lineEdit->text());
 			GetCurrentWebView()->setFocus();
 		}
 	}

@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     settings.cpp
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    settings.ui
 
 RESOURCES += \
     data/data.qrc

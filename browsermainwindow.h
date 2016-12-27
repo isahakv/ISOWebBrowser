@@ -29,8 +29,11 @@ public:
 
 	inline bool IsPrivateBrowsing() const { return isPrivateBrowsing; }
 
+	static QString GetHomePage();
+	static QString GetDefaultSearchEngine();
+
 public slots:
-	void LoadPage(const QString& url);
+	void LoadPage(WebView* tab, const QString& url);
 	void SetPrivateBrowsing(bool);
 
 private slots:
@@ -39,7 +42,7 @@ private slots:
 	void SlotCurrentWebPageChanged();
 	void SlotUpadateStatusBarText(const QString& text);
 
-	void LoadUrl(const QUrl& url);
+	void LoadUrl(WebView* tab, const QUrl& url);
 
 	void SlotFileNew();
 	void SlotFileOpen();
@@ -53,8 +56,10 @@ private slots:
 	void SlotViewZoomOut();
 	void SlotViewResetZoom();
 	void SlotViewPageSource();
-
 	void SlotAboutApplication();
+
+	void SlotHome();
+	void SlotLoadUrlInCurrentTab(const QUrl& url);
 
 	void SlotAboutToShowBackMenu();
 	void SlotAboutToShowForwardMenu();

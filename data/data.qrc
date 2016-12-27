@@ -14,5 +14,6 @@
     <qresource prefix="/Images/Vector">
         <file>search.svg</file>
         <file>cancel-button.svg</file>
+        <file>home-button.svg</file>
     </qresource>
 </RCC>

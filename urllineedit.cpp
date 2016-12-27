@@ -300,7 +300,7 @@ void SearchLineEdit::SlotSearch()
 	QSettings settings(QString("ISOBrowser"));
 	settings.beginGroup(QString("General"));
 	QUrl url(settings.value(QString("DefaultSearchEngine"),
-							BrowserMainWindow::defaultSearchEngine).toString());
+							BrowserMainWindow::GetDefaultSearchEngine()).toString());
 	settings.endGroup();
 
 	QUrlQuery urlQuery;

@@ -112,7 +112,7 @@ public:
 
 signals:
 	// tab widget signals
-	void LoadPage(const QString& url);
+	void LoadPage(WebView* tab, const QString& url);
 	void LastTabClosed();
 
 	// current tab signals
@@ -124,9 +124,9 @@ signals:
 	void geometryChangeRequested(const QRect& geometry);
 
 public slots:
-	void LoadHomePage(WebView* tab);
+	void LoadHomePage(WebView* tab = 0);
 	void LoadNewTabPage(WebView* tab);
-	void LoadUrlInCurrentTab(const QUrl& url);
+	void LoadUrl(WebView* tab, const QUrl& url);
 	WebView* NewTab(bool makeCurrent = true, bool loadHomePage = false);
 	void CloneTab(int index = -1);
 	void RequestCloseTab(int index = -1);

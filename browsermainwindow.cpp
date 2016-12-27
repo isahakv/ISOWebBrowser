@@ -4,6 +4,7 @@
 #include "tabwidget.h"
 #include "webview.h"
 #include "urllineedit.h"
+#include "settings.h"
 
 #include <QWebEngineProfile>
 #include <QWebEngineHistory>
@@ -20,6 +21,7 @@
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QFile>
+#include <QSettings>
 
 template<typename Arg, typename R>
 struct InvokeWrapper
@@ -39,7 +41,7 @@ InvokeWrapper<Arg, R> Invoke(R* receiver, void (R::*memberFunc)(Arg))
 	return wrapper;
 }
 
-const QString BrowserMainWindow::defaultHomePage = "http://google.com/";
+const QString BrowserMainWindow::defaultHomePage = "http://youtube.com/";
 const QString BrowserMainWindow::defaultSearchEngine = "http://google.com/search";
 
 BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
@@ -72,7 +74,7 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
 	centralWidget->setLayout(layout);
 	setCentralWidget(centralWidget);
 
-	connect(tabWidget, SIGNAL(LoadPage(QString)), this, SLOT(LoadPage(QString)));
+	connect(tabWidget, SIGNAL(LoadPage(WebView*,QString)), this, SLOT(LoadPage(WebView*,QString)));
 	connect(tabWidget, SIGNAL(WebPageLinkHovered(QString)),
 			statusBar(), SLOT(showMessage(QString)));
 	connect(tabWidget, SIGNAL(CurrentTabChanged(int)),
@@ -98,10 +100,30 @@ WebView* BrowserMainWindow::GetCurrentTab() const
 	return tabWidget->GetCurrentWebView();
 }
 
-void BrowserMainWindow::LoadPage(const QString& url)
+QString BrowserMainWindow::GetHomePage()
+{
+	QSettings settings("ISOBrowser");
+	settings.beginGroup("General");
+	QString homePage = settings.value(QLatin1String("HomePage"), defaultHomePage).toString();
+	settings.endGroup();
+
+	return homePage;
+}
+
+QString BrowserMainWindow::GetDefaultSearchEngine()
+{
+	QSettings settings("ISOBrowser");
+	settings.beginGroup("General");
+	QString searchEngine = settings.value(QLatin1String("SearchEngine"), defaultSearchEngine).toString();
+	settings.endGroup();
+
+	return searchEngine;
+}
+
+void BrowserMainWindow::LoadPage(WebView* tab, const QString& url)
 {
 	QUrl _url = QUrl::fromUserInput(url);
-	LoadUrl(_url);
+	LoadUrl(tab, _url);
 }
 
 void BrowserMainWindow::SetPrivateBrowsing(bool newPrivateBrowsing)
@@ -163,20 +185,22 @@ void BrowserMainWindow::SlotUpadateStatusBarText(const QString& text)
 	statusBar()->showMessage(text, 2000);
 }
 
-void BrowserMainWindow::LoadUrl(const QUrl& url)
+// If tab == NULL, Then Load on Current Tab
+void BrowserMainWindow::LoadUrl(WebView* tab, const QUrl& url)
 {
-	if (!GetCurrentTab() || !url.isValid())
+	if (!tab)
+		tab = GetCurrentTab();
+
+	if (!tab || !url.isValid())
 		return;
 
-	// tabWidget->GetCurrentLineEdit()->setText(QString::fromUtf8(url.toEncoded())); // maybe move this in tabwidget...
-	tabWidget->LoadUrlInCurrentTab(url);
+	tab->LoadUrl(url);
+	tab->setFocus();
 }
 
 void BrowserMainWindow::SlotFileNew()
 {
 	BrowserApplication::GetInstance()->newMainWindow();
-	//if (mw)
-	//	mw->SlotLoadHomePage();
 }
 
 void BrowserMainWindow::SlotFileOpen()
@@ -187,7 +211,7 @@ void BrowserMainWindow::SlotFileOpen()
 	if (file.isEmpty())
 		return;
 
-	LoadPage(file);
+	LoadPage(GetCurrentTab(), file);
 }
 
 void BrowserMainWindow::SlotFileSaveAs()
@@ -253,7 +277,8 @@ void BrowserMainWindow::SlotEditFindPrevious()
 
 void BrowserMainWindow::SlotPreferences()
 {
-
+	SettingsDialog* settingsDialog = new SettingsDialog(this);
+	settingsDialog->show();
 }
 
 void BrowserMainWindow::SlotViewZoomIn()
@@ -301,6 +326,19 @@ void BrowserMainWindow::SlotAboutApplication()
 													 "<p>Qt WebEngine is based on the Chromium open source project "
 													 "<p>Contact: isahakv@gmail.com"
 													 ).arg(QCoreApplication::applicationVersion()));
+}
+
+void BrowserMainWindow::SlotHome()
+{
+	if (!GetCurrentTab())
+		return;
+
+	tabWidget->LoadHomePage(GetCurrentTab());
+}
+
+void BrowserMainWindow::SlotLoadUrlInCurrentTab(const QUrl& url)
+{
+	LoadUrl(GetCurrentTab(), url);
 }
 
 // Fix this
@@ -476,6 +514,11 @@ void BrowserMainWindow::SetupToolBar()
 			this, SLOT(SlotOpenActionUrl(QAction*)));
 	navigationBar->addAction(historyForward);
 
+	QAction* home = new QAction(this);
+	home->setIcon(QIcon(":Images/Vector/home-button.svg"));
+	navigationBar->addAction(home);
+	connect(home, SIGNAL(triggered(bool)), this, SLOT(SlotHome()));
+
 	stopReload = new QAction(this);
 	reloadIcon = style()->standardIcon(QStyle::SP_BrowserReload);
 	stopIcon = style()->standardIcon(QStyle::SP_BrowserStop);
@@ -487,7 +530,7 @@ void BrowserMainWindow::SetupToolBar()
 
 	toolbarSearch = new SearchLineEdit(navigationBar, this);
 	navigationBar->addWidget(toolbarSearch);
-	connect(toolbarSearch, SIGNAL(Search(QUrl)), this, SLOT(LoadUrl(QUrl)));
+	connect(toolbarSearch, SIGNAL(Search(QUrl)), this, SLOT(SlotLoadUrlInCurrentTab(QUrl)));
 }
 
 void BrowserMainWindow::HandleFindTextResult(bool isFound)

@@ -21,7 +21,7 @@ BrowserApplication::BrowserApplication(int &argc, char **argv)
 	{
 		const QString url = GetCommandLineUrlArgument();
 		if (!url.isEmpty())
-			GetCurrentMainWindow()->LoadPage(url);
+			GetCurrentMainWindow()->LoadPage(NULL, url);
 		//else
 		//	GetCurrentMainWindow()->SlotLoadHomePage();
 	}
