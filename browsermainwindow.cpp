@@ -17,6 +17,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPlainTextEdit>
 #include <QStyle>
+#include <QPixmap>
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QFileDialog>
@@ -381,11 +382,21 @@ void BrowserMainWindow::SlotViewPageSource()
 
 void BrowserMainWindow::SlotAboutApplication()
 {
-	QMessageBox::about(this, tr("About Browser"), tr("Version %1"
-													 "<p>This is my Personal \"Yet\" Not Commercial Browser!"
-													 "<p>Qt WebEngine is based on the Chromium open source project "
-													 "<p>Contact: isahakv@gmail.com"
-													 ).arg(QCoreApplication::applicationVersion()));
+	QMessageBox about;
+	QPixmap pic(":/Images/Creators/isahak.jpg");
+	pic = pic.scaled(QSize(200, 200), Qt::KeepAspectRatio);
+	about.setIconPixmap(pic);
+	about.setText(tr("Version %1"
+					 "<p>I'm Isahak Vardanyan, I'm born in 14.01.1999"
+					 "<p>My profession is Software Enginneer and Game Developer"
+					 "<p>This is my Personal \"Yet\" Not Commercial Browser!"
+//					 "<p>Qt WebEngine is based on the Chromium open source project "
+					 "If you have any questions and suggestion feel free to Contact me."
+					 "<p>Contact: isahakv@gmail.com"
+					 ).arg(QCoreApplication::applicationVersion()));
+
+	about.show();
+	about.exec();
 }
 
 void BrowserMainWindow::SlotHome()
