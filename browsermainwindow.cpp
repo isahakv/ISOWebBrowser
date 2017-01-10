@@ -152,6 +152,26 @@ void BrowserMainWindow::SetPrivateBrowsing(bool newPrivateBrowsing)
 	}
 }
 
+void BrowserMainWindow::closeEvent(QCloseEvent* event)
+{
+	if (tabWidget->count() > 1)
+	{
+		int ret = QMessageBox::warning(this, QString(),
+									   tr("Are you sure you want to close the window?"
+										  "\nThere are %1 tabs open!").arg(tabWidget->count()),
+										QMessageBox::Yes | QMessageBox::No,
+										QMessageBox::No);
+		if (ret == QMessageBox::No)
+		{
+			event->ignore();
+			return;
+		}
+	}
+
+	event->accept();
+	deleteLater();
+}
+
 void BrowserMainWindow::SlotWebPageLoadStarted(WebView* webView)
 {
 	if (!webView || webView != GetCurrentTab())

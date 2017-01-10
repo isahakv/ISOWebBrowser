@@ -1,8 +1,286 @@
-<html>
-    <head>
-        <link rel="shortcut icon" href="new-tab.png" />
-        <h1>Here Can be your New <i>Incognito</i> Page!!!</h1>
-    </head>
-    <body>
-    </body>
-</html>
+<!DOCTYPE html>
+<!-- saved from url=(0029)http://mybrowserstartpage.ru/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+                <title>New Incognito Tab</title>
+		
+		<meta name="keywords" content="начальная,страница,стартовая,start,page,browser,браузер">
+		<meta name="description" content="Это Стартовая Страница Для Любого Веб Браузера. у нас есть два наилучшие поисковые системы и 8 популярние сайти который ты заходишь каждый день. кроме этого очень приятный дизайн в стиле &#39;Google Material Design&#39;">
+		<meta name="author" content="Tigran, tikonazaryan5@gmail.com">
+		<meta name="designer" content="Tigran Nazaryan">
+		<meta name="copyright" content="ManiFold">
+		<meta name="revisit-after" content="7 days">
+		<meta name="language" content="ru">
+		<meta name="robots" content="index,follow">
+		<meta property="og:title" content="Начальная Страница Для Браузера.">
+		<meta property="og:image" content="demoPic.png">
+		<meta property="og:url" content="http://mybrowserstartpage.ru/">
+		<meta property="og:description" content="8 Самых Популярных Сайтов И Два Лучших Поисковых Систем Под Рукой. ">
+		<link rel="shortcut icon" type="image=/x-con" href="./NewTabPage_files/logo.png">
+	<style>@font-face{font-family:uc-nexus-iconfont;src:url(chrome-extension://pogijhnlcfmcppgimcaccdkmbedjkmhi/res/font_9qmmi8b8jsxxbt9.woff) format('woff'),url(chrome-extension://pogijhnlcfmcppgimcaccdkmbedjkmhi/res/font_9qmmi8b8jsxxbt9.ttf) format('truetype')}</style></head>
+	<body>
+		<style>
+			body{
+				margin:0;
+				background-color:#FAFAFA;
+			}
+			.wrapper{
+				margin:auto;
+				margin-top:100px;
+				width:calc(1110px + 6rem)
+			}
+			.card{
+				box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+				background-color:white;
+				margin:0.5rem;
+				vertical-align:top;
+				display:inline-block;
+				cursor:pointer;
+				width:185px;
+				height:190px;
+				padding: 30px;
+				box-sizing: border-box;
+			}
+			.header{
+				vertical-align:top;
+				display:inline-block;
+				width:calc(740px + 3rem);
+				margin:0.5rem;
+				box-sizing: border-box;
+			}
+			.header > .card{
+				margin:0;
+				padding:26px;
+				display:block;
+				width:100%;
+				height:calc(95px - 0.5rem);
+			}
+			.header > .card:first-child{
+				margin-bottom:1rem;
+				padding: 21px;
+			}
+			#googleSearchContent{
+				background-color: #fff;
+				height: 44px;
+				vertical-align: top;
+				border-radius: 2px;
+				box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);transition: box-shadow 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+			}
+			#googleSearchContent:hover{
+				box-shadow:0 3px 8px 0 rgba(0,0,0,0.2),0 0 0 1px rgba(0,0,0,0.08);border:none;
+			}
+			#googleSearchInput{
+				border: none;
+				outline: none;
+				width: calc(100% - 60px);
+				vertical-align: middle;
+				margin-top: 6px;
+				margin-left: 10px;
+				font-size: 16px;
+				height: 30px;
+				font: 16px arial,sans-serif;
+			}
+			#googleSearchIcon{
+				width: 24px;
+				height: 24px;
+				display: inline-block;
+				vertical-align: middle;
+				margin-left: 10px;
+				margin-top: 6px;
+				fill: #4285f4;
+				cursor:pointer;
+			}
+			#yandexSearchContent{
+				height: 36px;
+				width:calc(100% - 14px);
+				background-color: #FFDB4D;
+				vertical-align:middle;
+				display:inline-block;
+			}
+			#yandexSearchInput{
+				border: none;
+				margin: 2px;
+				height: 30px;
+				color: #000;
+				padding-left:10px;
+				font: 13px Arial,Helvetica,sans-serif;
+				outline: none;
+				display: inline-block;
+				vertical-align: middle;
+				width: calc(100% - 88px);
+			}
+			#yandexSearchIcon{
+				cursor:pointer;
+				font-size: 16px;
+				margin-left:13px;
+				vertical-align:middle;
+				display:inline-block;
+				font-family: Arial,sans-serif;
+				overflow:hidden;
+			}
+			#yandexSvgContent{
+				vertical-align: middle;
+				display: inline-block;
+				height: 36px;
+				width: 22px;
+				overflow: hidden;
+				margin-left: -5px;
+				position: absolute;
+			}
+			#yandexSvgContent svg{
+				width: 22px;
+				height: 36px;
+				transform: scale(2.5) rotateY(54deg);
+				fill: #ffdb4d;
+			}
+			.card svg{
+				transition:0.3s all;
+			}
+			.card:hover svg{
+				transform:scale(1.1);
+			}
+			#yandex{
+				line-height: 155px;
+			}
+			#createByManifold{position: fixed;right: 10px;bottom: 10px;color: #9e9e9e;}#createByManifold img{vertical-align:middle;display:inline-block;margin-top:-3px;}#createByManifoldText{vertical-align:middle;display:inline-block;margin-right:10px;}#sorry{width: 100%;text-align: center;margin-top: 200px;font-size: 37px;color: #616161;display:none;}
+			@media screen and (max-width: 1230px){
+				.card{
+					height:150px;
+					width:150px;
+				}
+				.header{
+					vertical-align:top;
+					display:inline-block;
+					width:calc(600px + 3rem);
+					margin:0.5rem;
+				}
+				.header > .card{
+					padding:15px;
+					height:calc(75px - 0.5rem);
+				}
+				.wrapper{
+					width:calc(900px + 6rem)
+				}
+				.header > .card:first-child{
+					padding: 12px;
+				}
+				#yandex{
+					line-height: 110px;
+				}
+			}
+			@media screen and (max-width: 1000px){
+				.wrapper{
+					width:100%;
+					margin-top:20px;
+					text-align:center;
+				}
+				.header > .card{
+					padding-left:5px;
+				}
+				.header{
+					width:calc(100% - 3rem);
+				}
+			}
+		</style>
+		<div class="wrapper">
+			<a href="https://www.google.com/"><div class="card">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+					<path style="fill:#FBBB00;" d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256  c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456  C103.821,274.792,107.225,292.797,113.47,309.408z"></path>
+					<path style="fill:#518EF8;" d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451  c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535  c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176L507.527,208.176z"></path>
+					<path style="fill:#28B446;" d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512  c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771  c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z"></path>
+					<path style="fill:#F14336;" d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012  c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0  C318.115,0,375.068,22.126,419.404,58.936z"></path>
+				</svg>
+			</div></a><div class="header" id="header">
+				<div class="card">
+					<div id="googleSearchContent">
+						<input id="googleSearchInput">
+						<svg focusable="false" id="googleSearchIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+							<path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
+							</path>
+						</svg>
+					</div>
+				</div>
+				<div class="card">
+					<div id="yandexSearchContent">
+						<input id="yandexSearchInput">
+						<div id="yandexSearchIcon">	Search</div>
+					</div>
+					<div id="yandexSvgContent">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" width="123.958px" height="123.959px" viewBox="0 0 123.958 123.959" style="enable-background:new 0 0 123.958 123.959;" xml:space="preserve">
+							<g>
+								<path d="M38.217,1.779c-3.8-3.8-10.2-1.1-10.2,4.2v112c0,5.3,6.4,8,10.2,4.2l56-56c2.3-2.301,2.3-6.101,0-8.401L38.217,1.779z"></path>
+							</g>
+						</svg>
+					</div>
+				</div>
+			</div><a href="https://www.yandex.com/" id="yandexa"><div id="yandex" class="card">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 107 43">
+					<g fill="none" fill-rule="evenodd">
+						<path d="M29.244 33.263c-.685 1.044-2.005 1.898-3.325 1.898-1.957 0-2.886-1.803-2.886-4.555 0-3.085 1.027-5.125 5.77-5.125h.441v7.782zm3.766-.712V21.305c0-5.789-2.397-7.592-6.75-7.592-2.493 0-4.743.997-5.867 1.898l.733 3.274c1.272-1.091 2.934-2.088 4.89-2.088 2.152 0 3.228 1.33 3.228 4.46v1.424h-.538c-6.895 0-9.585 3.227-9.585 8.352 0 4.697 2.396 7.26 5.917 7.26 2.152 0 3.521-.902 4.597-2.23h.245c.049.616.195 1.375.342 1.897h3.228a33.41 33.41 0 0 1-.44-5.409zm8.434-13.114c.88-1.187 2.25-2.373 3.864-2.373 1.467 0 2.298.617 2.298 2.42V37.99h3.863V19.152c0-3.654-1.711-5.41-4.939-5.41-2.298 0-4.157 1.472-4.841 2.373h-.245v-2.088H37.63V37.99h3.814V19.437zm25.847 16.625h.244l.294 1.898h2.836V4.02H66.85v10.595c-.733-.522-1.956-.902-3.13-.902-4.939 0-8.362 4.318-8.362 13.191 0 7.403 2.641 11.389 7.482 11.389 2.005 0 3.375-.902 4.45-2.23zm-.44-2.752c-.636.95-1.663 1.85-3.57 1.85-2.788 0-3.864-3.416-3.864-9.015 0-4.887 1.467-9.395 4.548-9.395 1.272 0 2.103.38 2.885 1.139V33.31zm21.761 3.037l-.88-2.847c-.978.664-2.543 1.613-4.695 1.613-3.032 0-4.596-2.847-4.596-8.256h10.27v-2.04c0-8.114-2.69-11.104-6.798-11.104-5.233 0-7.434 5.6-7.434 13.286 0 7.355 3.13 11.294 8.216 11.294 2.445 0 4.352-.76 5.917-1.946zm-6.7-19.597c2.201 0 2.886 2.99 2.886 7.07h-6.309c.245-4.27 1.076-7.07 3.424-7.07zm19.66-2.705l-3.375 8.684-3.178-8.684h-3.962l4.646 11.53-5.135 12.385h3.766l3.717-9.87 3.814 9.87h3.961l-5.135-12.716 4.597-11.199h-3.716z" fill="#000"></path>
+						<path fill="#F00" d="M12.858 38.003V25.998L22.59.043h-4.318l-7.273 20.83-6.182-16.83H.438l8.556 21.813v12.147z"></path>
+					</g>
+				</svg>
+			</div></a><a href="https://www.youtube.com/"><div class="card">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 455.731 455.731" style="enable-background:new 0 0 455.731 455.731;" xml:space="preserve"><g><rect x="0" y="0" style="fill:#DC472E;" width="455.731" height="455.731"></rect><g><path style="fill:#FFFFFF;" d="M263.259,291.734c-0.01-1.7-0.51-3.47-1.14-5.06c-0.84-2.09-2.64-3.13-4.9-3.35    c-2.65-0.26-4.77,0.81-6.69,2.51c-0.77,0.67-1.12,1.67-1.12,1.67l0.04,53.97v1.33c0,0,0.46,0.62,0.53,0.7    c1.56,1.69,3.38,3.03,5.71,3.51c3.84,0.79,6.55-0.81,7.3-4.37c0.19-0.89,0.3-1.81,0.3-2.72    C263.309,323.854,263.339,307.794,263.259,291.734z M263.259,291.734c-0.01-1.7-0.51-3.47-1.14-5.06    c-0.84-2.09-2.64-3.13-4.9-3.35c-2.65-0.26-4.77,0.81-6.69,2.51c-0.77,0.67-1.12,1.67-1.12,1.67l0.04,53.97v1.33    c0,0,0.46,0.62,0.53,0.7c1.56,1.69,3.38,3.03,5.71,3.51c3.84,0.79,6.55-0.81,7.3-4.37c0.19-0.89,0.3-1.81,0.3-2.72    C263.309,323.854,263.339,307.794,263.259,291.734z M323.689,210.344c-63.87-1.37-127.77-1.37-191.65,0    c-22.16,0.47-39.88,18.59-39.88,40.76v99.76c0,22.18,17.72,40.3,39.88,40.77c63.88,1.37,127.78,1.37,191.65,0    c22.17-0.47,39.89-18.59,39.89-40.77v-99.76C363.579,228.935,345.859,210.814,323.689,210.344z M150.799,359.955h-18.42v-104.13    h-19.07v-17.42h56.6v17.38h-19.11V359.955z M216.719,316.734v43.23h-16.31v-9.88c-0.59,0.63-0.92,0.97-1.23,1.32    c-3.51,3.96-7.49,7.26-12.57,9.01c-2.48,0.85-5.03,1.14-7.64,0.69c-3.56-0.59-5.95-2.64-7.39-5.88c-1.34-2.99-1.68-6.19-1.69-9.41    c-0.04-11.9-0.02-74.88-0.02-75.49h16.27c0.03,0.55,0.09,45.76,0.1,67.81c0,1.2,0.01,2.43,0.25,3.6c0.6,2.96,2.87,4.23,5.72,3.19    c3.28-1.2,5.78-3.46,7.88-6.17c0.31-0.39,0.31-1.09,0.31-1.65v-66.88l16.32-0.04C216.719,270.185,216.719,301.754,216.719,316.734    z M278.769,351.324c-2.18,6.56-6.98,9.9-13.88,9.83c-5.61-0.05-10.16-2.28-13.91-6.35c-0.42-0.45-1.58-1.68-1.58-1.68v6.82h-16.34    v-121.55h16.34c0,12.94,0,40.01,0,40.01s0.92-1.84,1.76-2.79c2.53-2.83,5.61-5.02,9.41-5.98c6.27-1.57,13.5,0.37,16.94,7.7    c2.03,4.33,2.6,8.95,2.6,13.65c0.03,16.99,0.03,33.98,0.01,50.97C280.109,345.134,279.779,348.275,278.769,351.324z     M339.119,347.905c-2.83,8.29-8.68,12.89-17.26,14.15c-5.32,0.78-10.59,0.67-15.58-1.59c-6.83-3.08-10.7-8.65-12.36-15.74    c-0.77-3.3-1.15-6.76-1.19-10.15c-0.13-13.31-0.07-26.63-0.04-39.94c0.01-6.96,1.67-13.38,6.44-18.71    c5.44-6.09,12.4-8.36,20.35-7.85c2.39,0.15,4.83,0.54,7.1,1.29c7.73,2.54,11.86,8.33,13.48,16.01c0.62,2.96,0.85,6.03,0.9,9.06    c0.13,7.1-0.05,22.75-0.05,22.75h-31.29v22.43c0,4.03,3.26,7.29,7.29,7.29c4.02,0,7.28-3.26,7.28-7.29v-11.53h16.81    C340.999,328.084,341.249,341.695,339.119,347.905z M324.189,290.685c0-4.02-3.26-7.29-7.28-7.29c-4.03,0-7.29,3.27-7.29,7.29    v12.59h14.57V290.685z M262.119,286.675c-0.84-2.09-2.64-3.13-4.9-3.35c-2.65-0.26-4.77,0.81-6.69,2.51    c-0.77,0.67-1.12,1.67-1.12,1.67l0.04,53.97v1.33c0,0,0.46,0.62,0.53,0.7c1.56,1.69,3.38,3.03,5.71,3.51    c3.84,0.79,6.55-0.81,7.3-4.37c0.19-0.89,0.3-1.81,0.3-2.72c0.02-16.07,0.05-32.13-0.03-48.19    C263.249,290.034,262.749,288.264,262.119,286.675z"></path><path style="fill:#FFFFFF;" d="M303.887,94.99l-0.005,90.244H287.16l0.02-9.695c-1.849,1.821-3.427,3.522-5.161,5.05    c-3.074,2.708-6.556,4.727-10.629,5.524c-6.253,1.223-11.579-0.754-13.573-7.23c-0.664-2.157-1.065-4.482-1.082-6.734V94.99    h16.596v68.821c0,0.912,0.073,1.834,0.233,2.728c0.504,2.836,2.6,4.171,5.331,3.224c3.329-1.152,5.869-3.457,8.024-6.173    c0.306-0.388,0.251-1.112,0.251-1.681V94.99H303.887z"></path><path style="fill:#FFFFFF;" d="M165.578,110.672c-3.63-15.301-11.235-47.602-11.235-47.602h-19.029    c0,0,14.62,48.487,21.158,70.111c0.235,0.782,0.343,1.631,0.343,2.45l-0.007,49.584h17.547l-0.007-49.584    c0-0.819,0.108-1.668,0.343-2.45c6.538-21.624,21.158-70.111,21.158-70.111H176.82c0,0-7.606,32.301-11.235,47.602H165.578z"></path><path style="fill:#FFFFFF;" d="M218.752,92.731L218.752,92.731c-13.224,0-23.944,10.72-23.944,23.944v46.859    c0,13.224,10.72,23.944,23.944,23.944h0c13.224,0,23.944-10.72,23.944-23.944v-46.859    C242.697,103.451,231.976,92.731,218.752,92.731z M225.662,164.48c0,3.81-3.1,6.909-6.909,6.909s-6.909-3.099-6.909-6.909v-48.752    c0-3.81,3.1-6.909,6.909-6.909s6.909,3.1,6.909,6.909V164.48z"></path></g></g></svg>
+			</div></a><a href="https://vk.com/"><div class="card">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 455.731 455.731" style="enable-background:new 0 0 455.731 455.731;" xml:space="preserve"><g><rect x="0" y="0" style="fill:#44678D;" width="455.731" height="455.731"></rect><path style="fill:#FFFFFF;" d="M118.06,138.69c10.922,26.972,24.764,52.402,42.995,75.231c2.418,3.038,5.466,5.739,8.677,7.938   c4.69,3.221,9.115,2.089,11.022-3.276c2.017-5.63,3.868-17.04,3.978-22.952c0.301-15.448-0.045-25.572-0.875-41.001   c-0.538-9.882-4.051-18.559-18.587-21.178c-4.489-0.812-4.906-4.507-2.022-8.193c6.004-7.674,14.368-8.897,23.438-9.381   c14.7-0.794,29.454-0.146,44.172,0c5.995,0.055,12.026,0.538,17.93,1.825c7.701,1.679,11.825,7.081,13.094,14.599   c0.657,3.878,0.995,7.865,0.903,11.789c-0.383,16.862-1.195,33.715-1.387,50.568c-0.082,6.615,0.401,13.395,1.816,19.837   c1.98,8.978,8.093,11.232,14.344,4.745c7.938-8.239,14.937-17.51,21.506-26.926c11.935-17.127,20.849-35.923,28.523-55.303   c3.969-10,7.008-12.172,17.765-12.199c20.22-0.046,40.44-0.064,60.66,0c3.586,0.018,7.336,0.356,10.721,1.433   c5.493,1.752,7.674,6.232,6.387,11.917c-3.002,13.322-10.201,24.645-17.911,35.531c-12.373,17.464-25.339,34.509-38.003,51.772   c-1.615,2.199-3.038,4.544-4.362,6.925c-4.736,8.559-4.407,13.358,2.5,20.484c10.995,11.342,22.766,21.953,33.414,33.605   c7.738,8.477,14.9,17.674,21.032,27.355c7.756,12.245,2.965,23.778-11.524,25.831c-9.115,1.287-53.641,0.01-55.942,0   c-11.971-0.054-22.464-4.206-30.914-12.336c-9.398-9.051-17.939-18.979-26.963-28.423c-2.719-2.847-5.621-5.575-8.75-7.957   c-7.382-5.63-14.627-4.38-18.076,4.289c-2.947,7.446-5.493,26.999-5.612,28.669c-0.62,8.732-6.177,14.298-15.959,14.836   c-28.24,1.533-55.605-1.615-81.098-15.274c-21.607-11.57-38.861-27.93-53.807-47.009c-23.742-30.304-42.495-63.615-59.616-97.904   c-0.875-1.753-18.216-38.653-18.682-40.396c-1.549-5.836-0.104-11.411,4.827-13.33c3.074-1.196,60.248-0.004,61.199,0.047   C107.996,125.372,114.217,129.221,118.06,138.69z"></path></g></svg>
+			</div></a><a href="https://www.facebook.com/"><div class="card">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 455.73 455.73" style="enable-background:new 0 0 455.73 455.73;" xml:space="preserve"><path style="fill:#3A559F;" d="M0,0v455.73h242.704V279.691h-59.33v-71.864h59.33v-60.353c0-43.893,35.582-79.475,79.475-79.475  h62.025v64.622h-44.382c-13.947,0-25.254,11.307-25.254,25.254v49.953h68.521l-9.47,71.864h-59.051V455.73H455.73V0H0z"></path></svg>
+			</div></a><a href="https://mail.google.com/"><div class="card">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><polygon style="fill:#F2F2F2;" points="484.973,122.808 452.288,451.017 59.712,451.017 33.379,129.16 256,253.802  "></polygon><polygon style="fill:#F2F2F2;" points="473.886,60.983 256,265.659 38.114,60.983 256,60.983  "></polygon></g><path style="fill:#F14336;" d="M59.712,155.493v295.524H24.139C10.812,451.017,0,440.206,0,426.878V111.967l39,1.063L59.712,155.493  z"></path><path style="fill:#D32E2A;" d="M512,111.967v314.912c0,13.327-10.812,24.139-24.152,24.139h-35.56V155.493l19.692-46.525  L512,111.967z"></path><path style="fill:#F14336;" d="M512,85.122v26.845l-59.712,43.526L256,298.561L59.712,155.493L0,111.967V85.122  c0-13.327,10.812-24.139,24.139-24.139h13.975L256,219.792L473.886,60.983h13.962C501.188,60.983,512,71.794,512,85.122z"></path><polygon style="fill:#D32E2A;" points="59.712,155.493 0,146.235 0,111.967 "></polygon></svg>
+			</div></a><a href="https://translate.google.ru/"><div class="card">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><path style="fill:#E6E6E6;" d="M479.068,96h-216.32l-22.515,87.1l-8.083,57.242l43.329,120.845l6.957,146.639h196.633  c18.184,0,32.932-14.748,32.932-32.932V128.932C512,110.748,497.252,96,479.068,96z"></path><polygon style="fill:#3A5BBC;" points="368.696,416 282.435,507.826 251.882,416 264.348,382.521 "></polygon><path style="fill:#808080;" d="M469.565,244.174v-20.87h-79.304v-29.217h-20.87v29.217H297.92v20.87h115.89  c-6.446,13.572-17.621,35.215-32.978,58.035c-14.132-17.649-23.062-29.931-23.168-30.077l-6.129-8.445l-16.892,12.255l6.127,8.445  c0.477,0.658,10.876,14.963,27.338,35.3c-11.222,13.749-31.808,36.106-42.655,46.952l14.756,14.756  c9.362-9.362,28.774-30.214,41.426-45.327c16.459,19.553,32.523,37.194,47.854,52.526l7.378,7.378l14.758-14.755l-7.378-7.378  c-15.839-15.839-32.519-34.264-49.647-54.799c22.133-31.823,36.48-61.956,42.2-74.866H469.565z"></path><path style="fill:#518EF8;" d="M349.329,357.523L368.696,416H251.882H32.932C14.734,416,0,401.252,0,383.068V37.106  C0,18.922,14.734,4.174,32.932,4.174h199.416L262.748,96l45.607,137.739L349.329,357.523z"></path><path style="fill:#FFFFFF;" d="M149.301,287.374c-42.77,0-77.565-34.795-77.565-77.565s34.795-77.565,77.565-77.565  c20.704,0,40.182,8.065,54.845,22.712l-14.749,14.766c-10.723-10.71-24.961-16.608-40.097-16.608  c-31.263,0-56.696,25.433-56.696,56.696s25.433,56.696,56.696,56.696c27.698,0,50.82-19.967,55.733-46.261h-55.731v-20.87h77.565  v10.435C226.866,252.579,192.071,287.374,149.301,287.374z"></path></svg>
+			</div></a><a href="https://www.google.com/drive/"><div class="card">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><polygon style="fill:#28B446;" points="165.891,334.343 161.611,419.266 82.713,479.21 0,333.399 172.602,32.79 253.414,88.26   256.078,178.175 255.315,178.614 "></polygon><polygon style="fill:#219B38;" points="172.602,32.79 221.718,237.124 256.078,178.175 253.414,59.814 "></polygon><polygon style="fill:#FFD837;" points="339.385,32.79 512,333.399 418.917,380.477 345.204,333.851 345.204,333.399   256.078,178.175 172.602,32.79 "></polygon><polygon style="fill:#518EF8;" points="512,333.399 429.339,478.266 82.713,479.21 165.891,334.343 345.204,333.851 "></polygon><polygon style="fill:#3A5BBC;" points="82.713,479.21 227.749,334.173 165.891,334.343 "></polygon><polygon style="fill:#FBBB00;" points="512,333.399 322.76,294.31 345.204,333.851 "></polygon></svg>
+			</div></a>
+			<div id="createByManifold"><div id="createByManifoldText">Created By ManiFold </div> <img src="./NewTabPage_files/logo.png" width="25px" height="25px"></div>
+			<script async="" src="./NewTabPage_files/analytics.js"></script><script>
+				document.getElementById("googleSearchInput").focus();
+				document.getElementById("googleSearchIcon").onclick = function(){
+					window.location.href = 'https://www.google.am/#q='+document.getElementById("googleSearchInput").value;
+				};
+				document.getElementById("googleSearchInput").onkeyup = function(event){
+					if(document.getElementById("googleSearchInput") == document.activeElement && event.keyCode == 13){
+						window.location.href = 'https://www.google.am/#q='+document.getElementById("googleSearchInput").value;
+					}
+				};
+				document.getElementById("yandexSearchInput").onkeyup = function(event){
+					if(document.getElementById("yandexSearchInput") == document.activeElement && event.keyCode == 13){
+						window.location.href = 'https://www.yandex.com/search/?text='+document.getElementById("yandexSearchInput").value;
+					}
+				};
+				document.getElementById("yandexSearchIcon").onclick = function(){
+					window.location.href = 'https://www.yandex.com/search/?text='+document.getElementById("yandexSearchInput").value;
+				};
+				function changePos(){
+					if(document.documentElement.clientWidth < 1000){
+						var sp2 = document.getElementById("header");
+						var sp1 = document.getElementById("yandexa");
+						var parentDiv = sp2.parentNode;
+						parentDiv.insertBefore(sp1, sp2);
+					}else{
+						var sp1 = document.getElementById("header");
+						var sp2 = document.getElementById("yandexa");
+						var parentDiv = sp2.parentNode;
+						parentDiv.insertBefore(sp1, sp2);
+					}
+				}
+				changePos();
+				window.onresize = function(){
+					changePos()
+				};
+			</script>
+		</div>
+	
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-89655842-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+
+</body></html>

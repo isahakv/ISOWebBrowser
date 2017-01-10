@@ -258,11 +258,10 @@ void TabWidget::LoadNewTabPage(WebView* tab)
 	QString htmlTxt;
 	QFile html;
 
-	//if (GetMainWindow()->IsPrivateBrowsing())
-	if (profile == QWebEngineProfile::defaultProfile())
-		html.setFileName(":html/NewTab.html");
-	else
+	if (ownerBrowserMainWindow && ownerBrowserMainWindow->IsPrivateBrowsing())
 		html.setFileName(":html/NewIncognitoTab.html");
+	else
+		html.setFileName(":html/NewTab.html");
 
 	html.open(QIODevice::OpenModeFlag::ReadOnly);
 	/*QTextStream in(&html);

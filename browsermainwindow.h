@@ -36,6 +36,9 @@ public slots:
 	void LoadPage(WebView* tab, const QString& url);
 	void SetPrivateBrowsing(bool);
 
+protected:
+	void closeEvent(QCloseEvent* event);
+
 private slots:
 	void SlotWebPageLoadStarted(WebView* webView);
 	void SlotWebPageLoadFinished(WebView* webView);

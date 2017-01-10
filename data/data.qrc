@@ -16,4 +16,7 @@
         <file>cancel-button.svg</file>
         <file>home-button.svg</file>
     </qresource>
+    <qresource prefix="/Images/Creators">
+        <file>isahak.jpg</file>
+    </qresource>
 </RCC>
