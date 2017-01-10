@@ -27,6 +27,9 @@ public:
 	inline TabWidget* GetTabWidget() const { return tabWidget; }
 	WebView* GetCurrentTab() const;
 
+	QByteArray SaveState(int withTabs = true) const;
+	bool RestoreState(const QByteArray& state);
+
 	inline bool IsPrivateBrowsing() const { return isPrivateBrowsing; }
 
 	static QString GetHomePage();
@@ -69,6 +72,9 @@ private slots:
 	void SlotOpenActionUrl(QAction* action);
 
 private:
+	void LoadDefaultState();
+	void SaveDefaultState();
+
 	void SetupMenu();
 	void SetupToolBar();
 	void HandleFindTextResult(bool isFound);

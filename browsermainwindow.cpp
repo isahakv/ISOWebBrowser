@@ -21,6 +21,7 @@
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QFile>
+#include <QDataStream>
 #include <QSettings>
 
 template<typename Arg, typename R>
@@ -87,6 +88,7 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
 			tabWidget, SLOT(NewTab()));
 
 	SetPrivateBrowsing(isPrivateWindow);
+	LoadDefaultState();
 	tabWidget->NewTab(true, true);
 }
 
@@ -98,6 +100,43 @@ BrowserMainWindow::~BrowserMainWindow()
 WebView* BrowserMainWindow::GetCurrentTab() const
 {
 	return tabWidget->GetCurrentWebView();
+}
+
+QByteArray BrowserMainWindow::SaveState(int withTabs) const
+{
+	QString version = BrowserApplication::GetInstance()->applicationVersion();
+	QByteArray data;
+	QDataStream stream(&data, QIODevice::WriteOnly);
+
+	stream << version;
+	stream << pos();
+	stream << size();
+
+	return data;
+}
+
+bool BrowserMainWindow::RestoreState(const QByteArray& state)
+{
+	QString version = BrowserApplication::GetInstance()->applicationVersion();
+	QByteArray sd = state;
+	QDataStream stream(&sd, QIODevice::ReadOnly);
+	if (stream.atEnd())
+		return false;
+
+	QString v;
+	stream >> v;
+	if (v != version)
+		return false;
+
+	QPoint pos;
+	QSize size;
+	stream >> pos;
+	stream >> size;
+
+	move(pos);
+	resize(size);
+
+	return true;
 }
 
 QString BrowserMainWindow::GetHomePage()
@@ -168,6 +207,7 @@ void BrowserMainWindow::closeEvent(QCloseEvent* event)
 		}
 	}
 
+	SaveDefaultState();
 	event->accept();
 	deleteLater();
 }
@@ -414,6 +454,24 @@ void BrowserMainWindow::SlotOpenActionUrl(QAction* action)
 		history->goToItem(history->backItems(-1*offset).first());
 	else if (offset > 0)
 		history->goToItem(history->forwardItems(history->count() - offset + 1).back());
+}
+
+void BrowserMainWindow::LoadDefaultState()
+{
+	QSettings settings("ISOBrowser");
+	settings.beginGroup(QLatin1String("BrowserMainWindow"));
+	QByteArray data = settings.value(QLatin1String("DefaultState")).toByteArray();
+	RestoreState(data);
+	settings.endGroup();
+}
+
+void BrowserMainWindow::SaveDefaultState()
+{
+	QSettings settings("ISOBrowser");
+	settings.beginGroup(QLatin1String("BrowserMainWindow"));
+	QByteArray data = SaveState();
+	settings.setValue(QLatin1String("DefaultState"), data);
+	settings.endGroup();
 }
 
 void BrowserMainWindow::SetupMenu()

@@ -23,7 +23,7 @@ BrowserApplication::BrowserApplication(int &argc, char **argv)
 		if (!url.isEmpty())
 			GetCurrentMainWindow()->LoadPage(NULL, url);
 		//else
-		//	GetCurrentMainWindow()->SlotLoadHomePage();
+		//	GetCurrentMainWindow()->SlotHome();
 	}
 }
 
