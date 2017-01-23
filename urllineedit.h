@@ -5,6 +5,8 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QAbstractButton>
 #include <QtWidgets/QPushButton>
+// Note: may be deleted later
+#include <QBoxLayout>
 
 class QLineEdit;
 class WebView;
@@ -21,6 +23,7 @@ class SearchButton : public QAbstractButton
 public:
 	SearchButton(QWidget* parent = 0);
 	void paintEvent(QPaintEvent* event);
+	QSize sizeHint() const;
 
 	QMenu* menu;
 
@@ -40,6 +43,7 @@ class ClearButton : public QAbstractButton
 public:
 	ClearButton(QWidget* parent = 0);
 	void paintEvent(QPaintEvent* event);
+	QSize sizeHint() const;
 
 public slots:
 	void TextChanged(const QString& text);
@@ -57,11 +61,13 @@ public:
 	inline QWidget* GetLeftWidget() const { return leftWidget; }
 	inline void SetLeftWidget(QWidget* widget) { leftWidget = widget; }
 
-	QSize SizeHint() const;
+	QSize sizeHint() const;
 
 	QVariant inputMethodQuery(Qt::InputMethodQuery property) const;
 
 	inline BrowserMainWindow* GetOwnerBrowserMainWindow() const { return ownerBrowserMainWindow; }
+
+	int heightOfLineEdit;
 
 protected:
 	void focusInEvent(QFocusEvent* event);
@@ -69,8 +75,6 @@ protected:
 	void keyPressEvent(QKeyEvent* event);
 	void resizeEvent(QResizeEvent* event);
 	void inputMethodEvent(QInputMethodEvent* event);
-
-	virtual void UpdateGeometries();
 
 	QWidget* leftWidget;
 	QLineEdit* lineEdit;
@@ -104,9 +108,6 @@ class SearchLineEdit : public BrowserLineEdit
 public:
 	SearchLineEdit(QWidget* parent, BrowserMainWindow* ownerMainWindow);
 
-	inline QString GetInactiveText() const { return inactiveText; }
-	inline void setInactiveText(QString text) { inactiveText = text; }
-
 	QMenu* GetMenu() const;
 
 signals:
@@ -114,8 +115,6 @@ signals:
 
 protected:
 	void paintEvent(QPaintEvent* event);
-
-	virtual void UpdateGeometries() override;
 
 public slots:
 	void ClearRecentSearches();
@@ -130,7 +129,6 @@ private:
 	void LoadSearchHistory();
 
 	SearchButton* searchButton;
-	QString inactiveText;
 	int maxSavedSearches;
 	QStringListModel* stringListModel;
 };

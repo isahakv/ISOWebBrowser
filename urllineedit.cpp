@@ -15,6 +15,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QStyle>
 #include <QtWidgets/QStyleOptionFrame>
+#include <QLabel>
 #include <QStringListModel>
 #include <QSettings>
 #include <QtCore/QUrl>
@@ -30,7 +31,8 @@ SearchButton::SearchButton(QWidget *parent)
 	setToolTip(tr("Recent Searches"));
 	setFocusPolicy(Qt::NoFocus);
 
-	setGeometry(0, 0, 16, 16);
+	//setGeometry(0, 0, 16, 16);
+	//setIcon(QIcon(":Images/16x16/new-tab.png"));
 }
 
 void SearchButton::paintEvent(QPaintEvent* event)
@@ -39,8 +41,14 @@ void SearchButton::paintEvent(QPaintEvent* event)
 
 	QPainter painter(this);
 	QPixmap pixmap(":Images/Vector/search.svg");
+	//QPixmap pixmap(":Images/16x16/new-tab.png");
 
-	painter.drawPixmap(0, 0, width(), height(), pixmap);
+	painter.drawPixmap(0, 0, 16, 16, pixmap);
+}
+
+QSize SearchButton::sizeHint() const
+{
+	return QSize(16, 16);
 }
 
 void SearchButton::mousePressEvent(QMouseEvent* event)
@@ -71,7 +79,7 @@ ClearButton::ClearButton(QWidget *parent)
 	setVisible(false);
 	setFocusPolicy(Qt::NoFocus);
 
-	setGeometry(0, 0, 16, 16);
+	//setGeometry(0, 0, 16, 16);
 }
 
 void ClearButton::paintEvent(QPaintEvent* event)
@@ -82,6 +90,11 @@ void ClearButton::paintEvent(QPaintEvent* event)
 
 	painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
 	painter.drawPixmap(0, 0, 16, 16, QPixmap(":Images/Vector/cancel-button.svg"));
+}
+
+QSize ClearButton::sizeHint() const
+{
+	return QSize(16, 16);
 }
 
 void ClearButton::TextChanged(const QString& text)
@@ -97,9 +110,17 @@ BrowserLineEdit::BrowserLineEdit(QWidget *parent, BrowserMainWindow* ownerMainWi
 	, leftWidget(0)
 	, clearButton(0)
 {
+	heightOfLineEdit = 35;
+
 	setFocusPolicy(lineEdit->focusPolicy());
 	setAttribute(Qt::WA_InputMethodEnabled);
-	setSizePolicy(lineEdit->sizePolicy());
+
+	// setup size policies
+	QSizePolicy sizePolicy = lineEdit->sizePolicy();
+	sizePolicy.setVerticalPolicy(QSizePolicy::Preferred);
+	lineEdit->setSizePolicy(sizePolicy);
+	setSizePolicy(sizePolicy);
+
 	setBackgroundRole(lineEdit->backgroundRole());
 	setMouseTracking(true);
 	setAcceptDrops(true);
@@ -107,9 +128,12 @@ BrowserLineEdit::BrowserLineEdit(QWidget *parent, BrowserMainWindow* ownerMainWi
 	//setPalette(lineEdit->palette());
 
 	// line edit
-	lineEdit->setFrame(false);
+	lineEdit->setFrame(true);
 	lineEdit->setFocusProxy(this);
 	lineEdit->setAttribute(Qt::WA_MacShowFocusRect, false);
+	QFont font = lineEdit->font();
+	font.setPointSize(10);
+	lineEdit->setFont(font);
 
 	// clearButton
 	clearButton = new ClearButton(this);
@@ -119,12 +143,12 @@ BrowserLineEdit::BrowserLineEdit(QWidget *parent, BrowserMainWindow* ownerMainWi
 			clearButton, SLOT(TextChanged(QString)));
 }
 
-QSize BrowserLineEdit::SizeHint() const
+QSize BrowserLineEdit::sizeHint() const
 {
-	lineEdit->setFrame(true);
+	//lineEdit->setFrame(true);
 	QSize size = lineEdit->sizeHint();
-	lineEdit->setFrame(false);
-	return size;
+	//lineEdit->setFrame(false);
+	return QSize(size.width(), heightOfLineEdit);
 }
 
 QVariant BrowserLineEdit::inputMethodQuery(Qt::InputMethodQuery property) const
@@ -156,8 +180,6 @@ void BrowserLineEdit::keyPressEvent(QKeyEvent* event)
 
 void BrowserLineEdit::resizeEvent(QResizeEvent* event)
 {
-	qWarning("resizeEvent");
-	UpdateGeometries();
 	QWidget::resizeEvent(event);
 }
 
@@ -166,40 +188,18 @@ void BrowserLineEdit::inputMethodEvent(QInputMethodEvent* event)
 	lineEdit->event(event);
 }
 
-void BrowserLineEdit::UpdateGeometries()
-{
-	int leftWidgetX = 0, leftWidgetY = 0;
-	int leftWidgetWidth = 0, leftWidgetHeight = 0;
-	if (leftWidget)
-	{
-		leftWidgetWidth = leftWidget->width();
-		leftWidgetHeight = leftWidget->height();
-		leftWidgetX = 0;
-		leftWidgetY = (this->height() - leftWidgetHeight)/2;
-		leftWidget->setGeometry(leftWidgetX, leftWidgetY,
-								leftWidgetWidth, leftWidgetHeight);
-	}
-
-	int clearButtonWidth = 0, clearButtonHeight = 0;
-	if (clearButton)
-	{
-		clearButtonWidth = clearButtonHeight = clearButton->width();
-		clearButton->setGeometry(this->width()-clearButtonWidth, (this->height()-clearButtonHeight)/2,
-								 clearButtonWidth, clearButtonHeight);
-	}
-
-	int lineEditWidth = this->width() - leftWidgetWidth - clearButtonWidth, lineEditHeight = lineEdit->height();
-	lineEdit->setGeometry(leftWidgetX + leftWidgetWidth, (this->height()-lineEditHeight)/2,
-						  lineEditWidth, lineEditHeight);
-}
-
 // UrlLineEdit
 UrlLineEdit::UrlLineEdit(QWidget *parent, BrowserMainWindow* ownerMainWindow)
 	: BrowserLineEdit(parent, ownerMainWindow)
 	, webView(0)
 {	
 	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setSpacing(0);
+	layout->setMargin(5);
 	layout->addWidget(lineEdit);
+	layout->addWidget(clearButton);
+
+	lineEdit->setPlaceholderText(QString("Enter Url"));
 }
 
 void UrlLineEdit::SetWebView(WebView* _webView)
@@ -232,13 +232,15 @@ SearchLineEdit::SearchLineEdit(QWidget* parent, BrowserMainWindow* ownerMainWind
 	, stringListModel(new QStringListModel(this))
 {
 	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setSpacing(0);
+	layout->setMargin(5);
+
+	layout->addWidget(searchButton);
 	layout->addWidget(lineEdit);
+	layout->addWidget(clearButton);
+	setLayout(layout);
 
-	SetLeftWidget(searchButton);
-	inactiveText = tr("Search");
-
-	QSizePolicy policy = sizePolicy();
-	setSizePolicy(QSizePolicy::Preferred, policy.verticalPolicy());
+	lineEdit->setPlaceholderText(QString("Search"));
 
 	QMenu* m = GetMenu();
 	connect(m, SIGNAL(aboutToShow()), this, SLOT(AboutToShowMenu()));
@@ -260,18 +262,6 @@ void SearchLineEdit::paintEvent(QPaintEvent* event)
 {
 	Q_UNUSED(event)
 
-
-}
-
-void SearchLineEdit::UpdateGeometries()
-{
-	BrowserLineEdit::UpdateGeometries();
-
-	/*
-	int clearButtonSize = this->height() / 3;
-	int x = clearButtonSize;//this->width() - clearButtonSize;
-	int y = (this->height() - clearButtonSize)/2;
-	searchButton->setGeometry(x, y, clearButtonSize, clearButtonSize);*/
 }
 
 void SearchLineEdit::ClearRecentSearches()

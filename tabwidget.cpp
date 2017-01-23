@@ -298,7 +298,7 @@ WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 
 	connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(LineEditReturnPressed()));
 	lineEdits->addWidget(urlLineEdit);
-	lineEdits->setSizePolicy(lineEdit->sizePolicy());
+	//lineEdits->setSizePolicy(lineEdit->sizePolicy());
 	// lineEdits->setCurrentWidget(urlLineEdit);
 
 	// webview

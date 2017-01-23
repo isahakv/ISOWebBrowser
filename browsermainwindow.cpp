@@ -1,4 +1,5 @@
 #include "browsermainwindow.h"
+#include "ui_mainwindow.h"
 
 #include "browserapplication.h"
 #include "tabwidget.h"
@@ -56,7 +57,10 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
 	, historyForward(0)
 	, stop(0)
 	, reload(0)
+	, ui(new Ui::MainWindow)
 {
+	ui->setupUi(this);
+
 	setToolButtonStyle(Qt::ToolButtonFollowStyle);
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	setMinimumSize(QSize(724, 124));
@@ -95,7 +99,7 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
 
 BrowserMainWindow::~BrowserMainWindow()
 {
-
+	delete ui;
 }
 
 WebView* BrowserMainWindow::GetCurrentTab() const
@@ -603,22 +607,29 @@ void BrowserMainWindow::SetupToolBar()
 			this, SLOT(SlotOpenActionUrl(QAction*)));
 	navigationBar->addAction(historyForward);
 
+	stopReload = new QAction(this);
+	reloadIcon = style()->standardIcon(QStyle::SP_BrowserReload);
+	stopIcon = style()->standardIcon(QStyle::SP_BrowserStop);
+	stopReload->setIcon(reloadIcon);
+	navigationBar->addAction(stopReload);
+
 	QAction* home = new QAction(this);
 	home->setIcon(QIcon(":Images/Vector/home-button.svg"));
 	navigationBar->addAction(home);
 	connect(home, SIGNAL(triggered(bool)), this, SLOT(SlotHome()));
 
-	stopReload = new QAction(this);
-	reloadIcon = style()->standardIcon(QStyle::SP_BrowserReload);
-	stopIcon = style()->standardIcon(QStyle::SP_BrowserStop);
-	stopReload->setIcon(reloadIcon);
 
-	navigationBar->addAction(stopReload);
+	QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	sizePolicy.setHorizontalStretch(4);
 
 	navigationBar->addWidget(tabWidget->GetLineEditStack());
+	tabWidget->GetLineEditStack()->setSizePolicy(sizePolicy);
 
 	toolbarSearch = new SearchLineEdit(navigationBar, this);
 	navigationBar->addWidget(toolbarSearch);
+
+	sizePolicy.setHorizontalStretch(1);
+	toolbarSearch->setSizePolicy(sizePolicy);
 	connect(toolbarSearch, SIGNAL(Search(QUrl)), this, SLOT(SlotLoadUrlInCurrentTab(QUrl)));
 }
 
