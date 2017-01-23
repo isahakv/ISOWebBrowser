@@ -4,6 +4,8 @@
 #include <QWebEnginePage>
 #include <QWebEngineView>
 
+#include <QtWidgets/QMainWindow>
+
 class QWebEngineProfile;
 
 class WebPage : public QWebEnginePage
@@ -16,6 +18,8 @@ public:
 	void javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString &message,
 								  int lineNumber, const QString &sourceID);
 
+
+	QMainWindow* testWindow;
 };
 
 class WebView : public QWebEngineView

@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = ISOWebBrowser
-QT += webenginewidgets network widgets printsupport
+QT += webenginewidgets network widgets svg printsupport
 
 CONFIG += debug_and_release
 

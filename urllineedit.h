@@ -21,7 +21,7 @@ class SearchButton : public QAbstractButton
 	Q_OBJECT
 
 public:
-	SearchButton(QWidget* parent = 0);
+	SearchButton(QWidget* parent = 0, int _size = 16);
 	void paintEvent(QPaintEvent* event);
 	QSize sizeHint() const;
 
@@ -29,6 +29,8 @@ public:
 
 protected:
 	void mousePressEvent(QMouseEvent* event);
+
+	int size;
 };
 
 /*
@@ -41,12 +43,15 @@ class ClearButton : public QAbstractButton
 	Q_OBJECT
 
 public:
-	ClearButton(QWidget* parent = 0);
+	ClearButton(QWidget* parent = 0, int _size = 16);
 	void paintEvent(QPaintEvent* event);
 	QSize sizeHint() const;
 
 public slots:
 	void TextChanged(const QString& text);
+
+protected:
+	int size;
 };
 
 class BrowserLineEdit : public QWidget

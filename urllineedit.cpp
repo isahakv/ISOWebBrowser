@@ -21,34 +21,51 @@
 #include <QtCore/QUrl>
 #include <QtCore/QUrlQuery>
 
-SearchButton::SearchButton(QWidget *parent)
+#include <QtSvg>
+
+SearchButton::SearchButton(QWidget *parent, int _size)
 	: QAbstractButton(parent)
 	, menu(0)
+	, size(_size)
 {
 #ifndef QT_NO_CURSOR
 	setCursor(Qt::ArrowCursor);
 #endif // QT_NO_CURSOR
 	setToolTip(tr("Recent Searches"));
 	setFocusPolicy(Qt::NoFocus);
-
-	//setGeometry(0, 0, 16, 16);
-	//setIcon(QIcon(":Images/16x16/new-tab.png"));
 }
 
 void SearchButton::paintEvent(QPaintEvent* event)
 {
 	Q_UNUSED(event)
 
-	QPainter painter(this);
-	QPixmap pixmap(":Images/Vector/search.svg");
-	//QPixmap pixmap(":Images/16x16/new-tab.png");
+	/*
+	QSvgRenderer svgRenderer(QString("D:/Qt5.7/Projects/ISOWebBrowser/data/search.svg"));
+	//QPixmap pix(QSize(16, 16));
+	//QPainter pixPainter( &pix );
+	//svgRenderer.load(QString(":Images/Vector/search.svg"));
+	//svgRenderer.render( &pixPainter );
 
-	painter.drawPixmap(0, 0, 16, 16, pixmap);
+	QImage image(16, 16, QImage::Format_ARGB32);
+	QPainter painter(&image);
+	svgRenderer.render(&painter);*/
+
+	//generator.setFileName(":Images/Vector/search.svg");
+	//generator.setSize(QSize(size, size));
+	//generator.setViewBox(QRect(0, 0, size, size));
+
+	QPainter painter(this);
+	//painter.begin(&generator);
+	//painter.end();
+
+	QPixmap pixmap(":Images/Vector/search.svg");
+
+	painter.drawPixmap(0, 0, size, size, pixmap);
 }
 
 QSize SearchButton::sizeHint() const
 {
-	return QSize(16, 16);
+	return QSize(size, size);
 }
 
 void SearchButton::mousePressEvent(QMouseEvent* event)
@@ -69,8 +86,9 @@ void SearchButton::mousePressEvent(QMouseEvent* event)
 }
 
 // ClearButton
-ClearButton::ClearButton(QWidget *parent)
+ClearButton::ClearButton(QWidget *parent, int _size)
 	: QAbstractButton(parent)
+	, size(_size)
 {
 #ifndef QT_NO_CURSOR
 	setCursor(Qt::ArrowCursor);
@@ -78,8 +96,6 @@ ClearButton::ClearButton(QWidget *parent)
 	setToolTip(tr("Clear"));
 	setVisible(false);
 	setFocusPolicy(Qt::NoFocus);
-
-	//setGeometry(0, 0, 16, 16);
 }
 
 void ClearButton::paintEvent(QPaintEvent* event)
@@ -89,12 +105,12 @@ void ClearButton::paintEvent(QPaintEvent* event)
 	QPainter painter(this);
 
 	painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
-	painter.drawPixmap(0, 0, 16, 16, QPixmap(":Images/Vector/cancel-button.svg"));
+	painter.drawPixmap(0, 0, size, size, QPixmap(":Images/Vector/cancel-button.svg"));
 }
 
 QSize ClearButton::sizeHint() const
 {
-	return QSize(16, 16);
+	return QSize(size, size);
 }
 
 void ClearButton::TextChanged(const QString& text)
