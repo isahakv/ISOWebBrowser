@@ -10,7 +10,9 @@ HEADERS  += browsermainwindow.h \
     webview.h \
     urllineedit.h \
     browsertypes.h \
-    settings.h
+    settings.h \
+    inspectelement.h \
+    webviewwrapper.h
 
 SOURCES += main.cpp\
         browsermainwindow.cpp \
@@ -18,7 +20,9 @@ SOURCES += main.cpp\
     tabwidget.cpp \
     webview.cpp \
     urllineedit.cpp \
-    settings.cpp
+    settings.cpp \
+    inspectelement.cpp \
+    webviewwrapper.cpp
 
 FORMS += \
     mainwindow.ui \

@@ -150,6 +150,7 @@ BrowserLineEdit::BrowserLineEdit(QWidget *parent, BrowserMainWindow* ownerMainWi
 	QFont font = lineEdit->font();
 	font.setPointSize(10);
 	lineEdit->setFont(font);
+	//lineEdit->setEchoMode(QLineEdit::Normal);
 
 	// clearButton
 	clearButton = new ClearButton(this);
@@ -221,6 +222,12 @@ UrlLineEdit::UrlLineEdit(QWidget *parent, BrowserMainWindow* ownerMainWindow)
 void UrlLineEdit::SetWebView(WebView* _webView)
 {
 	Q_ASSERT(_webView);
+	if (webView)
+	{
+		disconnect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(WebViewUrlChanged(QUrl)));
+		disconnect(webView, SIGNAL(loadProgress(int)), this, SLOT(update()));
+	}
+
 	webView = _webView;
 	connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(WebViewUrlChanged(QUrl)));
 	connect(webView, SIGNAL(loadProgress(int)), this, SLOT(update()));
@@ -230,7 +237,7 @@ void UrlLineEdit::focusOutEvent(QFocusEvent* event)
 {
 	BrowserLineEdit::focusOutEvent(event);
 
-	if (lineEdit->text().isEmpty() && webView)
+	if (webView && lineEdit->text().isEmpty())
 		lineEdit->setText(QString::fromUtf8(webView->url().toEncoded()));
 }
 

@@ -3,9 +3,10 @@
 
 #include <QtWidgets/QTabBar>
 
+#include "browsertypes.h"
+
 class QLabel;
 class QWebEngineProfile;
-
 class BrowserMainWindow;
 
 /*
@@ -75,9 +76,12 @@ private:
 	QWebEnginePage::WebAction webAction;
 };
 
+
+
 #include <QtWidgets/QTabWidget>
 
 class WebView;
+class WebViewWrapper;
 class QLineEdit;
 class QStackedWidget;
 
@@ -124,10 +128,10 @@ signals:
 	void geometryChangeRequested(const QRect& geometry);
 
 public slots:
-	void LoadHomePage(WebView* tab = 0);
+	void LoadHomePage(WebView* tab = 0, HomePageType homePageType = HomePageType::None);
 	void LoadNewTabPage(WebView* tab);
 	void LoadUrl(WebView* tab, const QUrl& url);
-	WebView* NewTab(bool makeCurrent = true, bool loadHomePage = false);
+	WebViewWrapper* NewTab(bool makeCurrent = true, HomePageType homePageType = HomePageType::None);
 	void CloneTab(int index = -1);
 	void RequestCloseTab(int index = -1);
 	void CloseTab(int index);

@@ -1,8 +1,7 @@
 #include "tabwidget.h"
 
-#include "browsertypes.h"
 #include "browsermainwindow.h"
-#include "webview.h"
+#include "webviewwrapper.h"
 #include "urllineedit.h"
 
 #include <QWebEngineProfile>
@@ -205,14 +204,14 @@ WebView* TabWidget::GetCurrentWebView() const
 WebView* TabWidget::GetWebView(int index) const
 {
 	QWidget* widget = this->widget(index);
-	if (WebView* webview = qobject_cast<WebView*>(widget))
-		return webview;
+	if (WebViewWrapper* webViewWrapper = qobject_cast<WebViewWrapper*>(widget))
+		return webViewWrapper->GetWebView();
 	return NULL;
 }
 
 int TabWidget::GetWebViewIndex(WebView* webView) const
 {
-	return indexOf(webView);
+	return indexOf(webView->GetOwnerWebViewWrapper());
 }
 
 void TabWidget::SetProfile(QWebEngineProfile* newProfile)
@@ -230,19 +229,23 @@ void TabWidget::SetProfile(QWebEngineProfile* newProfile)
 	}
 }
 
-void TabWidget::LoadHomePage(WebView* tab)
+void TabWidget::LoadHomePage(WebView* tab, HomePageType homePageType)
 {
 	if (!tab)
 		tab = GetCurrentWebView();
 	if (!tab)
 		return;
 
-	QSettings settings("ISOBrowser");
-	settings.beginGroup(QLatin1String("General"));
-	HomePageType homeType = qvariant_cast<HomePageType>(settings.value(QLatin1String("HomePageType"),
-														(unsigned short)HomePageType::NewTabPage));
-	settings.endGroup();
-	switch (homeType)
+	if (homePageType == HomePageType::None)
+	{
+		QSettings settings("ISOBrowser");
+		settings.beginGroup(QLatin1String("General"));
+		homePageType = qvariant_cast<HomePageType>(settings.value(QLatin1String("HomePageType"),
+															(unsigned short)HomePageType::NewTabPage));
+		settings.endGroup();
+	}
+
+	switch (homePageType)
 	{
 	case HomePageType::NewTabPage:
 		LoadNewTabPage(tab);
@@ -290,7 +293,7 @@ void TabWidget::LoadUrl(WebView* tab, const QUrl& url)
 	tab->setFocus();
 }
 
-WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
+WebViewWrapper* TabWidget::NewTab(bool makeCurrent, HomePageType homePageType)
 {
 	// line edit
 	UrlLineEdit* urlLineEdit = new UrlLineEdit(this, ownerBrowserMainWindow);
@@ -302,7 +305,8 @@ WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 	// lineEdits->setCurrentWidget(urlLineEdit);
 
 	// webview
-	WebView* webView = new WebView;
+	WebViewWrapper* webViewWrapper = new WebViewWrapper;
+	WebView* webView = webViewWrapper->GetWebView();
 	webView->setPage(new WebPage(profile, webView));
 	urlLineEdit->SetWebView(webView);
 	connect(webView, SIGNAL(loadStarted()), this, SLOT(SlotWebViewLoadStarted()));
@@ -315,19 +319,15 @@ WebView* TabWidget::NewTab(bool makeCurrent, bool loadHomePage)
 	connect(webView->page(), SIGNAL(recentlyAudibleChanged(bool)),
 			this, SLOT(WebPageMutedOrAudibleChanged()));
 
-	addTab(webView, tr("Untitled"));
+	addTab(webViewWrapper, tr("Untitled"));
 	if (makeCurrent)
-		setCurrentWidget(webView);
+		setCurrentWidget(webViewWrapper);
 
 	SetupPage(webView->page());
-
-	if (loadHomePage)
-		LoadHomePage(webView);
-	else
-		LoadNewTabPage(webView);
+	LoadHomePage(webView, homePageType);
 
 	//qWarning(QString("LineEditStack Count = %1").arg(lineEdits->count()).toStdString().c_str());
-	return webView;
+	return webViewWrapper;
 }
 
 // When index is -1 index chooses the current tab
@@ -338,7 +338,7 @@ void TabWidget::CloneTab(int index)
 	if (index < 0 || index >= count())
 		return;
 
-	WebView* webView = NewTab(false);
+	WebView* webView = NewTab(false)->GetWebView();
 	webView->setUrl(GetWebView(index)->url());
 }
 
@@ -467,8 +467,8 @@ void TabWidget::mouseReleaseEvent(QMouseEvent* event)
 		qWarning(url.toString().toStdString().c_str());
 		if (!url.isEmpty() && url.isValid() && !url.scheme().isEmpty())
 		{
-			WebView* webView = NewTab();
-			webView->setUrl(url);
+			WebViewWrapper* webViewWrapper = NewTab();
+			webViewWrapper->GetWebView()->setUrl(url);
 		}
 	}
 

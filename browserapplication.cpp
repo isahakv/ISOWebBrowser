@@ -69,6 +69,7 @@ QList<BrowserMainWindow*> BrowserApplication::GetMainWindows()
 
 QIcon BrowserApplication::GetIconByUrl(const QUrl& url)
 {
+	Q_UNUSED(url)
 	// QIcon icon = QWebEngineSettings::
 	return QIcon(":Images/16x16/defaulticon.png");
 }

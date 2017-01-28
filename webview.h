@@ -17,22 +17,28 @@ public:
 
 	void javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString &message,
 								  int lineNumber, const QString &sourceID);
-
-
-	QMainWindow* testWindow;
 };
+
+class InspectElement;
+class WebViewWrapper;
 
 class WebView : public QWebEngineView
 {
 	Q_OBJECT
 
 public:
-	WebView(QWidget* parent = 0);
+	WebView(QWidget* parent = 0, WebViewWrapper* _ownerWebViewWrapper = 0);
+	~WebView();
+	QSize sizeHint() const;
+
+	inline WebViewWrapper* GetOwnerWebViewWrapper() { return ownerWebViewWrapper; }
 
 	void LoadUrl(const QUrl& url);
 	QUrl GetUrl() const;
 	inline bool IsWebPageLoading() const { return isWebPageLoading; }
 
+protected:
+	WebViewWrapper* ownerWebViewWrapper;
 
 private slots:
 	void SlotLoadStarted();

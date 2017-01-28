@@ -2,48 +2,50 @@
 
 #include <QWebEngineProfile>
 
-#include <QListWidget>
-#include <QListWidgetItem>
-
 #include "browserapplication.h"
 #include "browsermainwindow.h"
+#include "webviewwrapper.h"
+#include "inspectelement.h"
 
 WebPage::WebPage(QWebEngineProfile* profile, QObject* parent)
 	: QWebEnginePage(profile, parent)
 {
-	testWindow = new QMainWindow(0);
-	QListWidget* listView = new QListWidget(testWindow);
-	testWindow->setCentralWidget(listView);
-	testWindow->show();
 }
 
 void WebPage::javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString &message,
 							  int lineNumber, const QString &sourceID)
 {
-	QListWidget* listView = qobject_cast<QListWidget*>(testWindow->centralWidget());
-	if (listView)
-	{
-		QListWidgetItem* listWidgetItem = new QListWidgetItem(listView);
-		listWidgetItem->setText(tr("Line ") + QString::number(lineNumber) + tr("| ") + message + tr(" | Script ") + sourceID.toUtf8());
+	WebView* webView = qobject_cast<WebView*>(view());
+	if (!webView)
+		return;
 
-		if (level == JavaScriptConsoleMessageLevel::ErrorMessageLevel)
-			listWidgetItem->setBackgroundColor(QColor(255, 0, 0));
-		else if (level == JavaScriptConsoleMessageLevel::WarningMessageLevel)
-			listWidgetItem->setBackgroundColor(QColor(255, 255, 0));
-		else if (level == JavaScriptConsoleMessageLevel::InfoMessageLevel)
-			listWidgetItem->setBackgroundColor(QColor(135, 206, 250));
-
-		listView->addItem(listWidgetItem);
-	}
+	webView->GetOwnerWebViewWrapper()->GetInspectElement()->AddJavaScriptConsoleMessage(level, message,
+																						lineNumber, sourceID);
 }
 
-WebView::WebView(QWidget* parent)
+WebView::WebView(QWidget* parent, WebViewWrapper* _ownerWebViewWrapper)
 	: QWebEngineView(parent)
+	, ownerWebViewWrapper(_ownerWebViewWrapper)
 {
 	isWebPageLoading = false;
 
+	QSizePolicy sp = sizePolicy();
+	sp.setHorizontalPolicy(QSizePolicy::Preferred);
+	sp.setHorizontalPolicy(QSizePolicy::Preferred);
+	sp.setVerticalStretch(2);
+	setSizePolicy(sp);
+
 	connect(this, SIGNAL(loadStarted()), this, SLOT(SlotLoadStarted()));
 	connect(this, SIGNAL(loadFinished(bool)), this, SLOT(SlotLoadFinished()));
+}
+
+WebView::~WebView()
+{
+}
+
+QSize WebView::sizeHint() const
+{
+	return QSize(100, 100);
 }
 
 void WebView::LoadUrl(const QUrl& url)

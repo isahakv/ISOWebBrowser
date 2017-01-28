@@ -8,11 +8,6 @@ class WebView;
 class QWebEngineProfile;
 class SearchLineEdit;
 
-namespace Ui
-{
-    class MainWindow;
-};
-
 /*!
 	The MainWindow of the Browser Application.
 
@@ -108,8 +103,6 @@ private:
 
 	QWebEngineProfile* privateProfile;
 	bool isPrivateBrowsing;
-
-    Ui::MainWindow* ui;
 };
 
 #endif // BROWSERMAINWINDOW_H

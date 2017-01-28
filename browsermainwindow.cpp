@@ -44,7 +44,7 @@ InvokeWrapper<Arg, R> Invoke(R* receiver, void (R::*memberFunc)(Arg))
 	return wrapper;
 }
 
-const QString BrowserMainWindow::defaultHomePage = "http://youtube.com/";
+const QString BrowserMainWindow::defaultHomePage = "http://google.com/";
 const QString BrowserMainWindow::defaultSearchEngine = "http://google.com/search";
 
 BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
@@ -57,9 +57,7 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
 	, historyForward(0)
 	, stop(0)
 	, reload(0)
-	, ui(new Ui::MainWindow)
 {
-	ui->setupUi(this);
 
 	setToolButtonStyle(Qt::ToolButtonFollowStyle);
 	setAttribute(Qt::WA_DeleteOnClose, true);
@@ -94,12 +92,12 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
 
 	SetPrivateBrowsing(isPrivateWindow);
 	LoadDefaultState();
-	tabWidget->NewTab(true, true);
+	tabWidget->NewTab();
 }
 
 BrowserMainWindow::~BrowserMainWindow()
 {
-	delete ui;
+
 }
 
 WebView* BrowserMainWindow::GetCurrentTab() const
