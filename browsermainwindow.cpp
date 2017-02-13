@@ -4,8 +4,10 @@
 #include "browserapplication.h"
 #include "tabwidget.h"
 #include "webview.h"
+#include "inspectelement.h"
 #include "urllineedit.h"
 #include "settings.h"
+#include "browserhelpers.h"
 
 #include <QWebEngineProfile>
 #include <QWebEngineHistory>
@@ -25,24 +27,6 @@
 #include <QFile>
 #include <QDataStream>
 #include <QSettings>
-
-template<typename Arg, typename R>
-struct InvokeWrapper
-{
-	R* receiver;
-	void (R::*memberFunc)(Arg);
-	void operator()(Arg result)
-	{
-		(receiver->*memberFunc)(result);
-	}
-};
-
-template<typename Arg, typename R>
-InvokeWrapper<Arg, R> Invoke(R* receiver, void (R::*memberFunc)(Arg))
-{
-	InvokeWrapper<Arg, R> wrapper = { receiver, memberFunc };
-	return wrapper;
-}
 
 const QString BrowserMainWindow::defaultHomePage = "http://google.com/";
 const QString BrowserMainWindow::defaultSearchEngine = "http://google.com/search";
@@ -318,7 +302,7 @@ void BrowserMainWindow::SlotEditFind()
 	if (ok && !search.isEmpty())
 	{
 		lastSearch = search;
-		GetCurrentTab()->findText(lastSearch, 0, Invoke(this, &BrowserMainWindow::HandleFindTextResult));
+		GetCurrentTab()->findText(lastSearch, 0, BrowserHelpers::Invoke(this, &BrowserMainWindow::HandleFindTextResult));
 	}
 }
 
@@ -379,7 +363,12 @@ void BrowserMainWindow::SlotViewPageSource()
 	textEdit->setAttribute(Qt::WA_DeleteOnClose);
 	textEdit->show();
 
-	GetCurrentTab()->page()->toHtml(Invoke(textEdit, &QPlainTextEdit::setPlainText));
+	GetCurrentTab()->page()->toHtml(BrowserHelpers::Invoke(textEdit, &QPlainTextEdit::setPlainText));
+}
+
+void BrowserMainWindow::SlotViewToggleInspectElement(bool show)
+{
+	GetCurrentTab()->GetInspectElement()->setHidden(!show);
 }
 
 void BrowserMainWindow::SlotAboutApplication()
@@ -559,6 +548,12 @@ void BrowserMainWindow::SetupMenu()
 	viewMenu->addSeparator();
 
 	viewMenu->addAction(tr("Page Source"), this, SLOT(SlotViewPageSource()), tr("Ctrl+Alt+U"));
+	QAction* toggleInspectElement = new QAction(tr("Inspect Element"), this);
+	toggleInspectElement->setCheckable(true);
+	toggleInspectElement->setChecked(false);
+	toggleInspectElement->setShortcut(QKeySequence(Qt::Key_F12));
+	connect(toggleInspectElement, SIGNAL(toggled(bool)), this, SLOT(SlotViewToggleInspectElement(bool)));
+	viewMenu->addAction(toggleInspectElement);
 
 	// History
 	QMenu* historyMenu = menuBar()->addMenu(tr("Hi&story"));

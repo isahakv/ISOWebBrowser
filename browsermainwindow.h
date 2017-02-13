@@ -62,6 +62,7 @@ private slots:
 	void SlotViewZoomOut();
 	void SlotViewResetZoom();
 	void SlotViewPageSource();
+	void SlotViewToggleInspectElement(bool show);
 	void SlotAboutApplication();
 
 	void SlotHome();

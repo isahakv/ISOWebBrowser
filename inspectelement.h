@@ -7,6 +7,25 @@
 
 class QListWidget;
 class WebViewWrapper;
+class WebView;
+class QPlainTextEdit;
+class QPushButton;
+
+class WebPageSource : public QWidget
+{
+	Q_OBJECT
+public:
+	WebPageSource(QWidget *parent = 0, WebView* _webView = 0);
+
+public slots:
+	void SlotRefresh();
+
+protected:
+	WebView* webView;
+
+	QPlainTextEdit* pageSource;
+	QPushButton* refreshButton;
+};
 
 class JavaScriptConsole : public QWidget
 {
@@ -33,9 +52,11 @@ class InspectElement : public QTabWidget
 	Q_OBJECT	
 public:
 	explicit InspectElement(QWidget *parent = 0, WebViewWrapper* _ownerWebViewWrapper = 0);
-	//QSize sizeHint() const;
-	inline WebViewWrapper* GetOwnerWebViewWrapper() { return ownerWebViewWrapper; }
+	WebView* GetWebWiew() const;
+	inline WebViewWrapper* GetOwnerWebViewWrapper() const { return ownerWebViewWrapper; }
 	inline JavaScriptConsole* GetJavaScriptConsole() const { return javaScriptConsole; }
+
+	void showEvent(QShowEvent* event);
 
 	void AddJavaScriptConsoleMessage(QWebEnginePage::JavaScriptConsoleMessageLevel level,
 									 const QString &message,int lineNumber, const QString &sourceID);
@@ -43,6 +64,7 @@ public:
 protected:
 	WebViewWrapper* ownerWebViewWrapper;
 	JavaScriptConsole* javaScriptConsole;
+	WebPageSource* pageSource;
 };
 
 #endif // INSPECTELEMENT_H

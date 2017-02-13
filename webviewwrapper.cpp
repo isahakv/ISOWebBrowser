@@ -11,6 +11,8 @@ WebViewWrapper::WebViewWrapper(QWidget *parent)
 	, webView(new WebView(this, this))
 	, inspectElement(new InspectElement(this, this))
 {
+	inspectElement->setHidden(true);
+
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	QSplitter* splitter = new QSplitter(this);
 	layout->addWidget(splitter);

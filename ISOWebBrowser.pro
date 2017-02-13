@@ -12,7 +12,8 @@ HEADERS  += browsermainwindow.h \
     browsertypes.h \
     settings.h \
     inspectelement.h \
-    webviewwrapper.h
+    webviewwrapper.h \
+    browserhelpers.h
 
 SOURCES += main.cpp\
         browsermainwindow.cpp \
@@ -22,7 +23,8 @@ SOURCES += main.cpp\
     urllineedit.cpp \
     settings.cpp \
     inspectelement.cpp \
-    webviewwrapper.cpp
+    webviewwrapper.cpp \
+    browserhelpers.cpp
 
 FORMS += \
     mainwindow.ui \

@@ -26,13 +26,11 @@ void WebPage::javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, cons
 WebView::WebView(QWidget* parent, WebViewWrapper* _ownerWebViewWrapper)
 	: QWebEngineView(parent)
 	, ownerWebViewWrapper(_ownerWebViewWrapper)
+	, isWebPageLoading(false)
 {
-	isWebPageLoading = false;
-
 	QSizePolicy sp = sizePolicy();
 	sp.setHorizontalPolicy(QSizePolicy::Preferred);
-	sp.setHorizontalPolicy(QSizePolicy::Preferred);
-	sp.setVerticalStretch(2);
+	//sp.setVerticalStretch(2);
 	setSizePolicy(sp);
 
 	connect(this, SIGNAL(loadStarted()), this, SLOT(SlotLoadStarted()));
@@ -43,9 +41,9 @@ WebView::~WebView()
 {
 }
 
-QSize WebView::sizeHint() const
+WebPage* WebView::GetWebPage() const
 {
-	return QSize(100, 100);
+	return qobject_cast<WebPage*>(page());
 }
 
 void WebView::LoadUrl(const QUrl& url)
@@ -61,6 +59,11 @@ QUrl WebView::GetUrl() const
 		return url;
 
 	return initialUrl;
+}
+
+InspectElement* WebView::GetInspectElement() const
+{
+	return ownerWebViewWrapper->GetInspectElement();
 }
 
 void WebView::SlotLoadStarted()

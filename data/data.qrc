@@ -15,6 +15,8 @@
         <file>search.svg</file>
         <file>cancel-button.svg</file>
         <file>home-button.svg</file>
+        <file>addTab.svg</file>
+        <file>close.svg</file>
     </qresource>
     <qresource prefix="/Images/Creators">
         <file>isahak.jpg</file>

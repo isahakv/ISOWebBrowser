@@ -16,6 +16,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QToolButton>
 #include <QPixmap>
 #include <QMovie>
 
@@ -152,6 +153,13 @@ TabWidget::TabWidget(QWidget *parent, BrowserMainWindow* ownerMainWindow)
 	, profile(QWebEngineProfile::defaultProfile())
 {
 	setElideMode(Qt::ElideRight);
+
+	QToolButton* newTabButton = new QToolButton(this);
+	setCornerWidget(newTabButton, Qt::TopRightCorner);
+	newTabButton->setAutoRaise(true);
+	newTabButton->setIcon(QIcon(":/Images/Vector/addTab.svg"));
+	newTabButton->setToolTip(tr("Add Tab"));
+	connect(newTabButton, SIGNAL(clicked()), this, SLOT(NewTab()));
 
 	connect(tabBar, SIGNAL(NewTab()), this, SLOT(NewTab()));
 	connect(tabBar, SIGNAL(CloneTab(int)), this, SLOT(CloneTab(int)));

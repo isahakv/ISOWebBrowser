@@ -29,13 +29,15 @@ class WebView : public QWebEngineView
 public:
 	WebView(QWidget* parent = 0, WebViewWrapper* _ownerWebViewWrapper = 0);
 	~WebView();
-	QSize sizeHint() const;
 
 	inline WebViewWrapper* GetOwnerWebViewWrapper() { return ownerWebViewWrapper; }
+	WebPage* GetWebPage() const;
 
 	void LoadUrl(const QUrl& url);
 	QUrl GetUrl() const;
 	inline bool IsWebPageLoading() const { return isWebPageLoading; }
+
+	InspectElement* GetInspectElement() const;
 
 protected:
 	WebViewWrapper* ownerWebViewWrapper;
