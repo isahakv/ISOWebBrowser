@@ -72,6 +72,8 @@ private slots:
 	void SlotAboutToShowForwardMenu();
 	void SlotOpenActionUrl(QAction* action);
 
+	void UpdateToggleInspectElementState();
+
 private:
 	void LoadDefaultState();
 	void SaveDefaultState();
@@ -96,6 +98,7 @@ private:
 	QAction* reload;
 	QAction* stop;
 	QAction* stopReload;
+	QAction* toggleInspectElement;
 
 	QIcon reloadIcon;
 	QIcon stopIcon;

@@ -1,13 +1,13 @@
 #include "browserhelpers.h"
 
-BrowserHelpers::BrowserHelpers(QObject *parent) : QObject(parent)
-{
+#include "browsermainwindow.h"
 
-}
-
-template<typename Arg, typename R>
-InvokeWrapper<Arg, R> BrowserHelpers::Invoke(R* receiver, void (R::*memberFunc)(Arg))
-{
-	InvokeWrapper<Arg, R> wrapper = { receiver, memberFunc };
-	return wrapper;
-}
+//namespace BrowserHelpers
+//{
+	//template<typename Arg, typename R>
+	//InvokeWrapper<Arg, R> Invoke(R* receiver, void (R::*memberFunc)(Arg))
+	//{
+	//	InvokeWrapper<Arg, R> wrapper = { receiver, memberFunc };
+	//	return wrapper;
+	//}
+//}

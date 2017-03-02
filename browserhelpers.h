@@ -1,27 +1,28 @@
 #ifndef BROWSERHELPERS_H
 #define BROWSERHELPERS_H
 
-#include <QObject>
+//#include <QObject>
 
-template<typename Arg, typename R>
-struct InvokeWrapper
+namespace BrowserHelpers
 {
-	R* receiver;
-	void (R::*memberFunc)(Arg);
-	void operator()(Arg result)
+	template<typename Arg, typename R>
+	struct InvokeWrapper
 	{
-		(receiver->*memberFunc)(result);
-	}
-};
+		R* receiver;
+		void (R::*memberFunc)(Arg);
 
-class BrowserHelpers : public QObject
-{
-	Q_OBJECT
-public:
-	explicit BrowserHelpers(QObject *parent = 0);
+		void operator()(Arg result)
+		{
+			(receiver->*memberFunc)(result);
+		}
+	};
 
 	template<typename Arg, typename R>
-	static InvokeWrapper<Arg, R> Invoke(R* receiver, void (R::*memberFunc)(Arg));
-};
+	InvokeWrapper<Arg, R> Invoke(R* receiver, void (R::*memberFunc)(Arg))
+	{
+		InvokeWrapper<Arg, R> wrapper = { receiver, memberFunc };
+		return wrapper;
+	}
+}
 
 #endif // BROWSERHELPERS_H

@@ -91,6 +91,8 @@ WebView* BrowserMainWindow::GetCurrentTab() const
 
 QByteArray BrowserMainWindow::SaveState(int withTabs) const
 {
+	Q_UNUSED(withTabs)
+
 	QString version = BrowserApplication::GetInstance()->applicationVersion();
 	QByteArray data;
 	QDataStream stream(&data, QIODevice::WriteOnly);
@@ -302,7 +304,7 @@ void BrowserMainWindow::SlotEditFind()
 	if (ok && !search.isEmpty())
 	{
 		lastSearch = search;
-		GetCurrentTab()->findText(lastSearch, 0, BrowserHelpers::Invoke(this, &BrowserMainWindow::HandleFindTextResult));
+		//GetCurrentTab()->findText(lastSearch, 0, BrowserHelpers::Invoke<bool,BrowserMainWindow>(this, &BrowserMainWindow::HandleFindTextResult));
 	}
 }
 
@@ -458,6 +460,14 @@ void BrowserMainWindow::SlotOpenActionUrl(QAction* action)
 		history->goToItem(history->forwardItems(history->count() - offset + 1).back());
 }
 
+void BrowserMainWindow::UpdateToggleInspectElementState()
+{
+	if (!GetCurrentTab())
+		return;
+
+	toggleInspectElement->setChecked(!(GetCurrentTab()->GetInspectElement()->isHidden()));
+}
+
 void BrowserMainWindow::LoadDefaultState()
 {
 	QSettings settings("ISOBrowser");
@@ -548,11 +558,12 @@ void BrowserMainWindow::SetupMenu()
 	viewMenu->addSeparator();
 
 	viewMenu->addAction(tr("Page Source"), this, SLOT(SlotViewPageSource()), tr("Ctrl+Alt+U"));
-	QAction* toggleInspectElement = new QAction(tr("Inspect Element"), this);
+	toggleInspectElement = new QAction(tr("Inspect Element"), this);
 	toggleInspectElement->setCheckable(true);
 	toggleInspectElement->setChecked(false);
 	toggleInspectElement->setShortcut(QKeySequence(Qt::Key_F12));
 	connect(toggleInspectElement, SIGNAL(toggled(bool)), this, SLOT(SlotViewToggleInspectElement(bool)));
+	connect(tabWidget, SIGNAL(CurrentTabChanged(int)), this, SLOT(UpdateToggleInspectElementState()));
 	viewMenu->addAction(toggleInspectElement);
 
 	// History

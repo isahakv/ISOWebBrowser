@@ -25,6 +25,21 @@
 TabBar::TabBar(QWidget *parent)
 	: QTabBar(parent)
 {
+	setStyleSheet("QTabBar::tab {"
+				  "border: 2px solid #C4C4C3;"
+				  "border-bottom-color: #C2C7CB;"
+				  "border-top-left-radius: 4px;"
+				  "border-top-right-radius: 4px;"
+				  "min-width: 8ex;"
+				  "padding: 2px; }"
+				  "QTabBar::tab:selected {"
+				  "background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #b7b7b7, stop: 0.4 #919191, stop: 0.5 #878787, stop: 1.0 #707070);"
+				  "border-color: #9B9B9B;"
+				  "border-bottom-color: #C2C7CB; }"
+				  "QTabBar::tab:!selected {"
+				  "background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #E1E1E1, stop: 0.4 #DDDDDD, stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);"
+				  "margin-top: 2px; }");
+
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	setAcceptDrops(true);
 	connect(this, SIGNAL(customContextMenuRequested(QPoint)),
@@ -143,7 +158,7 @@ void TabBar::ContextMenuRequested(const QPoint& position)
 	menu.exec(QCursor::pos());
 }
 
-int TabWidget::MaxSymbolsInTabTitle = 20;
+int TabWidget::MaxSymbolsInTabTitle = 20; // move this to another file...
 
 TabWidget::TabWidget(QWidget *parent, BrowserMainWindow* ownerMainWindow)
 	: QTabWidget(parent)
@@ -153,6 +168,8 @@ TabWidget::TabWidget(QWidget *parent, BrowserMainWindow* ownerMainWindow)
 	, profile(QWebEngineProfile::defaultProfile())
 {
 	setElideMode(Qt::ElideRight);
+	setStyleSheet(QString("QTabWidget::pane { border-top: 2px solid #C2C7CB; }"
+						  "QTabWidget::tab-bar { left: 5px }"));
 
 	QToolButton* newTabButton = new QToolButton(this);
 	setCornerWidget(newTabButton, Qt::TopRightCorner);
@@ -566,20 +583,16 @@ void TabWidget::WebViewTitleChanged(const QString& title)
 	{
 		QString t = NormalizeTabTitle(title);
 		setTabText(index, t);
+		setTabToolTip(index, title);
 	}
 }
 
 void TabWidget::WebViewUrlChanged(const QUrl& url)
 {
-	// qWarning("WebViewUrlChanged Function Called!");
-
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
-	{
 		tabBar->setTabData(index, url);
-		tabBar->setTabToolTip(index, QString::fromUtf8(url.toEncoded()));
-	}
 }
 
 void TabWidget::WebPageMutedOrAudibleChanged()
