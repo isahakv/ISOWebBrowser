@@ -9,6 +9,7 @@ SettingsDialog::SettingsDialog(QWidget* parent)
 	: QDialog(parent)
 {
 	setupUi(this);
+	setWindowTitle(QLatin1String("Preferences"));
 
 	LoadDefaults();
 	LoadSettings();

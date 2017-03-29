@@ -7,6 +7,7 @@ class TabWidget;
 class WebView;
 class QWebEngineProfile;
 class SearchLineEdit;
+class HistoryDialog;
 
 /*!
 	The MainWindow of the Browser Application.
@@ -63,6 +64,8 @@ private slots:
 	void SlotViewResetZoom();
 	void SlotViewPageSource();
 	void SlotViewToggleInspectElement(bool show);
+	void SlotToggleHistoryDialog(bool show);
+	void SlotHistoryDialogDestroyed();
 	void SlotAboutApplication();
 
 	void SlotHome();
@@ -89,11 +92,13 @@ private:
 	QToolBar* navigationBar;
 	SearchLineEdit* toolbarSearch;
 	TabWidget* tabWidget;
+	HistoryDialog* historyDialog;
 
 	QAction* historyBack;
 	QMenu* historyBackMenu;
 	QAction* historyForward;
 	QMenu* historyForwardMenu;
+	QAction* toggleHistory;
 
 	QAction* reload;
 	QAction* stop;

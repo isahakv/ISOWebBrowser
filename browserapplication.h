@@ -6,6 +6,7 @@
 #include <QtCore/QPointer>
 
 class BrowserMainWindow;
+class HistoryManager;
 
 class BrowserApplication : public QApplication
 {
@@ -21,6 +22,8 @@ public:
 	QList<BrowserMainWindow*> GetMainWindows();
 	QIcon GetIconByUrl(const QUrl& url);
 
+	static HistoryManager* GetHistoryManager();
+
 public slots:
 	BrowserMainWindow* newMainWindow(bool isPrivateWindow = false);
 
@@ -33,6 +36,8 @@ private:
 	QString GetCommandLineUrlArgument() const;
 
 	QList<QPointer<BrowserMainWindow> > mainWindows;
+
+	static HistoryManager* historyManager;
 };
 
 #endif // BROWSERAPPLICATION_H

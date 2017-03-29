@@ -32,7 +32,7 @@ void WebPageSource::SlotRefresh()
 	if (!webView->GetWebPage())
 		return;
 
-	//webView->GetWebPage()->toHtml(BrowserHelpers::Invoke(pageSource, &QPlainTextEdit::setPlainText));
+	webView->GetWebPage()->toHtml(BrowserHelpers::Invoke(pageSource, &QPlainTextEdit::setPlainText));
 }
 
 JavaScriptConsole::JavaScriptConsole(QWidget *parent)

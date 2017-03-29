@@ -13,7 +13,8 @@ HEADERS  += browsermainwindow.h \
     settings.h \
     inspectelement.h \
     webviewwrapper.h \
-    browserhelpers.h
+    browserhelpers.h \
+    history.h
 
 SOURCES += main.cpp\
         browsermainwindow.cpp \
@@ -24,11 +25,13 @@ SOURCES += main.cpp\
     settings.cpp \
     inspectelement.cpp \
     webviewwrapper.cpp \
-    browserhelpers.cpp
+    browserhelpers.cpp \
+    history.cpp
 
 FORMS += \
     mainwindow.ui \
-    settings.ui
+    settings.ui \
+    history.ui
 
 RESOURCES += \
     data/data.qrc

@@ -1,8 +1,10 @@
 #include "tabwidget.h"
 
+#include "browserapplication.h"
 #include "browsermainwindow.h"
 #include "webviewwrapper.h"
 #include "urllineedit.h"
+#include "history.h"
 
 #include <QWebEngineProfile>
 
@@ -565,13 +567,13 @@ void TabWidget::SlotWebViewLoadFinished(bool b)
 
 void TabWidget::WebViewIconChanged(const QIcon& icon)
 {
-	// qWarning("WebViewIconChanged Called");
-
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
 	{
 		SetTabIconToImage(index, icon);
+		HistoryManager* historyManager = BrowserApplication::GetHistoryManager();
+		historyManager->SetHistoryEntryIcon(webView->url().host(), icon);
 	}
 }
 
@@ -592,7 +594,13 @@ void TabWidget::WebViewUrlChanged(const QUrl& url)
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
+	{
 		tabBar->setTabData(index, url);
+		HistoryManager* historyManager = BrowserApplication::GetHistoryManager();
+		if (url.isValid() && url.toString() != "about:blank")
+			historyManager->AddHistoryEntry(url.host(), webView->title(), webView->icon());
+	}
+	//emit TabsChanged();
 }
 
 void TabWidget::WebPageMutedOrAudibleChanged()
@@ -705,7 +713,7 @@ QString TabWidget::NormalizeTabTitle(const QString& title)
 	return t;
 }
 
-WebActionMapper::WebActionMapper(QAction *_rootAction, QWebEnginePage::WebAction _webAction, QObject *parent)
+WebActionMapper::WebActionMapper(QAction* _rootAction, QWebEnginePage::WebAction _webAction, QObject* parent)
 	: QObject(parent)
 	, currentPage(0)
 	, rootAction(_rootAction)
@@ -745,7 +753,7 @@ void WebActionMapper::UpdateCurrentPage(QWebEnginePage* newCurrentPage)
 	connect(currentPage->action(webAction), SIGNAL(changed()),
 			this, SLOT(CurrentPageActionChanged()));
 	connect(currentPage, SIGNAL(destroyed(QObject*)),
-					   this, SLOT(CurrentPageDestroyed()));
+			this, SLOT(CurrentPageDestroyed()));
 }
 
 void WebActionMapper::RootTriggered()

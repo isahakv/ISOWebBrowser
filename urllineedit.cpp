@@ -243,6 +243,8 @@ void UrlLineEdit::focusOutEvent(QFocusEvent* event)
 
 void UrlLineEdit::WebViewUrlChanged(const QUrl& url)
 {
+	qWarning(QString::fromUtf8(url.toEncoded()).toStdString().c_str());
+	qWarning(url.toString().toStdString().c_str());
 	lineEdit->setText(QString::fromUtf8(url.toEncoded()));
 }
 

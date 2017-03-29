@@ -1,6 +1,7 @@
 #include "browserapplication.h"
 
 #include "browsermainwindow.h"
+#include "history.h"
 
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
@@ -8,6 +9,8 @@
 #include <QWebEngineScriptCollection>
 
 #include <QUrl>
+
+HistoryManager* BrowserApplication::historyManager = 0;
 
 BrowserApplication::BrowserApplication(int &argc, char **argv)
 	: QApplication(argc, argv)
@@ -54,7 +57,7 @@ BrowserMainWindow* BrowserApplication::GetCurrentMainWindow()
 	if (mainWindows.isEmpty())
 		newMainWindow();
 
-	return mainWindows[0];
+	return mainWindows[0]; // Fix this...
 }
 
 QList<BrowserMainWindow*> BrowserApplication::GetMainWindows()
@@ -69,9 +72,17 @@ QList<BrowserMainWindow*> BrowserApplication::GetMainWindows()
 
 QIcon BrowserApplication::GetIconByUrl(const QUrl& url)
 {
+	//QWebEngineSettings::
 	Q_UNUSED(url)
 	// QIcon icon = QWebEngineSettings::
 	return QIcon(":Images/16x16/defaulticon.png");
+}
+
+HistoryManager* BrowserApplication::GetHistoryManager()
+{
+	if (!historyManager)
+		historyManager = new HistoryManager(BrowserApplication::GetInstance());
+	return historyManager;
 }
 
 BrowserMainWindow* BrowserApplication::newMainWindow(bool isPrivateWindow)

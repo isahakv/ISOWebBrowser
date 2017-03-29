@@ -5,6 +5,7 @@
 #include "tabwidget.h"
 #include "webview.h"
 #include "inspectelement.h"
+#include "history.h"
 #include "urllineedit.h"
 #include "settings.h"
 #include "browserhelpers.h"
@@ -39,6 +40,7 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
 	, privateProfile(0)
 	, historyBack(0)
 	, historyForward(0)
+	, historyDialog(0)
 	, stop(0)
 	, reload(0)
 {
@@ -304,7 +306,7 @@ void BrowserMainWindow::SlotEditFind()
 	if (ok && !search.isEmpty())
 	{
 		lastSearch = search;
-		//GetCurrentTab()->findText(lastSearch, 0, BrowserHelpers::Invoke<bool,BrowserMainWindow>(this, &BrowserMainWindow::HandleFindTextResult));
+		GetCurrentTab()->findText(lastSearch, 0, BrowserHelpers::Invoke<bool,BrowserMainWindow>(this, &BrowserMainWindow::HandleFindTextResult));
 	}
 }
 
@@ -371,6 +373,26 @@ void BrowserMainWindow::SlotViewPageSource()
 void BrowserMainWindow::SlotViewToggleInspectElement(bool show)
 {
 	GetCurrentTab()->GetInspectElement()->setHidden(!show);
+}
+
+void BrowserMainWindow::SlotToggleHistoryDialog(bool show)
+{
+	if (show && !historyDialog)
+	{
+		historyDialog = new HistoryDialog(BrowserApplication::GetHistoryManager(), this);
+		historyDialog->show();
+		connect(historyDialog, SIGNAL(destroyed(QObject*)), this, SLOT(SlotHistoryDialogDestroyed()));
+	}
+	else if (!show && historyDialog)
+	{
+		historyDialog->deleteLater();
+		historyDialog = 0;
+	}
+}
+
+void BrowserMainWindow::SlotHistoryDialogDestroyed()
+{
+	toggleHistory->setChecked(false);
 }
 
 void BrowserMainWindow::SlotAboutApplication()
@@ -583,6 +605,13 @@ void BrowserMainWindow::SetupMenu()
 	historyActions.append(historyForward);
 
 	historyMenu->addActions(historyActions);
+	historyMenu->addSeparator();
+	toggleHistory = new QAction(tr("History"), this);
+	toggleHistory->setCheckable(true);
+	toggleHistory->setChecked(false);
+	toggleHistory->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_H));
+	connect(toggleHistory, SIGNAL(toggled(bool)), this, SLOT(SlotToggleHistoryDialog(bool)));
+	historyMenu->addAction(toggleHistory);
 
 	// Help
 	QMenu* helpMenu = menuBar()->addMenu(tr("&Help"));
