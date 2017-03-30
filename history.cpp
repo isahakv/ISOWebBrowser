@@ -21,8 +21,10 @@ void HistoryManager::AddHistoryEntry(const QString& url, const QString& title, c
 	if (BrowserApplication::GetInstance()->GetCurrentMainWindow()->IsPrivateBrowsing())
 		return;
 
-	//QUrl cleanUrl(url);
-	//cleanUrl.setHost(cleanUrl.host());
+	int index = GetHistoryItemIndexByUrl(url);
+	if (index != -1)
+		RemoveHistoryEntry(url);
+
 	HistoryItem item(url, QDateTime::currentDateTime(), title, icon);
 	emit EntryAdded(item);
 }
@@ -32,10 +34,7 @@ void HistoryManager::RemoveHistoryEntry(const QString& url)
 	if (BrowserApplication::GetInstance()->GetCurrentMainWindow()->IsPrivateBrowsing())
 		return;
 
-	//QUrl cleanUrl(url);
-	//cleanUrl.setHost(cleanUrl.host());
-	HistoryItem item(url, QDateTime::currentDateTime());
-	emit EntryRemoved(item);
+	emit EntryRemoved(*GetHistoryItemByUrl(url));
 }
 
 void HistoryManager::SetHistoryEntryIcon(const QString& url, const QIcon& icon)
@@ -47,12 +46,21 @@ void HistoryManager::SetHistoryEntryIcon(const QString& url, const QIcon& icon)
 
 HistoryItem* HistoryManager::GetHistoryItemByUrl(const QString& url)
 {
+	int index = GetHistoryItemIndexByUrl(url);
+	if (index == -1)
+		return 0;
+
+	return &(history[index]);
+}
+
+int HistoryManager::GetHistoryItemIndexByUrl(const QString& url) const
+{
 	for (int i = 0; i < history.length(); i++)
 	{
 		if (history[i].url == url)
-			return &(history[i]);
+			return i;
 	}
-	return 0;
+	return -1;
 }
 
 HistoryModel::HistoryModel(HistoryManager* _historyManager, QObject* parent)

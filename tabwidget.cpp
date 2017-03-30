@@ -591,6 +591,8 @@ void TabWidget::WebViewTitleChanged(const QString& title)
 
 void TabWidget::WebViewUrlChanged(const QUrl& url)
 {
+	qWarning("WebViewUrlChanged");
+
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
 	if (index != -1)

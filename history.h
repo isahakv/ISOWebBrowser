@@ -46,6 +46,7 @@ public:
 	void RemoveHistoryEntry(const QString& url);
 	void SetHistoryEntryIcon(const QString& url, const QIcon& icon);
 	HistoryItem* GetHistoryItemByUrl(const QString& url);
+	int GetHistoryItemIndexByUrl(const QString& url) const;
 
 	inline QList<HistoryItem>& GetHistory() { return history; }
 
