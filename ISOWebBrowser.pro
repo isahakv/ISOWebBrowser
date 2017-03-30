@@ -14,7 +14,9 @@ HEADERS  += browsermainwindow.h \
     inspectelement.h \
     webviewwrapper.h \
     browserhelpers.h \
-    history.h
+    history.h \
+    historytreeview.h \
+    searchlineedit.h
 
 SOURCES += main.cpp\
         browsermainwindow.cpp \
@@ -26,7 +28,9 @@ SOURCES += main.cpp\
     inspectelement.cpp \
     webviewwrapper.cpp \
     browserhelpers.cpp \
-    history.cpp
+    history.cpp \
+    historytreeview.cpp \
+    searchlineedit.cpp
 
 FORMS += \
     mainwindow.ui \

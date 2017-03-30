@@ -7,6 +7,7 @@
 #include "inspectelement.h"
 #include "history.h"
 #include "urllineedit.h"
+#include "searchlineedit.h"
 #include "settings.h"
 #include "browserhelpers.h"
 
@@ -658,7 +659,8 @@ void BrowserMainWindow::SetupToolBar()
 	navigationBar->addWidget(tabWidget->GetLineEditStack());
 	tabWidget->GetLineEditStack()->setSizePolicy(sizePolicy);
 
-	toolbarSearch = new SearchLineEdit(navigationBar, this);
+	toolbarSearch = new SearchLineEdit(navigationBar);
+	toolbarSearch->SetOwnerBrowserMainWindow(this);
 	navigationBar->addWidget(toolbarSearch);
 
 	sizePolicy.setHorizontalStretch(1);

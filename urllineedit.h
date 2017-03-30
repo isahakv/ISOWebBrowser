@@ -5,8 +5,6 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QAbstractButton>
 #include <QtWidgets/QPushButton>
-// Note: may be deleted later
-#include <QBoxLayout>
 
 class QLineEdit;
 class WebView;
@@ -58,8 +56,12 @@ class BrowserLineEdit : public QWidget
 {
 	Q_OBJECT
 
+signals:
+	void textChanged(const QString&);
+
 public:
-	BrowserLineEdit(QWidget* parent = 0, BrowserMainWindow* ownerMainWindow = 0);
+	BrowserLineEdit(QWidget* parent = 0);
+	inline void SetOwnerBrowserMainWindow(BrowserMainWindow* ownerMainWindow) { ownerBrowserMainWindow = ownerMainWindow; }
 
 	inline QLineEdit* GetLineEdit() const { return lineEdit; }
 
@@ -92,7 +94,7 @@ class UrlLineEdit : public BrowserLineEdit
 {
 	Q_OBJECT
 public:
-	UrlLineEdit(QWidget *parent, BrowserMainWindow* ownerMainWindow);
+	UrlLineEdit(QWidget *parent);
 	void SetWebView(WebView* _webView);
 
 protected:
@@ -103,39 +105,6 @@ private slots:
 
 private:
 	WebView* webView;
-};
-
-class QStringListModel;
-
-class SearchLineEdit : public BrowserLineEdit
-{
-	Q_OBJECT
-public:
-	SearchLineEdit(QWidget* parent, BrowserMainWindow* ownerMainWindow);
-
-	QMenu* GetMenu() const;
-
-signals:
-	void Search(const QUrl& url);
-
-protected:
-	void paintEvent(QPaintEvent* event);
-
-public slots:
-	void ClearRecentSearches();
-	void SlotSearch();
-
-private slots:
-	void AboutToShowMenu();
-	void TriggeredMenuAction(QAction* action);
-	void SaveSearchHistory();
-
-private:
-	void LoadSearchHistory();
-
-	SearchButton* searchButton;
-	int maxSavedSearches;
-	QStringListModel* stringListModel;
 };
 
 #endif // URLLINEEDIT_H

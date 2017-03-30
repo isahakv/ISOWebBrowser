@@ -38,13 +38,17 @@ class HistoryManager : public QObject
 signals:
 	void EntryAdded(const HistoryItem& item);
 	void EntryRemoved(const HistoryItem& item);
+	void AllEntriesRemoved();
 
 public:
 	HistoryManager(QObject* parent = 0);
 
 	void AddHistoryEntry(const QString& url, const QString& title, const QIcon& icon);
 	void RemoveHistoryEntry(const QString& url);
+	void RemoveAllHistory();
 	void SetHistoryEntryIcon(const QString& url, const QIcon& icon);
+	void SetHistoryEntryTitle(const QString& url, const QString& title);
+
 	HistoryItem* GetHistoryItemByUrl(const QString& url);
 	int GetHistoryItemIndexByUrl(const QString& url) const;
 
@@ -83,6 +87,7 @@ public:
 public slots:
 	void EntryAdded(const HistoryItem& item);
 	void EntryRemoved(const HistoryItem& item);
+	void AllEntriesRemoved();
 
 private:
 	HistoryManager* historyManager;

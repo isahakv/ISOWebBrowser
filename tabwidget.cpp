@@ -323,7 +323,8 @@ void TabWidget::LoadUrl(WebView* tab, const QUrl& url)
 WebViewWrapper* TabWidget::NewTab(bool makeCurrent, HomePageType homePageType)
 {
 	// line edit
-	UrlLineEdit* urlLineEdit = new UrlLineEdit(this, ownerBrowserMainWindow);
+	UrlLineEdit* urlLineEdit = new UrlLineEdit(this);
+	urlLineEdit->SetOwnerBrowserMainWindow(ownerBrowserMainWindow);
 	QLineEdit* lineEdit = urlLineEdit->GetLineEdit();
 
 	connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(LineEditReturnPressed()));
@@ -573,7 +574,7 @@ void TabWidget::WebViewIconChanged(const QIcon& icon)
 	{
 		SetTabIconToImage(index, icon);
 		HistoryManager* historyManager = BrowserApplication::GetHistoryManager();
-		historyManager->SetHistoryEntryIcon(webView->url().host(), icon);
+		historyManager->SetHistoryEntryIcon(webView->url().toString(), icon);
 	}
 }
 
@@ -586,13 +587,14 @@ void TabWidget::WebViewTitleChanged(const QString& title)
 		QString t = NormalizeTabTitle(title);
 		setTabText(index, t);
 		setTabToolTip(index, title);
+
+		HistoryManager* historyManager = BrowserApplication::GetHistoryManager();
+		historyManager->SetHistoryEntryTitle(webView->url().toString(), title);
 	}
 }
 
 void TabWidget::WebViewUrlChanged(const QUrl& url)
 {
-	qWarning("WebViewUrlChanged");
-
 	WebView* webView = qobject_cast<WebView*>(sender());
 	int index = GetWebViewIndex(webView);
 	if (index != -1)
@@ -600,7 +602,7 @@ void TabWidget::WebViewUrlChanged(const QUrl& url)
 		tabBar->setTabData(index, url);
 		HistoryManager* historyManager = BrowserApplication::GetHistoryManager();
 		if (url.isValid() && url.toString() != "about:blank")
-			historyManager->AddHistoryEntry(url.host(), webView->title(), webView->icon());
+			historyManager->AddHistoryEntry(url.toString(), webView->title(), webView->icon());
 	}
 	//emit TabsChanged();
 }

@@ -5,7 +5,9 @@
 
 #include "browserapplication.h"
 #include "browsermainwindow.h"
+#include "historytreeview.h"
 
+/** HistoryManager */
 HistoryManager::HistoryManager(QObject* parent)
 	: QObject(parent)
 	, historyModel(0)
@@ -37,11 +39,26 @@ void HistoryManager::RemoveHistoryEntry(const QString& url)
 	emit EntryRemoved(*GetHistoryItemByUrl(url));
 }
 
+void HistoryManager::RemoveAllHistory()
+{
+	if (BrowserApplication::GetInstance()->GetCurrentMainWindow()->IsPrivateBrowsing())
+		return;
+
+	emit AllEntriesRemoved();
+}
+
 void HistoryManager::SetHistoryEntryIcon(const QString& url, const QIcon& icon)
 {
 	HistoryItem* historyItem = GetHistoryItemByUrl(url);
 	if(historyItem)
 		historyItem->icon = icon;
+}
+
+void HistoryManager::SetHistoryEntryTitle(const QString& url, const QString& title)
+{
+	HistoryItem* historyItem = GetHistoryItemByUrl(url);
+	if(historyItem)
+		historyItem->title = title;
 }
 
 HistoryItem* HistoryManager::GetHistoryItemByUrl(const QString& url)
@@ -63,6 +80,7 @@ int HistoryManager::GetHistoryItemIndexByUrl(const QString& url) const
 	return -1;
 }
 
+/** HistoryModel */
 HistoryModel::HistoryModel(HistoryManager* _historyManager, QObject* parent)
 	: QAbstractTableModel(parent)
 	, historyManager(_historyManager)
@@ -73,6 +91,8 @@ HistoryModel::HistoryModel(HistoryManager* _historyManager, QObject* parent)
 			this, SLOT(EntryAdded(HistoryItem)));
 	connect(historyManager, SIGNAL(EntryRemoved(HistoryItem)),
 			this, SLOT(EntryRemoved(HistoryItem)));
+	connect(historyManager, SIGNAL(AllEntriesRemoved()),
+			this, SLOT(AllEntriesRemoved()));
 }
 
 void HistoryModel::EntryAdded(const HistoryItem& item)
@@ -89,6 +109,13 @@ void HistoryModel::EntryRemoved(const HistoryItem& item)
 	beginRemoveRows(QModelIndex(), index, index);
 	historyManager->history.takeAt(index);
 	endRemoveRows();
+}
+
+void HistoryModel::AllEntriesRemoved()
+{
+	beginResetModel();
+	historyManager->history.clear();
+	endResetModel();
 }
 
 QVariant HistoryModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -177,6 +204,7 @@ bool HistoryModel::removeRows(int row, int count, const QModelIndex &parent)
 	return true;
 }
 
+/** HistoryProxyModel */
 HistoryProxyModel::HistoryProxyModel(QObject* parent)
 	: QSortFilterProxyModel(parent)
 {
@@ -184,6 +212,7 @@ HistoryProxyModel::HistoryProxyModel(QObject* parent)
 	setFilterCaseSensitivity(Qt::CaseInsensitive);
 }
 
+/** HistoryDialog */
 HistoryDialog::HistoryDialog(HistoryManager* historyManager, QWidget* parent)
 	: QDialog(parent)
 {
@@ -195,6 +224,8 @@ HistoryDialog::HistoryDialog(HistoryManager* historyManager, QWidget* parent)
 	proxyModel->setFilterKeyColumn(1);
 	connect(searchLineEdit, SIGNAL(textChanged(QString)),
 			proxyModel, SLOT(setFilterFixedString(QString)));
+	connect(removeButton, SIGNAL(clicked(bool)), treeView, SLOT(RemoveOne()));
+	connect(removeAllButton, SIGNAL(clicked(bool)), treeView, SLOT(RemoveAll()));
 	treeView->setModel(proxyModel);
 	treeView->setSortingEnabled(true);
 }
