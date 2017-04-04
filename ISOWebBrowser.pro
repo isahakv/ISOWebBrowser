@@ -16,7 +16,8 @@ HEADERS  += browsermainwindow.h \
     browserhelpers.h \
     history.h \
     historytreeview.h \
-    searchlineedit.h
+    searchlineedit.h \
+    defines.h
 
 SOURCES += main.cpp\
         browsermainwindow.cpp \

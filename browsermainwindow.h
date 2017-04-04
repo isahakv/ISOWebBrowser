@@ -20,10 +20,7 @@ class BrowserMainWindow : public QMainWindow
 
 public:
 	BrowserMainWindow(QWidget *parent = 0, bool isPrivateWindow = false);
-    ~BrowserMainWindow();
-
-	static const QString defaultHomePage;
-	static const QString defaultSearchEngine;
+	~BrowserMainWindow();
 
 	inline TabWidget* GetTabWidget() const { return tabWidget; }
 	WebView* GetCurrentTab() const;

@@ -1,5 +1,6 @@
 #include "searchlineedit.h"
 
+#include "defines.h"
 #include "browsermainwindow.h"
 
 #include <QStringListModel>
@@ -9,9 +10,10 @@
 #include <QtCore/QUrl>
 #include <QtCore/QUrlQuery>
 
-SearchLineEdit::SearchLineEdit(QWidget* parent)
+SearchLineEdit::SearchLineEdit(QWidget* parent, bool _haveHistory)
 	: BrowserLineEdit(parent)
 	, searchButton(new SearchButton(this))
+	, haveHistory(_haveHistory)
 	, maxSavedSearches(10)
 	, stringListModel(new QStringListModel(this))
 {
@@ -26,13 +28,17 @@ SearchLineEdit::SearchLineEdit(QWidget* parent)
 
 	lineEdit->setPlaceholderText(QString("Search"));
 
-	QMenu* m = GetMenu();
-	connect(m, SIGNAL(aboutToShow()), this, SLOT(AboutToShowMenu()));
-	connect(m, SIGNAL(triggered(QAction*)), this, SLOT(TriggeredMenuAction(QAction*)));
-
 	connect(lineEdit, SIGNAL(textChanged(QString)), this, SIGNAL(textChanged(QString)));
 	connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(SlotSearch()));
-	LoadSearchHistory();
+
+	if (haveHistory)
+	{
+		QMenu* m = GetMenu();
+		connect(m, SIGNAL(aboutToShow()), this, SLOT(AboutToShowMenu()));
+		connect(m, SIGNAL(triggered(QAction*)), this, SLOT(TriggeredMenuAction(QAction*)));
+
+		LoadSearchHistory();
+	}
 }
 
 QMenu* SearchLineEdit::GetMenu() const
@@ -57,26 +63,25 @@ void SearchLineEdit::ClearRecentSearches()
 void SearchLineEdit::SlotSearch()
 {
 	QString searchText = lineEdit->text();
-	QStringList newList = stringListModel->stringList();
-	if (newList.contains(searchText))
-		newList.removeAt(newList.indexOf(searchText));
-	newList.prepend(searchText);
 
-	if (newList.count() >= maxSavedSearches)
-		newList.removeLast();
-
-	if (ownerBrowserMainWindow && !(ownerBrowserMainWindow->IsPrivateBrowsing()))
+	if (haveHistory)
 	{
-		stringListModel->setStringList(newList);
-		SaveSearchHistory();
+		QStringList newList = stringListModel->stringList();
+		if (newList.contains(searchText))
+			newList.removeAt(newList.indexOf(searchText));
+		newList.prepend(searchText);
+
+		if (newList.count() > maxSavedSearches)
+			newList.removeLast();
+
+		if (ownerBrowserMainWindow && !(ownerBrowserMainWindow->IsPrivateBrowsing()))
+		{
+			stringListModel->setStringList(newList);
+			SaveSearchHistory();
+		}
 	}
 
-	QSettings settings(QString("ISOBrowser"));
-	settings.beginGroup(QString("General"));
-	QUrl url(settings.value(QString("DefaultSearchEngine"),
-							BrowserMainWindow::GetDefaultSearchEngine()).toString());
-	settings.endGroup();
-
+	QUrl url(BrowserMainWindow::GetDefaultSearchEngine());
 	QUrlQuery urlQuery;
 	urlQuery.addQueryItem(QLatin1String("q"), searchText);
 	url.setQuery(urlQuery);
@@ -107,10 +112,10 @@ void SearchLineEdit::AboutToShowMenu()
 
 void SearchLineEdit::TriggeredMenuAction(QAction* action)
 {
-	QVariant v = action->data();
-	if (v.canConvert<QString>())
+	QVariant data = action->data();
+	if (data.canConvert<QString>())
 	{
-		QString text = v.toString();
+		QString text = data.toString();
 		lineEdit->setText(text);
 		SlotSearch();
 	}
@@ -118,10 +123,10 @@ void SearchLineEdit::TriggeredMenuAction(QAction* action)
 
 void SearchLineEdit::SaveSearchHistory()
 {
-	QSettings settings(QLatin1String("ISOBrowser"));
-	settings.beginGroup(QLatin1String("ToolbarSearch"));
-	settings.setValue(QLatin1String("RecentSearches"), stringListModel->stringList());
-	settings.setValue(QLatin1String("MaxSavedSearches"), maxSavedSearches);
+	QSettings settings(APP_NAME);
+	settings.beginGroup(BROWSER_TOOLBAR_SEARCH_GROUP_KEY);
+	settings.setValue(BROWSER_RECENT_SEARCHES_KEY, stringListModel->stringList());
+	settings.setValue(BROWSER_MAX_SAVED_SEARCHES_KEY, maxSavedSearches);
 	settings.endGroup();
 
 	settings.sync();
@@ -129,10 +134,10 @@ void SearchLineEdit::SaveSearchHistory()
 
 void SearchLineEdit::LoadSearchHistory()
 {
-	QSettings settings(QLatin1String("ISOBrowser"));
-	settings.beginGroup(QLatin1String("ToolbarSearch"));
-	QStringList list = settings.value(QLatin1String("RecentSearches")).toStringList();
-	maxSavedSearches = settings.value(QLatin1String("MaxSavedSearches"), maxSavedSearches).toInt();
+	QSettings settings(APP_NAME);
+	settings.beginGroup(BROWSER_TOOLBAR_SEARCH_GROUP_KEY);
+	QStringList list = settings.value(BROWSER_RECENT_SEARCHES_KEY).toStringList();
+	maxSavedSearches = settings.value(BROWSER_MAX_SAVED_SEARCHES_KEY, maxSavedSearches).toInt();
 	settings.endGroup();
 	stringListModel->setStringList(list);
 }

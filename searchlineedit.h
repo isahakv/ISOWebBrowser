@@ -12,9 +12,10 @@ class SearchLineEdit : public BrowserLineEdit
 {
 	Q_OBJECT
 public:
-	SearchLineEdit(QWidget* parent);
+	SearchLineEdit(QWidget* parent, bool _haveHistory = false);
 
 	QMenu* GetMenu() const;
+	bool GetHaveHistory() const { return haveHistory; }
 
 signals:
 	void Search(const QUrl& url);
@@ -35,6 +36,7 @@ private:
 	void LoadSearchHistory();
 
 	SearchButton* searchButton;
+	bool haveHistory;
 	int maxSavedSearches;
 	QStringListModel* stringListModel;
 };

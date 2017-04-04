@@ -1,6 +1,7 @@
 #include "browsermainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "defines.h"
 #include "browserapplication.h"
 #include "tabwidget.h"
 #include "webview.h"
@@ -29,9 +30,6 @@
 #include <QFile>
 #include <QDataStream>
 #include <QSettings>
-
-const QString BrowserMainWindow::defaultHomePage = "http://google.com/";
-const QString BrowserMainWindow::defaultSearchEngine = "http://google.com/search";
 
 BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
 	: QMainWindow(parent)
@@ -133,9 +131,9 @@ bool BrowserMainWindow::RestoreState(const QByteArray& state)
 
 QString BrowserMainWindow::GetHomePage()
 {
-	QSettings settings("ISOBrowser");
-	settings.beginGroup("General");
-	QString homePage = settings.value(QLatin1String("HomePage"), defaultHomePage).toString();
+	QSettings settings(APP_NAME);
+	settings.beginGroup(BROWSER_GENERAL_REGISTRY_GROUP_KEY);
+	QString homePage = settings.value(BROWSER_HOME_PAGE_REGISTRY_KEY, defaultHomePage).toString();
 	settings.endGroup();
 
 	return homePage;
@@ -143,9 +141,9 @@ QString BrowserMainWindow::GetHomePage()
 
 QString BrowserMainWindow::GetDefaultSearchEngine()
 {
-	QSettings settings("ISOBrowser");
-	settings.beginGroup("General");
-	QString searchEngine = settings.value(QLatin1String("SearchEngine"), defaultSearchEngine).toString();
+	QSettings settings(APP_NAME);
+	settings.beginGroup(BROWSER_GENERAL_REGISTRY_GROUP_KEY);
+	QString searchEngine = settings.value(BROWSER_SEARCH_ENGINE_REGISTRY_KEY, defaultSearchEngine).toString();
 	settings.endGroup();
 
 	return searchEngine;
@@ -493,19 +491,19 @@ void BrowserMainWindow::UpdateToggleInspectElementState()
 
 void BrowserMainWindow::LoadDefaultState()
 {
-	QSettings settings("ISOBrowser");
-	settings.beginGroup(QLatin1String("BrowserMainWindow"));
-	QByteArray data = settings.value(QLatin1String("DefaultState")).toByteArray();
+	QSettings settings(APP_NAME);
+	settings.beginGroup(BROWSER_MAIN_WINDOW_REGISTRY_GROUP_KEY);
+	QByteArray data = settings.value(BROWSER_DEFAULT_STATE_REGISTRY_KEY).toByteArray();
 	RestoreState(data);
 	settings.endGroup();
 }
 
 void BrowserMainWindow::SaveDefaultState()
 {
-	QSettings settings("ISOBrowser");
-	settings.beginGroup(QLatin1String("BrowserMainWindow"));
+	QSettings settings(APP_NAME);
+	settings.beginGroup(BROWSER_MAIN_WINDOW_REGISTRY_GROUP_KEY);
 	QByteArray data = SaveState();
-	settings.setValue(QLatin1String("DefaultState"), data);
+	settings.setValue(BROWSER_DEFAULT_STATE_REGISTRY_KEY, data);
 	settings.endGroup();
 }
 
@@ -659,7 +657,7 @@ void BrowserMainWindow::SetupToolBar()
 	navigationBar->addWidget(tabWidget->GetLineEditStack());
 	tabWidget->GetLineEditStack()->setSizePolicy(sizePolicy);
 
-	toolbarSearch = new SearchLineEdit(navigationBar);
+	toolbarSearch = new SearchLineEdit(navigationBar, true);
 	toolbarSearch->SetOwnerBrowserMainWindow(this);
 	navigationBar->addWidget(toolbarSearch);
 
