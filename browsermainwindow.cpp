@@ -43,7 +43,6 @@ BrowserMainWindow::BrowserMainWindow(QWidget *parent, bool isPrivateWindow)
 	, stop(0)
 	, reload(0)
 {
-
 	setToolButtonStyle(Qt::ToolButtonFollowStyle);
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	setMinimumSize(QSize(724, 124));
@@ -421,7 +420,7 @@ void BrowserMainWindow::SlotHome()
 	tabWidget->LoadHomePage(GetCurrentTab());
 }
 
-void BrowserMainWindow::SlotLoadUrlInCurrentTab(const QUrl& url)
+void BrowserMainWindow::LoadUrlInCurrentTab(const QUrl& url)
 {
 	LoadUrl(GetCurrentTab(), url);
 }
@@ -442,8 +441,8 @@ void BrowserMainWindow::SlotAboutToShowBackMenu()
 		QAction* action = new QAction(this);
 		action->setData(-1*(historyCount-i-1));
 
-		QIcon icon = BrowserApplication::GetInstance()->GetIconByUrl(backItem.url());
-		action->setIcon(icon);
+		//QIcon icon = BrowserApplication::GetInstance()->GetIconByUrl(backItem.url());
+		//action->setIcon(icon);
 		action->setText(backItem.title());
 		historyBackMenu->addAction(action);
 	}
@@ -464,8 +463,8 @@ void BrowserMainWindow::SlotAboutToShowForwardMenu()
 		QAction* action = new QAction(this);
 		action->setData(historyCount-i);
 
-		QIcon icon = BrowserApplication::GetInstance()->GetIconByUrl(forwardItem.url());
-		action->setIcon(icon);
+		//QIcon icon = BrowserApplication::GetInstance()->GetIconByUrl(forwardItem.url());
+		//action->setIcon(icon);
 		action->setText(forwardItem.title());
 		historyForwardMenu->addAction(action);
 	}
@@ -663,7 +662,7 @@ void BrowserMainWindow::SetupToolBar()
 
 	sizePolicy.setHorizontalStretch(1);
 	toolbarSearch->setSizePolicy(sizePolicy);
-	connect(toolbarSearch, SIGNAL(Search(QUrl)), this, SLOT(SlotLoadUrlInCurrentTab(QUrl)));
+	connect(toolbarSearch, SIGNAL(Search(QUrl)), this, SLOT(LoadUrlInCurrentTab(QUrl)));
 }
 
 void BrowserMainWindow::HandleFindTextResult(bool isFound)

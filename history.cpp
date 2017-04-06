@@ -1,11 +1,15 @@
 #include "history.h"
 
-#include <QCloseEvent>
-#include <QFileInfo>
-
 #include "browserapplication.h"
 #include "browsermainwindow.h"
 #include "historytreeview.h"
+
+#include <QCloseEvent>
+#include <QFileInfo>
+#include <QMenu>
+#include <QClipboard>
+
+#include <QWebEngineSettings>
 
 /** HistoryManager */
 HistoryManager::HistoryManager(QObject* parent)
@@ -134,7 +138,7 @@ QVariant HistoryModel::headerData(int section, Qt::Orientation orientation, int 
 
 QVariant HistoryModel::data(const QModelIndex &index, int role) const
 {
-	QList<HistoryItem> history = historyManager->GetHistory();
+	const QList<HistoryItem>& history = historyManager->GetHistory();
 	if (index.row() < 0 || index.row() >= history.size())
 		return QVariant();
 
@@ -172,10 +176,8 @@ QVariant HistoryModel::data(const QModelIndex &index, int role) const
 		}
 	}
 	case Qt::DecorationRole:
-		if (index.column() == 1)
-		{
+		if (index.column() == 0)
 			return item.icon;
-		}
 	}
 	return QVariant();
 }
@@ -228,10 +230,48 @@ HistoryDialog::HistoryDialog(HistoryManager* historyManager, QWidget* parent)
 	connect(removeAllButton, SIGNAL(clicked(bool)), treeView, SLOT(RemoveAll()));
 	treeView->setModel(proxyModel);
 	treeView->setSortingEnabled(true);
+	treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(treeView, SIGNAL(customContextMenuRequested(QPoint)),
+			this, SLOT(CustomContextMenuRequested(QPoint)));
 }
 
 void HistoryDialog::closeEvent(QCloseEvent* event)
 {
 	event->accept();
 	deleteLater();
+}
+
+void HistoryDialog::CustomContextMenuRequested(const QPoint& pos)
+{
+	QMenu menu;
+	QModelIndex index = treeView->indexAt(pos);
+	if (index.isValid())
+	{
+		menu.addAction("Open", this, SLOT(OpenHistoryItem()));
+		menu.addAction("Copy", this, SLOT(CopyHistoryItem()));
+		menu.addAction("Remove", treeView, SLOT(RemoveOne()));
+	}
+	menu.addAction("Remove All", treeView, SLOT(RemoveAll()));
+	menu.exec(QCursor::pos());
+}
+
+void HistoryDialog::OpenHistoryItem()
+{
+	QModelIndex index = treeView->currentIndex();
+	if (!index.isValid())
+		return;
+
+	QUrl url = index.data(HistoryModel::UrlRole).toUrl();
+	BrowserApplication::GetInstance()->GetCurrentMainWindow()->LoadUrlInCurrentTab(url); // Note: Change this to signal???
+}
+
+void HistoryDialog::CopyHistoryItem()
+{
+	QModelIndex index = treeView->currentIndex();
+	if (!index.isValid())
+		return;
+
+	QString url = index.data(HistoryModel::UrlStringRole).toString();
+	QClipboard* clipboard = QApplication::clipboard();
+	clipboard->setText(url);
 }

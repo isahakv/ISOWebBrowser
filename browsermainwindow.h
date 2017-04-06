@@ -35,6 +35,7 @@ public:
 
 public slots:
 	void LoadPage(WebView* tab, const QString& url);
+	void LoadUrlInCurrentTab(const QUrl& url);
 	void SetPrivateBrowsing(bool);
 
 protected:
@@ -66,7 +67,6 @@ private slots:
 	void SlotAboutApplication();
 
 	void SlotHome();
-	void SlotLoadUrlInCurrentTab(const QUrl& url);
 
 	void SlotAboutToShowBackMenu();
 	void SlotAboutToShowForwardMenu();

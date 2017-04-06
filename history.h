@@ -112,6 +112,11 @@ public:
 
 protected:
 	void closeEvent(QCloseEvent* event);
+
+private slots:
+	void CustomContextMenuRequested(const QPoint& pos);
+	void OpenHistoryItem();
+	void CopyHistoryItem();
 };
 
 #endif // HISTORY_H
