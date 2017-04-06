@@ -7,6 +7,7 @@
 
 class BrowserMainWindow;
 class HistoryManager;
+class DownloadManager;
 
 class BrowserApplication : public QApplication
 {
@@ -22,6 +23,7 @@ public:
 	QList<BrowserMainWindow*> GetMainWindows();
 
 	static HistoryManager* GetHistoryManager();
+	static DownloadManager* GetDownloadManager();
 
 public slots:
 	BrowserMainWindow* newMainWindow(bool isPrivateWindow = false);
@@ -37,6 +39,7 @@ private:
 	QList<QPointer<BrowserMainWindow> > mainWindows;
 
 	static HistoryManager* historyManager;
+	static DownloadManager* downloadManager;
 };
 
 #endif // BROWSERAPPLICATION_H

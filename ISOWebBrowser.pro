@@ -17,7 +17,8 @@ HEADERS  += browsermainwindow.h \
     history.h \
     historytreeview.h \
     searchlineedit.h \
-    defines.h
+    defines.h \
+    downloadmanager.h
 
 SOURCES += main.cpp\
         browsermainwindow.cpp \
@@ -31,12 +32,15 @@ SOURCES += main.cpp\
     browserhelpers.cpp \
     history.cpp \
     historytreeview.cpp \
-    searchlineedit.cpp
+    searchlineedit.cpp \
+    downloadmanager.cpp
 
 FORMS += \
     mainwindow.ui \
     settings.ui \
-    history.ui
+    history.ui \
+    downloads.ui \
+    downloaditem.ui
 
 RESOURCES += \
     data/data.qrc

@@ -2,6 +2,7 @@
 
 #include "browsermainwindow.h"
 #include "history.h"
+#include "downloadmanager.h"
 
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
@@ -75,6 +76,13 @@ HistoryManager* BrowserApplication::GetHistoryManager()
 	if (!historyManager)
 		historyManager = new HistoryManager(BrowserApplication::GetInstance());
 	return historyManager;
+}
+
+HistoryManager* BrowserApplication::GetDownloadManager()
+{
+	if (!downloadManager)
+		downloadManager = new DownloadManager(BrowserApplication::GetInstance());
+	return downloadManager;
 }
 
 BrowserMainWindow* BrowserApplication::newMainWindow(bool isPrivateWindow)
