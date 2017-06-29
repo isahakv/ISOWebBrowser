@@ -12,6 +12,7 @@
 #include <QUrl>
 
 HistoryManager* BrowserApplication::historyManager = 0;
+DownloadManager* BrowserApplication::downloadManager = 0;
 
 BrowserApplication::BrowserApplication(int &argc, char **argv)
 	: QApplication(argc, argv)
@@ -78,10 +79,10 @@ HistoryManager* BrowserApplication::GetHistoryManager()
 	return historyManager;
 }
 
-HistoryManager* BrowserApplication::GetDownloadManager()
+DownloadManager* BrowserApplication::GetDownloadManager()
 {
 	if (!downloadManager)
-		downloadManager = new DownloadManager(BrowserApplication::GetInstance());
+		downloadManager = new DownloadManager();
 	return downloadManager;
 }
 

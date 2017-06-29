@@ -7,6 +7,7 @@
 
 class QLabel;
 class QWebEngineProfile;
+class QWebEngineDownloadItem;
 class BrowserMainWindow;
 
 /*
@@ -153,6 +154,7 @@ private slots:
 	void WebViewTitleChanged(const QString& title);
 	void WebViewUrlChanged(const QUrl& url);
 	void WebPageMutedOrAudibleChanged();
+	void WebPageDownloadRequested(QWebEngineDownloadItem *downloadItem);
 	void LineEditReturnPressed();
 	void WindowCloseRequested();
 	void MoveTab(int fromIndex, int toIndex);

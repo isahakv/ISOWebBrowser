@@ -8,6 +8,7 @@ class WebView;
 class QWebEngineProfile;
 class SearchLineEdit;
 class HistoryDialog;
+class DownloadDialog;
 
 /*!
 	The MainWindow of the Browser Application.
@@ -64,12 +65,14 @@ private slots:
 	void SlotViewToggleInspectElement(bool show);
 	void SlotToggleHistoryDialog(bool show);
 	void SlotHistoryDialogDestroyed();
+	void SlotShowDownloadDialog();
 	void SlotAboutApplication();
 
 	void SlotHome();
 
 	void SlotAboutToShowBackMenu();
 	void SlotAboutToShowForwardMenu();
+	void SlotAboutToShowWindowMenu();
 	void SlotOpenActionUrl(QAction* action);
 
 	void UpdateToggleInspectElementState();
@@ -90,6 +93,9 @@ private:
 	SearchLineEdit* toolbarSearch;
 	TabWidget* tabWidget;
 	HistoryDialog* historyDialog;
+	DownloadDialog* downloadDialog;
+
+	QMenu* windowMenu;
 
 	QAction* historyBack;
 	QMenu* historyBackMenu;

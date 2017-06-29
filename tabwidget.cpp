@@ -5,8 +5,10 @@
 #include "webviewwrapper.h"
 #include "urllineedit.h"
 #include "history.h"
+#include "downloadmanager.h"
 
 #include <QWebEngineProfile>
+#include <QWebEngineDownloadItem>
 
 #include <QApplication>
 #include <QClipboard>
@@ -518,12 +520,16 @@ void TabWidget::SlotCurrentTabChanged(int index)
 				   this, SIGNAL(WebPageLinkHovered(QString)));
 		//disconnect(oldWebView, SIGNAL(loadProgress(int)),
 		//		   this, SIGNAL(WebPageLoadProgress(int)));
+		disconnect(oldWebView->page()->profile(), SIGNAL(downloadRequested(QWebEngineDownloadItem*)),
+				   this, SLOT(WebPageDownloadRequested(QWebEngineDownloadItem*)));
 	}
 
 	connect(webView->page(), SIGNAL(linkHovered(QString)),
 					   this, SIGNAL(WebPageLinkHovered(QString)));
 	//connect(webView, SIGNAL(loadProgress(int)),
 	//				   this, SIGNAL(WebPageLoadProgress(int)));
+	connect(webView->page()->profile(), SIGNAL(downloadRequested(QWebEngineDownloadItem*)),
+					   this, SLOT(WebPageDownloadRequested(QWebEngineDownloadItem*)));
 
 	for (int i = 0; i < webActionMappers.count(); i++)
 	{
@@ -625,6 +631,12 @@ void TabWidget::WebPageMutedOrAudibleChanged()
 
 		setTabText(index, title);
 	}
+}
+
+void TabWidget::WebPageDownloadRequested(QWebEngineDownloadItem *downloadItem)
+{
+	BrowserApplication::GetDownloadManager()->download(downloadItem);
+	downloadItem->accept();
 }
 
 void TabWidget::LineEditReturnPressed()

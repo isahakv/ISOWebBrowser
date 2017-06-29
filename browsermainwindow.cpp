@@ -7,6 +7,7 @@
 #include "webview.h"
 #include "inspectelement.h"
 #include "history.h"
+#include "downloadmanager.h"
 #include "urllineedit.h"
 #include "searchlineedit.h"
 #include "settings.h"
@@ -393,6 +394,13 @@ void BrowserMainWindow::SlotHistoryDialogDestroyed()
 	toggleHistory->setChecked(false);
 }
 
+void BrowserMainWindow::SlotShowDownloadDialog()
+{
+	downloadDialog = new DownloadDialog(BrowserApplication::GetDownloadManager(), this);
+	downloadDialog->show();
+	//BrowserApplication::GetDownloadManager()->show();
+}
+
 void BrowserMainWindow::SlotAboutApplication()
 {
 	QMessageBox about;
@@ -469,6 +477,19 @@ void BrowserMainWindow::SlotAboutToShowForwardMenu()
 		historyForwardMenu->addAction(action);
 	}
 }
+
+void BrowserMainWindow::SlotAboutToShowWindowMenu()
+{
+	windowMenu->clear();
+	// nextTabAction
+	// previousTabAction
+	windowMenu->addSeparator();
+	windowMenu->addAction(tr("Downloads"), this, SLOT(SlotShowDownloadDialog()),
+						  QKeySequence(Qt::CTRL | Qt::Key_J));
+	windowMenu->addSeparator();
+	// show all windows
+}
+
 // Fix this
 void BrowserMainWindow::SlotOpenActionUrl(QAction* action)
 {
@@ -610,6 +631,11 @@ void BrowserMainWindow::SetupMenu()
 	toggleHistory->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_H));
 	connect(toggleHistory, SIGNAL(toggled(bool)), this, SLOT(SlotToggleHistoryDialog(bool)));
 	historyMenu->addAction(toggleHistory);
+
+	// Window
+	windowMenu = menuBar()->addMenu(tr("&Window"));
+	connect(windowMenu, SIGNAL(aboutToShow()),
+			this, SLOT(SlotAboutToShowWindowMenu()));
 
 	// Help
 	QMenu* helpMenu = menuBar()->addMenu(tr("&Help"));
